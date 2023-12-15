@@ -1,0 +1,15 @@
+{
+  "name": "lx-course-dec23-zhukouski-pavel-vanillajs",
+  "version": "1.0.0",
+  "description": "This is a web page that working with list of stores and their details",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://leverx-edu-sapui5-course-2023.leverx-group.com/pavel.zhukouski/lx-course-dec23-zhukouski-pavel-vanillajs"
+  },
+  "author": "Zhukouski Pavel",
+  "license": "ISC"
+}
