@@ -2,12 +2,16 @@
   margin: 0 auto;
   max-width: 1920px;
   width: 100%;
+  height: 100vh;
   display: flex;
 }
 
 .stores-list-wrapper {
+  max-width: 320px;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .stores-list-header {
@@ -20,6 +24,9 @@
 }
 
 .stores-list-header__main-headline {
+  position: sticky;
+  top: 10px;
+  background-color: #eff4f8;
   margin-bottom: 20px;
   font-family: "Roboto";
   font-size: 20px;
@@ -78,7 +85,7 @@
 .top-arrow-btn {
   position: absolute;
   bottom: -10px;
-  left: calc(50% - 31px);
+  left: calc(50% - 32px);
   width: 30px;
   height: 18px;
   border: none;
@@ -98,7 +105,7 @@
 .pin-btn {
   position: absolute;
   bottom: -10px;
-  left: calc(50% + 1px);
+  left: calc(50% + 2px);
   width: 30px;
   height: 18px;
   border: none;
@@ -116,21 +123,74 @@
 }
 
 .stores-list-main {
+  display: flex;
+  flex-direction: column;
 }
+
 .stores-list-item {
+  padding: 10px;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px #e6e6e6 solid;
+  border-bottom: 1px #e6e6e6 solid;
+  cursor: pointer;
+  transition: 0.3s;
 }
+.stores-list-item:hover {
+  background-color: #efefef;
+}
+
 .stores-list-item__name-address-column {
+  max-width: 230px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 10px;
 }
+
 .stores-list-item__name-headline {
+  line-height: 1.5em;
+  height: 3em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-family: "Roboto";
+  font-size: 16px;
 }
+
 .stores-list-item__address-text {
+  padding: 2px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .stores-list-item__area-data-column {
+  max-width: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
 }
+
 .stores-list-item__area-number {
+  margin-bottom: 5px;
+  font-family: "Roboto";
+  font-size: 18px;
 }
+
 .stores-list-item__area-unit {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .stores-list-footer {
 }
 .stores-list-footer__create-btn {
