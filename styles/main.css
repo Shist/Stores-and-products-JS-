@@ -193,11 +193,14 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-end;
+  text-align: end;
 }
 
 .stores-list-item__area-number {
   margin-bottom: 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   font-family: "Roboto";
   font-size: 18px;
 }
@@ -418,7 +421,8 @@
   position: relative;
   max-width: 85px;
   width: 100%;
-  padding-block: 15px;
+  padding-top: 15px;
+  padding-bottom: 30px;
   background-color: #eff4f8;
   border: 2px #eff4f8 solid;
   cursor: pointer;
@@ -454,7 +458,7 @@
 
 .products-filter-btn__description {
   position: absolute;
-  bottom: 0;
+  bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
   font-family: "Roboto";
@@ -471,79 +475,204 @@
 }
 
 .store-details-main {
+  padding: 10px;
+  flex-grow: 1;
 }
+
 .store-details-table {
+  width: 100%;
 }
+
 .store-details-table__head {
+  background-color: #f7f7f7;
 }
+
 .store-details-table__table-name-row {
 }
+
 .store-details-table__table-name {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 20px;
+  text-align: start;
 }
+
 .store-details-table__product-specifications-row {
+  border-block: 2px #e6e6e6 solid;
 }
+
 .store-details-table__product-name {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__product-price {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: end;
 }
+
 .store-details-table__product-specs {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__product-supplier-info {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__product-country-of-origin {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__product-prod-company {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__product-rating {
+  padding: 10px;
+  font-family: "Roboto";
+  font-size: 16px;
+  text-align: start;
 }
+
 .store-details-table__body {
 }
+
 .product-table-item {
+  border-block: 2px #e6e6e6 solid;
 }
+
 .product-table-item__name {
+  padding: 10px;
 }
+
 .product-table-item__name-num-wrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
 }
+
 .product-table-item__name-text {
+  font-family: "Roboto";
+  font-size: 12px;
+  font-weight: bold;
 }
+
 .product-table-item__num-text {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__price {
+  padding: 10px;
 }
+
 .product-table-item__price-wrapper {
+  display: flex;
+  column-gap: 5px;
 }
+
 .product-table-item__price-value {
+  font-family: "Roboto";
+  font-size: 12px;
+  font-weight: bold;
 }
+
 .product-table-item__price-currency {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__specs {
+  padding: 10px;
 }
+
 .product-table-item__specs-text {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__supplier-info {
+  padding: 10px;
 }
+
 .product-table-item__supplier-info-text {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__country-of-origin {
+  padding: 10px;
 }
+
 .product-table-item__country-of-origin-text {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__prod-company {
+  padding: 10px;
 }
+
 .product-table-item__prod-company-text {
+  font-family: "Roboto";
+  font-size: 12px;
 }
+
 .product-table-item__rating {
+  padding: 5px;
+  display: flex;
+  align-items: center;
 }
+.product-table-item__rating::after {
+  margin-left: 25px;
+  background-image: url(../icons/icon-arrow-right.png);
+  background-size: 20px 20px;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  content: "";
+}
+
 .product-table-item__stars-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 2px;
 }
+
 .yellow-star {
+  width: 20px;
+  height: 20px;
+  background: url(../icons/icon-yellow-star.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
 .empty-star {
+  width: 20px;
+  height: 20px;
+  background: url(../icons/icon-empty-star.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-.product-table-item__arrow-link {
-}
-.right-arrow {
-}
+
 .store-details-footer {
 }
 .store-details-footer__create-btn {
