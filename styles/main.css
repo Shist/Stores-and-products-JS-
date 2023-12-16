@@ -280,8 +280,20 @@
   flex-direction: column;
 }
 
-.store-details-header__main-headline {
+.store-details-header__main-headline-stub {
+  height: 20px;
   margin-bottom: 35px;
+}
+
+.store-details-header__main-headline {
+  padding: 10px 40px;
+  position: fixed;
+  top: 0;
+  right: 16px;
+  z-index: 3;
+  max-width: calc(100% - 336px);
+  width: 100%;
+  background-color: #eff4f8;
   font-family: "Roboto";
   font-size: 20px;
 }
