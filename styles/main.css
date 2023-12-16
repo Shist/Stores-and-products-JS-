@@ -23,11 +23,21 @@
   border-bottom: 2px #cfdfec solid;
 }
 
-.stores-list-header__main-headline {
-  position: sticky;
-  top: 10px;
+.stores-list-header__main-headline-stub {
+  height: 20px;
   background-color: #eff4f8;
   margin-bottom: 20px;
+}
+
+.stores-list-header__main-headline {
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  max-width: 304px;
+  width: 100%;
+  background-color: #eff4f8;
   font-family: "Roboto";
   font-size: 20px;
 }
@@ -38,11 +48,14 @@
 
 .stores-list-header__search-line {
   margin-bottom: 4px;
-  padding: 2px;
+  padding: 2px 50px 2px 2px;
   width: 100%;
   height: 28px;
   font-family: "Roboto";
   font-size: 16px;
+}
+.stores-list-header__search-line::-webkit-search-cancel-button {
+  -webkit-appearance: none;
 }
 
 .stores-list-header__search-btn {
@@ -125,6 +138,7 @@
 .stores-list-main {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .stores-list-item {
@@ -192,13 +206,52 @@
 }
 
 .stores-list-footer {
+  padding: 5px;
+  position: sticky;
+  left: 7px;
+  bottom: 7px;
+  max-width: 290px;
+  width: 100%;
+  height: 36px;
+  display: flex;
+  flex-direction: row-reverse;
+  border-radius: 5px;
+  background-color: rgba(48, 64, 76, 0.9);
 }
+
 .stores-list-footer__create-btn {
+  padding: 2px;
+  max-width: 80px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  font-family: "Roboto";
+  font-size: 14px;
+  color: #c4d1da;
+  background-color: #435563;
+  border-radius: 5px;
+  border: 2px #c4d1da solid;
+  cursor: pointer;
+  transition: 0.3s;
 }
+.stores-list-footer__create-btn:hover {
+  transform: scale(1.05);
+}
+
 .stores-list-footer__icon-plus {
+  width: 16px;
+  height: 16px;
+  background: url(../icons/icon-plus.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
 .stores-list-footer__text-create {
+  font-family: "Roboto";
+  font-size: 14px;
 }
+
 .store-details-wrapper {
 }
 .store-details-header {
