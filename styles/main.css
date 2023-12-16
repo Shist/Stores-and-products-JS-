@@ -139,6 +139,7 @@
 }
 
 .stores-list-main {
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -212,13 +213,11 @@
 }
 
 .stores-list-footer {
-  padding: 5px;
+  padding: 7px;
   position: sticky;
   left: 7px;
   bottom: 7px;
-  max-width: 290px;
-  width: 100%;
-  height: 36px;
+  max-width: calc(100% - 14px);
   display: flex;
   flex-direction: row-reverse;
   border-radius: 5px;
@@ -226,7 +225,7 @@
 }
 
 .footer-create-btn {
-  padding: 2px;
+  padding: 5px;
   max-width: 80px;
   width: 100%;
   display: flex;
@@ -477,11 +476,13 @@
 }
 
 .store-details-main {
+  margin-bottom: 5px;
   padding: 10px;
   flex-grow: 1;
 }
 
 .store-details-table {
+  table-layout: fixed;
   width: 100%;
 }
 
@@ -497,6 +498,7 @@
   font-family: "Roboto";
   font-size: 20px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-specifications-row {
@@ -508,6 +510,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-price {
@@ -515,6 +518,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: end;
+  vertical-align: middle;
 }
 
 .store-details-table__product-specs {
@@ -522,6 +526,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-supplier-info {
@@ -529,6 +534,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-country-of-origin {
@@ -536,6 +542,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-prod-company {
@@ -543,6 +550,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__product-rating {
@@ -550,6 +558,7 @@
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
+  vertical-align: middle;
 }
 
 .store-details-table__body {
@@ -557,10 +566,16 @@
 
 .product-table-item {
   border-block: 2px #e6e6e6 solid;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.product-table-item:hover {
+  background-color: #efefef;
 }
 
 .product-table-item__name {
   padding: 10px;
+  vertical-align: middle;
 }
 
 .product-table-item__name-num-wrapper {
@@ -570,22 +585,31 @@
 }
 
 .product-table-item__name-text {
+  padding-block: 1px;
   font-family: "Roboto";
   font-size: 12px;
   font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__num-text {
   font-family: "Roboto";
   font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__price {
   padding: 10px;
+  vertical-align: middle;
 }
 
 .product-table-item__price-wrapper {
   display: flex;
+  justify-content: flex-end;
   column-gap: 5px;
 }
 
@@ -593,15 +617,26 @@
   font-family: "Roboto";
   font-size: 12px;
   font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__price-currency {
+  min-width: 24px;
   font-family: "Roboto";
   font-size: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__specs {
   padding: 10px;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__specs-text {
@@ -611,6 +646,10 @@
 
 .product-table-item__supplier-info {
   padding: 10px;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__supplier-info-text {
@@ -620,6 +659,10 @@
 
 .product-table-item__country-of-origin {
   padding: 10px;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__country-of-origin-text {
@@ -629,6 +672,10 @@
 
 .product-table-item__prod-company {
   padding: 10px;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .product-table-item__prod-company-text {
@@ -637,18 +684,8 @@
 }
 
 .product-table-item__rating {
-  padding: 5px;
-  display: flex;
-  align-items: center;
-}
-.product-table-item__rating::after {
-  margin-left: 25px;
-  background-image: url(../icons/icon-arrow-right.png);
-  background-size: 20px 20px;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  content: "";
+  padding: 10px;
+  vertical-align: middle;
 }
 
 .product-table-item__stars-wrapper {
@@ -675,23 +712,31 @@
   background-repeat: no-repeat;
 }
 
+.right-arrow {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  background-image: url(../icons/icon-arrow-right.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .store-details-footer {
-  padding: 5px;
+  padding: 7px;
   position: sticky;
   left: 7px;
   bottom: 7px;
-  max-width: 1570px;
-  width: 100%;
-  height: 36px;
+  max-width: calc(100% - 14px);
   display: flex;
   flex-direction: row-reverse;
-  column-gap: 5px;
+  column-gap: 8px;
   border-radius: 5px;
   background-color: rgba(48, 64, 76, 0.9);
 }
 
 .footer-delete-btn {
-  padding: 2px;
+  padding: 5px;
   max-width: 80px;
   width: 100%;
   display: flex;
