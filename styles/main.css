@@ -14,6 +14,11 @@
   flex-direction: column;
   overflow-y: auto;
 }
+@media (max-width: 960px) {
+  .stores-list-wrapper {
+    display: none;
+  }
+}
 
 .stores-list-header {
   padding: 10px;
@@ -299,14 +304,25 @@
   font-family: "Roboto";
   font-size: 20px;
 }
+@media (max-width: 960px) {
+  .store-details-header__main-headline {
+    max-width: 100%;
+  }
+}
 
 .store-details-header__description-wrapper {
-  max-width: 700px;
+  max-width: 500px;
   display: grid;
   row-gap: 10px;
   column-gap: 30px;
   grid-template-rows: repeat(3, 1fr);
   grid-template-columns: repeat(2, 1fr);
+}
+@media (max-width: 576px) {
+  .store-details-header__description-wrapper {
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
 .store-details-header__email-wrapper {
@@ -316,13 +332,13 @@
 
 .store-details-header__email-label {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .store-details-header__email-data {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .store-details-header__est-date-wrapper {
@@ -332,13 +348,13 @@
 
 .store-details-header__est-date-label {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .store-details-header__est-date-data {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .store-details-header__phone-wrapper {
@@ -348,13 +364,13 @@
 
 .store-details-header__phone-label {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .store-details-header__phone-data {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .store-details-header__floor-area-wrapper {
@@ -364,13 +380,13 @@
 
 .store-details-header__floor-area-label {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .store-details-header__floor-area-data {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .store-details-header__address-wrapper {
@@ -380,13 +396,13 @@
 
 .store-details-header__address-label {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .store-details-header__address-data {
   font-family: "Roboto";
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .store-details-header__filters-wrapper {
@@ -532,6 +548,16 @@
   text-align: start;
   vertical-align: middle;
 }
+@media (max-width: 1024px) {
+  .store-details-table__product-name {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-name {
+    font-size: 12px;
+  }
+}
 
 .store-details-table__product-price {
   padding: 10px;
@@ -539,6 +565,16 @@
   font-size: 16px;
   text-align: end;
   vertical-align: middle;
+}
+@media (max-width: 1024px) {
+  .store-details-table__product-price {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-price {
+    font-size: 12px;
+  }
 }
 
 .store-details-table__product-specs {
@@ -548,6 +584,16 @@
   text-align: start;
   vertical-align: middle;
 }
+@media (max-width: 1024px) {
+  .store-details-table__product-specs {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-specs {
+    font-size: 12px;
+  }
+}
 
 .store-details-table__product-supplier-info {
   padding: 10px;
@@ -555,6 +601,16 @@
   font-size: 16px;
   text-align: start;
   vertical-align: middle;
+}
+@media (max-width: 1024px) {
+  .store-details-table__product-supplier-info {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-supplier-info {
+    font-size: 12px;
+  }
 }
 
 .store-details-table__product-country-of-origin {
@@ -564,6 +620,16 @@
   text-align: start;
   vertical-align: middle;
 }
+@media (max-width: 1024px) {
+  .store-details-table__product-country-of-origin {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-country-of-origin {
+    font-size: 12px;
+  }
+}
 
 .store-details-table__product-prod-company {
   padding: 10px;
@@ -572,6 +638,16 @@
   text-align: start;
   vertical-align: middle;
 }
+@media (max-width: 1024px) {
+  .store-details-table__product-prod-company {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-prod-company {
+    font-size: 12px;
+  }
+}
 
 .store-details-table__product-rating {
   padding: 10px;
@@ -579,6 +655,16 @@
   font-size: 16px;
   text-align: start;
   vertical-align: middle;
+}
+@media (max-width: 1024px) {
+  .store-details-table__product-rating {
+    font-size: 14px;
+  }
+}
+@media (max-width: 640px) {
+  .store-details-table__product-rating {
+    font-size: 12px;
+  }
 }
 
 .store-details-table__body {
@@ -712,6 +798,9 @@
   display: flex;
   align-items: center;
   column-gap: 2px;
+}
+.product-table-item__stars-wrapper > *:nth-child(5) {
+  margin-right: 10px;
 }
 
 .yellow-star {
