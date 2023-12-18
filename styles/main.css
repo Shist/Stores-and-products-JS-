@@ -90,11 +90,17 @@
   background-color: #d9d9d9;
 }
 
-.top-arrow-btn {
+.small-btns-wrapper {
   position: absolute;
   z-index: 2;
   bottom: -10px;
-  left: calc(50% - 32px);
+  left: calc(50%);
+  transform: translate(-50%, 0);
+  display: flex;
+  column-gap: 4px;
+}
+
+.top-arrow-btn {
   width: 30px;
   height: 18px;
   border: none;
@@ -113,10 +119,6 @@
 }
 
 .pin-btn {
-  position: absolute;
-  z-index: 2;
-  bottom: -10px;
-  left: calc(50% + 2px);
   width: 30px;
   height: 18px;
   border: none;
