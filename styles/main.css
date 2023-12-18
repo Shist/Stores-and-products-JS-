@@ -274,86 +274,52 @@
   }
 }
 
-.store-details-header__email-wrapper,
-.store-details-header__est-date-wrapper,
-.store-details-header__phone-wrapper,
-.store-details-header__floor-area-wrapper,
-.store-details-header__address-wrapper {
+.store-details-header__field-wrapper {
   display: flex;
   align-items: center;
   column-gap: 5px;
 }
 
-.store-details-header__email-label,
-.store-details-header__est-date-label,
-.store-details-header__phone-label,
-.store-details-header__floor-area-label,
-.store-details-header__address-label {
+.store-details-header__field-label {
   font-size: 12px;
   font-weight: bold;
 }
 
-.store-details-header__email-data {
-  max-width: 180px;
+.store-details-header__field-data {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   font-size: 12px;
 }
+.store-details-header__field-data_email {
+  max-width: 180px;
+}
+.store-details-header__field-data_est-date {
+  max-width: 130px;
+}
+.store-details-header__field-data_phone {
+  max-width: 140px;
+}
+.store-details-header__field-data_floor-area {
+  max-width: 170px;
+}
+.store-details-header__field-data_address {
+  max-width: 180px;
+}
 @media (max-width: 640px) {
-  .store-details-header__email-data {
+  .store-details-header__field-data_email {
     max-width: 340px;
   }
-}
-
-.store-details-header__est-date-data {
-  max-width: 130px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 12px;
-}
-@media (max-width: 640px) {
-  .store-details-header__est-date-data {
+  .store-details-header__field-data_est-date {
     max-width: 290px;
   }
-}
-
-.store-details-header__phone-data {
-  max-width: 140px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 12px;
-}
-@media (max-width: 640px) {
-  .store-details-header__phone-data {
+  .store-details-header__field-data_phone {
     max-width: 300px;
   }
-}
-
-.store-details-header__floor-area-data {
-  max-width: 170px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 12px;
-}
-@media (max-width: 640px) {
-  .store-details-header__floor-area-data {
+  .store-details-header__field-data_floor-area {
     max-width: 330px;
   }
-}
-
-.store-details-header__address-data {
-  max-width: 180px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 12px;
-}
-@media (max-width: 640px) {
-  .store-details-header__address-data {
+  .store-details-header__field-data_address {
     max-width: 340px;
   }
 }
