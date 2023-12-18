@@ -4,6 +4,7 @@
   width: 100%;
   height: 100vh;
   display: flex;
+  font-family: "Roboto";
 }
 
 .stores-list-wrapper {
@@ -34,7 +35,6 @@
 .stores-list-header__main-headline {
   margin-bottom: 20px;
   background-color: #eff4f8;
-  font-family: "Roboto";
   font-size: 20px;
 }
 
@@ -47,7 +47,6 @@
   padding: 2px 54px 2px 2px;
   width: 100%;
   height: 28px;
-  font-family: "Roboto";
   font-size: 16px;
 }
 .stores-list-header__search-line::-webkit-search-cancel-button {
@@ -152,7 +151,6 @@
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-family: "Roboto";
   font-size: 16px;
 }
 
@@ -161,7 +159,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -179,12 +176,10 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 18px;
 }
 
 .stores-list-item__area-unit {
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -206,7 +201,6 @@
   width: 100%;
   display: flex;
   justify-content: space-around;
-  font-family: "Roboto";
   font-size: 14px;
   color: #c4d1da;
   background-color: #435563;
@@ -226,7 +220,6 @@
 }
 
 .footer-create-btn__text-create {
-  font-family: "Roboto";
   font-size: 14px;
 }
 
@@ -258,7 +251,6 @@
 .store-details-header__main-headline {
   margin-bottom: 35px;
   background-color: #eff4f8;
-  font-family: "Roboto";
   font-size: 20px;
 }
 @media (max-width: 960px) {
@@ -297,7 +289,6 @@
 .store-details-header__phone-label,
 .store-details-header__floor-area-label,
 .store-details-header__address-label {
-  font-family: "Roboto";
   font-size: 12px;
   font-weight: bold;
 }
@@ -307,7 +298,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 @media (max-width: 640px) {
@@ -321,7 +311,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 @media (max-width: 640px) {
@@ -335,7 +324,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 @media (max-width: 640px) {
@@ -349,7 +337,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 @media (max-width: 640px) {
@@ -363,7 +350,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 @media (max-width: 640px) {
@@ -400,12 +386,10 @@
 }
 
 .store-details-header__products-amount {
-  font-family: "Roboto";
   font-size: 24px;
 }
 
 .store-details-header__products-note {
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -451,7 +435,6 @@
   bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "Roboto";
   font-size: 12px;
   white-space: nowrap;
 }
@@ -460,7 +443,6 @@
   position: absolute;
   right: 7px;
   top: 10px;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -482,7 +464,6 @@
 
 .products-table__table-name {
   padding: 10px;
-  font-family: "Roboto";
   font-size: 20px;
   text-align: start;
   vertical-align: middle;
@@ -503,14 +484,12 @@
 .products-table__product-prod-company,
 .products-table__product-rating {
   padding: 10px;
-  font-family: "Roboto";
   font-size: 16px;
   text-align: start;
   vertical-align: middle;
 }
 .products-table__product-price {
   padding: 10px;
-  font-family: "Roboto";
   font-size: 16px;
   text-align: end;
   vertical-align: middle;
@@ -576,7 +555,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -584,7 +562,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -599,7 +576,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -608,7 +584,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -616,7 +591,6 @@
 .product-table-item__supplier-info-text,
 .product-table-item__country-of-origin-text,
 .product-table-item__prod-company-text {
-  font-family: "Roboto";
   font-size: 12px;
 }
 
@@ -667,7 +641,6 @@
   width: 100%;
   display: flex;
   justify-content: space-around;
-  font-family: "Roboto";
   font-size: 14px;
   color: #ec857c;
   background-color: #435563;
@@ -687,6 +660,5 @@
 }
 
 .footer-delete-btn__text-delete {
-  font-family: "Roboto";
   font-size: 14px;
 }
