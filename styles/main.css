@@ -62,10 +62,7 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-search.png");
-  background-size: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-search.png") center / 20px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__search-btn:hover {
@@ -80,10 +77,7 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-refresh.png");
-  background-size: 20px;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-refresh.png") center / 20px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__refresh-btn:hover {
@@ -106,11 +100,8 @@
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  background-image: url("../icons/icon-arrow-up.png");
-  background-color: #d0e0ed;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #d0e0ed url("../icons/icon-arrow-up.png") no-repeat center /
+    contain;
   transition: 0.3s;
 }
 .top-arrow-btn:hover {
@@ -124,11 +115,8 @@
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  background-image: url("../icons/icon-thumbtack.png");
-  background-color: #d0e0ed;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #d0e0ed url("../icons/icon-thumbtack.png") no-repeat center /
+    contain;
   transition: 0.3s;
 }
 .pin-btn:hover {
@@ -243,10 +231,7 @@
 .footer-create-btn__icon-plus {
   width: 16px;
   height: 16px;
-  background: url("../icons/icon-plus.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-plus.png") no-repeat center/contain;
 }
 
 .footer-create-btn__text-create {
@@ -461,22 +446,13 @@
   height: 50px;
 }
 .products-filter-btn__icon_ok {
-  background: url("../icons/icon-ok.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-ok.png") no-repeat center/contain;
 }
 .products-filter-btn__icon_warning {
-  background: url("../icons/icon-warning.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-warning.png") no-repeat center/contain;
 }
 .products-filter-btn__icon_error {
-  background: url("../icons/icon-error.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-error.png") no-repeat center/contain;
 }
 
 .products-filter-btn__description {
@@ -665,29 +641,20 @@
 .yellow-star {
   width: 20px;
   height: 20px;
-  background: url("../icons/icon-yellow-star.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-yellow-star.png") no-repeat center/contain;
 }
 
 .empty-star {
   width: 20px;
   height: 20px;
-  background: url("../icons/icon-empty-star.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-empty-star.png") no-repeat center/contain;
 }
 
 .right-arrow {
   margin-left: auto;
   width: 20px;
   height: 20px;
-  background-image: url("../icons/icon-arrow-right.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-arrow-right.png") no-repeat center/contain;
 }
 
 .store-details-footer {
@@ -725,10 +692,7 @@
 .footer-delete-btn__icon-trash {
   width: 16px;
   height: 16px;
-  background: url("../icons/icon-trash.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("../icons/icon-trash.png") no-repeat center/contain;
 }
 
 .footer-delete-btn__text-delete {
