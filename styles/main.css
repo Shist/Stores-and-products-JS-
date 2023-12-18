@@ -94,34 +94,25 @@
   column-gap: 4px;
 }
 
-.top-arrow-btn {
+.small-btn {
   width: 30px;
   height: 18px;
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  transition: 0.3s;
+}
+.small-btn:hover {
+  transform: scale(1.1);
+  background-color: #bbd2e5;
+}
+.small-btn_top-arrow {
   background: #d0e0ed url("../icons/icon-arrow-up.png") no-repeat center /
     contain;
-  transition: 0.3s;
 }
-.top-arrow-btn:hover {
-  transform: scale(1.1);
-  background-color: #bbd2e5;
-}
-
-.pin-btn {
-  width: 30px;
-  height: 18px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+.small-btn_pin {
   background: #d0e0ed url("../icons/icon-thumbtack.png") no-repeat center /
     contain;
-  transition: 0.3s;
-}
-.pin-btn:hover {
-  transform: scale(1.1);
-  background-color: #bbd2e5;
 }
 
 .stores-list-section {
