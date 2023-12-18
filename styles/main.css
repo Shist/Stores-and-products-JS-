@@ -503,17 +503,17 @@
   flex-grow: 1;
 }
 
-.store-details-table {
+.products-table {
   position: relative;
   table-layout: fixed;
   width: 100%;
 }
 
-.store-details-table__head {
+.products-table__head {
   background-color: #f7f7f7;
 }
 
-.store-details-table__table-name {
+.products-table__table-name {
   padding: 10px;
   font-family: "Roboto";
   font-size: 20px;
@@ -521,7 +521,7 @@
   vertical-align: middle;
 }
 
-.store-details-table__product-specifications-row {
+.products-table__product-specifications-row {
   position: sticky;
   top: 240px;
   background-color: #f7f7f7;
@@ -529,19 +529,19 @@
   box-shadow: 0px 1px #e6e6e6, 0px -1px #e6e6e6;
 }
 
-.store-details-table__product-name,
-.store-details-table__product-specs,
-.store-details-table__product-supplier-info,
-.store-details-table__product-country-of-origin,
-.store-details-table__product-prod-company,
-.store-details-table__product-rating {
+.products-table__product-name,
+.products-table__product-specs,
+.products-table__product-supplier-info,
+.products-table__product-country-of-origin,
+.products-table__product-prod-company,
+.products-table__product-rating {
   padding: 10px;
   font-family: "Roboto";
   font-size: 16px;
   text-align: start;
   vertical-align: middle;
 }
-.store-details-table__product-price {
+.products-table__product-price {
   padding: 10px;
   font-family: "Roboto";
   font-size: 16px;
@@ -549,24 +549,24 @@
   vertical-align: middle;
 }
 @media (max-width: 1024px) {
-  .store-details-table__product-name,
-  .store-details-table__product-price,
-  .store-details-table__product-specs,
-  .store-details-table__product-supplier-info,
-  .store-details-table__product-country-of-origin,
-  .store-details-table__product-prod-company,
-  .store-details-table__product-rating {
+  .products-table__product-name,
+  .products-table__product-price,
+  .products-table__product-specs,
+  .products-table__product-supplier-info,
+  .products-table__product-country-of-origin,
+  .products-table__product-prod-company,
+  .products-table__product-rating {
     font-size: 14px;
   }
 }
 @media (max-width: 640px) {
-  .store-details-table__product-name,
-  .store-details-table__product-price,
-  .store-details-table__product-specs,
-  .store-details-table__product-supplier-info,
-  .store-details-table__product-country-of-origin,
-  .store-details-table__product-prod-company,
-  .store-details-table__product-rating {
+  .products-table__product-name,
+  .products-table__product-price,
+  .products-table__product-specs,
+  .products-table__product-supplier-info,
+  .products-table__product-country-of-origin,
+  .products-table__product-prod-company,
+  .products-table__product-rating {
     font-size: 12px;
   }
 }
