@@ -443,42 +443,24 @@
   box-shadow: 0px 1px #e6e6e6, 0px -1px #e6e6e6;
 }
 
-.products-table__product-name,
-.products-table__product-specs,
-.products-table__product-supplier-info,
-.products-table__product-country-of-origin,
-.products-table__product-prod-company,
-.products-table__product-rating {
+.products-table__product-field {
   padding: 10px;
   font-size: 16px;
-  text-align: start;
   vertical-align: middle;
 }
-.products-table__product-price {
-  padding: 10px;
-  font-size: 16px;
+.products-table__product-field_start {
+  text-align: start;
+}
+.products-table__product-field_end {
   text-align: end;
-  vertical-align: middle;
 }
 @media (max-width: 1024px) {
-  .products-table__product-name,
-  .products-table__product-price,
-  .products-table__product-specs,
-  .products-table__product-supplier-info,
-  .products-table__product-country-of-origin,
-  .products-table__product-prod-company,
-  .products-table__product-rating {
+  .products-table__product-field {
     font-size: 14px;
   }
 }
 @media (max-width: 640px) {
-  .products-table__product-name,
-  .products-table__product-price,
-  .products-table__product-specs,
-  .products-table__product-supplier-info,
-  .products-table__product-country-of-origin,
-  .products-table__product-prod-company,
-  .products-table__product-rating {
+  .products-table__product-field {
     font-size: 12px;
   }
 }
