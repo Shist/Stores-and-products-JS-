@@ -157,7 +157,7 @@
   background-color: #efefef;
 }
 
-.stores-list-item__name-address-column {
+.stores-list-item__name-address-wrapper {
   max-width: 230px;
   width: 100%;
   display: flex;
@@ -186,7 +186,7 @@
   font-size: 12px;
 }
 
-.stores-list-item__area-data-column {
+.stores-list-item__area-data-wrapper {
   max-width: 50px;
   width: 100%;
   display: flex;
