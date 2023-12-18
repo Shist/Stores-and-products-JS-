@@ -22,28 +22,17 @@
 
 .stores-list-header {
   padding: 10px;
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   background-color: #eff4f8;
   border-bottom: 2px #cfdfec solid;
 }
 
-.stores-list-header__main-headline-stub {
-  height: 20px;
-  background-color: #eff4f8;
-  margin-bottom: 20px;
-}
-
 .stores-list-header__main-headline {
-  padding: 10px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 3;
-  max-width: 304px;
-  width: 100%;
-  height: 40px;
+  margin-bottom: 20px;
   background-color: #eff4f8;
   font-family: "Roboto";
   font-size: 20px;
@@ -273,6 +262,9 @@
 }
 
 .store-details-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   background-color: #eff4f8;
@@ -285,20 +277,8 @@
   flex-direction: column;
 }
 
-.store-details-header__main-headline-stub {
-  height: 20px;
-  margin-bottom: 35px;
-}
-
 .store-details-header__main-headline {
-  padding: 10px 40px;
-  position: fixed;
-  top: 0;
-  right: 16px;
-  z-index: 3;
-  max-width: calc(100% - 336px);
-  width: 100%;
-  height: 40px;
+  margin-bottom: 35px;
   background-color: #eff4f8;
   font-family: "Roboto";
   font-size: 20px;
@@ -541,7 +521,7 @@
 
 .store-details-table__product-specifications-row {
   position: sticky;
-  top: 40px;
+  top: 240px;
   background-color: #f7f7f7;
   border-block: 2px solid #e6e6e6;
   box-shadow: 0px 1px #e6e6e6, 0px -1px #e6e6e6;
