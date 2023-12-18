@@ -136,7 +136,7 @@
   background-color: #bbd2e5;
 }
 
-.stores-list-main {
+.stores-list-section {
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
@@ -497,7 +497,7 @@
   font-size: 12px;
 }
 
-.store-details-main {
+.store-details-section {
   margin-bottom: 5px;
   padding: 10px;
   flex-grow: 1;
