@@ -39,7 +39,19 @@ function getStoresListForDOM() {
   return storesListToAddStr;
 }
 
-function addStoresListToDOM() {
+function highlightActiveStore(storeId) {
+  const storeItems = document.querySelectorAll(".stores-list-item");
+
+  storeItems.forEach((storeItem) => {
+    storeItem.classList.remove("js-selected-item");
+
+    if (storeItem.dataset.storeId === storeId) {
+      storeItem.classList.add("js-selected-item");
+    }
+  });
+}
+
+function loadStoresListToDOM() {
   toggleNoStoresLayout();
 
   const storesListSection = document.querySelector("#stores-list-layout");
@@ -150,6 +162,8 @@ function loadStoreFiltersDataToDOM(store) {
 }
 
 function loadAllStoreDetailsToDOM(storeId) {
+  highlightActiveStore(storeId);
+
   showStoreDetailsTable();
 
   const store = stores.find((nextStore) => nextStore.id.toString() === storeId);
@@ -163,10 +177,10 @@ function loadAllStoreDetailsToDOM(storeId) {
   //   store.rel_Products?.forEach((detail) => {
   //     storeDetailsTableToAddStr += `
 
-  //           `;
+  //             `;
   //   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  addStoresListToDOM();
+  loadStoresListToDOM();
 });
