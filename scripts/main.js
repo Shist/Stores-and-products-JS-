@@ -3,9 +3,7 @@
 import { stores } from "../data/data.js";
 
 function toggleNoStoresLayout() {
-  const noStoresLayout = document.querySelector(
-    ".stores-list-section__no-data-layout"
-  );
+  const noStoresLayout = document.querySelector("#no-stores-list-layout");
 
   if (stores.length) {
     noStoresLayout.classList.add("js-hidden-element");
@@ -44,23 +42,21 @@ function prepairStoresListForDOM() {
 function addStoresListToDOM() {
   toggleNoStoresLayout();
 
-  const storesListSection = document.querySelector(
-    ".stores-list-section__main-layout"
-  );
+  const storesListSection = document.querySelector("#stores-list-layout");
 
   storesListSection.innerHTML = prepairStoresListForDOM();
 
   storesListSection.addEventListener("click", (e) => {
     if ("storeId" in e.target.dataset) {
-      loadStoreDetailsToDOM(e.target.dataset.storeId);
+      loadAllStoreDetailsToDOM(e.target.dataset.storeId);
     }
   });
 }
 
 function showStoreDetailsTable() {
-  const storeDetailsWrapper = document.querySelector(".store-details-wrapper");
+  const storeDetailsWrapper = document.querySelector("#store-details-wrapper");
   const noStoreDetailsWrapper = document.querySelector(
-    ".no-store-details-wrapper"
+    "#no-store-details-wrapper"
   );
 
   storeDetailsWrapper.classList.add("js-flex-element");
@@ -95,21 +91,11 @@ function transformDateFromISO(dateISO) {
 }
 
 function loadStoreHeaderToDOM(store) {
-  const storeEmailField = document.querySelector(
-    ".store-details-header__field-data_email"
-  );
-  const storeEstDateField = document.querySelector(
-    ".store-details-header__field-data_est-date"
-  );
-  const storePhoneField = document.querySelector(
-    ".store-details-header__field-data_phone"
-  );
-  const storeFloorAreaField = document.querySelector(
-    ".store-details-header__field-data_floor-area"
-  );
-  const storeAddressField = document.querySelector(
-    ".store-details-header__field-data_address"
-  );
+  const storeEmailField = document.querySelector("#store-email");
+  const storeEstDateField = document.querySelector("#store-est-date");
+  const storePhoneField = document.querySelector("#store-phone");
+  const storeFloorAreaField = document.querySelector("#store-floor-area");
+  const storeAddressField = document.querySelector("#store-address");
 
   storeEmailField.textContent = store.Email;
   storeEstDateField.textContent = transformDateFromISO(store.Established);
@@ -118,20 +104,37 @@ function loadStoreHeaderToDOM(store) {
   storeFloorAreaField.textContent = store.FloorArea;
 }
 
-function loadStoreDetailsToDOM(storeId) {
+function loadStoreFiltersDataToDOM(store) {
+  const prodAmountField = document.querySelector(
+    ".store-details-header__products-amount"
+  );
+  const prodOkAmountField = document.querySelector(
+    ".store-details-header__products-amount"
+  );
+  const prodStorageAmountField = document.querySelector(
+    ".store-details-header__products-amount"
+  );
+  const prodOutOfStockAmountField = document.querySelector(
+    ".store-details-header__products-amount"
+  );
+}
+
+function loadAllStoreDetailsToDOM(storeId) {
   showStoreDetailsTable();
 
   const store = stores.find((nextStore) => nextStore.id.toString() === storeId);
 
   loadStoreHeaderToDOM(store);
 
-  //   let storeDetailsTableToAddStr = "";
+  loadStoreFiltersDataToDOM(store);
 
-  //   store.rel_Products?.forEach((detail) => {
-  //     storeDetailsTableToAddStr += `
+  let storeDetailsTableToAddStr = "";
 
-  //         `;
-  //   });
+  store.rel_Products?.forEach((detail) => {
+    storeDetailsTableToAddStr += `
+
+          `;
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
