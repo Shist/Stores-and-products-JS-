@@ -1,8 +1,8 @@
-.js-display-none {
+.js-hidden-element {
   display: none !important;
 }
 
-.js-display-flex {
+.js-flex-element {
   display: flex !important;
 }
 
