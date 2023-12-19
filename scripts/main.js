@@ -12,7 +12,7 @@ function toggleNoStoresLayout() {
   }
 }
 
-function prepairStoresListForDOM() {
+function getStoresListForDOM() {
   let storesListToAddStr = "";
 
   stores.forEach((store) => {
@@ -44,7 +44,7 @@ function addStoresListToDOM() {
 
   const storesListSection = document.querySelector("#stores-list-layout");
 
-  storesListSection.innerHTML = prepairStoresListForDOM();
+  storesListSection.innerHTML = getStoresListForDOM();
 
   storesListSection.addEventListener("click", (e) => {
     if ("storeId" in e.target.dataset) {
@@ -90,7 +90,7 @@ function transformDateFromISO(dateISO) {
   return formattedDate;
 }
 
-function loadStoreHeaderToDOM(store) {
+function loadStoreContactsToDOM(store) {
   const storeEmailField = document.querySelector("#store-email");
   const storeEstDateField = document.querySelector("#store-est-date");
   const storePhoneField = document.querySelector("#store-phone");
@@ -104,19 +104,49 @@ function loadStoreHeaderToDOM(store) {
   storeFloorAreaField.textContent = store.FloorArea;
 }
 
+function getStoreProductsAmounts(store) {
+  const amountsData = {
+    all: "rel_Products" in store ? store.rel_Products.length : 0,
+    ok: 0,
+    storage: 0,
+    outOfStock: 0,
+  };
+
+  store.rel_Products?.forEach((product) => {
+    switch (product.Status) {
+      case "OK":
+        amountsData.ok++;
+        break;
+      case "STORAGE":
+        amountsData.storage++;
+        break;
+      case "OUT_OF_STOCK":
+        amountsData.outOfStock++;
+        break;
+      default:
+        console.warn(
+          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
+        );
+    }
+  });
+
+  return amountsData;
+}
+
 function loadStoreFiltersDataToDOM(store) {
-  const prodAmountField = document.querySelector(
-    ".store-details-header__products-amount"
-  );
-  const prodOkAmountField = document.querySelector(
-    ".store-details-header__products-amount"
-  );
-  const prodStorageAmountField = document.querySelector(
-    ".store-details-header__products-amount"
-  );
+  const prodAmountField = document.querySelector("#all-prod-amount");
+  const prodOkAmountField = document.querySelector("#ok-prod-amount");
+  const prodStorageAmountField = document.querySelector("#storage-prod-amount");
   const prodOutOfStockAmountField = document.querySelector(
-    ".store-details-header__products-amount"
+    "#out-of-stock-prod-amount"
   );
+
+  const amountsData = getStoreProductsAmounts(store);
+
+  prodAmountField.textContent = amountsData.all;
+  prodOkAmountField.textContent = amountsData.ok;
+  prodStorageAmountField.textContent = amountsData.storage;
+  prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
 function loadAllStoreDetailsToDOM(storeId) {
@@ -124,17 +154,17 @@ function loadAllStoreDetailsToDOM(storeId) {
 
   const store = stores.find((nextStore) => nextStore.id.toString() === storeId);
 
-  loadStoreHeaderToDOM(store);
+  loadStoreContactsToDOM(store);
 
   loadStoreFiltersDataToDOM(store);
 
-  let storeDetailsTableToAddStr = "";
+  //   let storeDetailsTableToAddStr = "";
 
-  store.rel_Products?.forEach((detail) => {
-    storeDetailsTableToAddStr += `
+  //   store.rel_Products?.forEach((detail) => {
+  //     storeDetailsTableToAddStr += `
 
-          `;
-  });
+  //           `;
+  //   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

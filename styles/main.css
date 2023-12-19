@@ -346,13 +346,12 @@
 }
 
 .store-details-header__all-products-btn {
-  padding-block: 15px;
+  padding: 10px;
   max-width: 85px;
   width: 100%;
   display: flex;
   align-items: center;
-  column-gap: 5px;
-  padding: 10px;
+  column-gap: 7px;
   background-color: #eff4f8;
   border-top: 2px #eff4f8 solid;
   border-inline: 2px #eff4f8 solid;
@@ -365,6 +364,10 @@
 }
 
 .store-details-header__products-amount {
+  max-width: 45px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   font-size: 24px;
 }
 
@@ -422,6 +425,10 @@
   position: absolute;
   right: 7px;
   top: 10px;
+  max-width: 21px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   font-size: 12px;
 }
 
