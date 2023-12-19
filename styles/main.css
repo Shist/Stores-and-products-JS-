@@ -619,6 +619,29 @@
   font-size: 14px;
 }
 
+.stores-list-section__no-data-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  flex-grow: 1;
+}
+
+.stores-list-section__no-data-img {
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.stores-list-section__no-data-headline {
+  font-size: 20px;
+}
+
+.stores-list-section__no-data-message {
+  font-size: 16px;
+  color: gray;
+}
+
 .no-store-details-wrapper {
   max-width: 1600px;
   width: 100%;
