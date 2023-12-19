@@ -1,4 +1,4 @@
-export const Stores = [
+export const stores = [
   {
     Name: "Miller, Zboncak and Glover",
     Email: "Tyrese.Kshlerin87@hotmail.com",

@@ -129,6 +129,11 @@
   flex-grow: 1;
 }
 
+.stores-list-section__main-layout {
+  display: flex;
+  flex-direction: column;
+}
+
 .stores-list-item {
   padding: 10px;
   height: 80px;
@@ -424,6 +429,7 @@
   margin-bottom: 5px;
   padding: 10px;
   flex-grow: 1;
+  background-color: #e6e5e6;
 }
 
 .products-table {
