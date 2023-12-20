@@ -2,8 +2,11 @@
 
 import { storesData } from "../data/data.js";
 
+// Functions for updating UI
 function updateStoresList(stores) {
-  toggleNoStoresLayout(stores);
+  updateNoStoresLayout(stores);
+
+  setSearchStoresListeners();
 
   const storesListSection = document.querySelector("#stores-list-layout");
 
@@ -18,47 +21,12 @@ function updateStoresList(stores) {
   });
 }
 
-function toggleNoStoresLayout(stores) {
-  const noStoresLayout = document.querySelector("#no-stores-list-layout");
-
-  if (stores.length) {
-    noStoresLayout.classList.add("js-hidden-element");
-  } else {
-    noStoresLayout.classList.remove("js-hidden-element");
-  }
-}
-
-function getStoresListStrForDOM(stores) {
-  let storesListToAddStr = "";
-
-  stores.forEach((store) => {
-    storesListToAddStr += `
-              <div class="stores-list-item" data-store-id="${store.id}">
-                  <div class="stores-list-item__name-address-wrapper">
-                      <h3 class="stores-list-item__name-headline">
-                          ${store.Name}
-                      </h3>
-                      <span class="stores-list-item__address-text">
-                          ${store.Address}
-                      </span>
-                  </div>
-                  <div class="stores-list-item__area-data-wrapper">
-                      <span class="stores-list-item__area-number">
-                          ${store.FloorArea}
-                      </span>
-                      <span class="stores-list-item__area-unit">sq.m</span>
-                  </div>
-              </div>
-              `;
-  });
-
-  return storesListToAddStr;
-}
-
 function updateAllStoreDetails(storeId) {
-  highlightActiveStore(storeId);
-
   localStorage.setItem("currStoreId", storeId);
+
+  clearLocalStorageFromTableFilters();
+
+  highlightActiveStore(storeId);
 
   showStoreDetailsTable();
 
@@ -83,6 +51,16 @@ function updateAllStoreDetails(storeId) {
   productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 }
 
+function updateNoStoresLayout(stores) {
+  const noStoresLayout = document.querySelector("#no-stores-list-layout");
+
+  if (stores.length) {
+    noStoresLayout.classList.add("js-hidden-element");
+  } else {
+    noStoresLayout.classList.remove("js-hidden-element");
+  }
+}
+
 function highlightActiveStore(storeId) {
   const storeItems = document.querySelectorAll(".stores-list-item");
 
@@ -105,53 +83,6 @@ function showStoreDetailsTable() {
   noStoreDetailsWrapper.classList.add("js-hidden-element");
 }
 
-function getStoreTableHeadStrForDOM(titlePairs) {
-  let tablesTitlesToAddStr = "";
-  let titlesAmount = 0;
-
-  titlePairs.forEach(([title, value]) => {
-    if (title !== "Photo" && title !== "Status" && title !== "id") {
-      titlesAmount++;
-      const wrapperClassesStr =
-        title === "Price"
-          ? "products-table__product-field-wrapper products-table__product-field-wrapper_end"
-          : "products-table__product-field-wrapper";
-      tablesTitlesToAddStr += `
-              <th class="products-table__product-field">
-                <div class="${wrapperClassesStr}">
-                  <button
-                    class="products-table__product-field-sort-btn"
-                    title="Sort"
-                    data-sort-key="${title}"
-                    data-sort-type="${typeof value}"
-                    data-sort-state="default"
-                  ></button>
-                  <span class="products-table__product-field-name"
-                    >${title.toString()}</span
-                  >
-                </div>
-              </th>
-              `;
-    }
-  });
-
-  const tableHeadToAddStr = `<tr class="products-table__table-name-row">
-                                  <th colspan="${titlesAmount}" class="products-table__table-name">
-                                    Products
-                                  </th>
-                                </tr>
-                                <tr
-                                  class="products-table__product-specifications-row"
-                                  id="product-table-titles-wrapper"
-                                >${tablesTitlesToAddStr}</tr>`;
-
-  return tableHeadToAddStr;
-}
-
-function getStoreObjById(storeId) {
-  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
-}
-
 function updateStoreContacts(store) {
   const storeEmailField = document.querySelector("#store-email");
   const storeEstDateField = document.querySelector("#store-est-date");
@@ -164,33 +95,6 @@ function updateStoreContacts(store) {
   storeAddressField.textContent = store.Address;
   storePhoneField.textContent = store.PhoneNumber;
   storeFloorAreaField.textContent = store.FloorArea;
-}
-
-function transformDateFromISO(dateISO) {
-  const inputDate = new Date(dateISO);
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const day = inputDate.getDate();
-  const month = months[inputDate.getMonth()];
-  const year = inputDate.getFullYear();
-
-  const formattedDate = `${month} ${day}, ${year}`;
-
-  return formattedDate;
 }
 
 function updateStoreFiltersData(store) {
@@ -209,116 +113,169 @@ function updateStoreFiltersData(store) {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
-function getStoreProductsAmounts(store) {
-  const amountsData = {
-    all: "rel_Products" in store ? store.rel_Products.length : 0,
-    ok: 0,
-    storage: 0,
-    outOfStock: 0,
-  };
+// Functions for preparing HTML structures for DOM
+function getStoresListStrForDOM(stores) {
+  let storesListStr = "";
 
-  store.rel_Products?.forEach((product) => {
-    switch (product.Status) {
-      case "OK":
-        amountsData.ok++;
-        break;
-      case "STORAGE":
-        amountsData.storage++;
-        break;
-      case "OUT_OF_STOCK":
-        amountsData.outOfStock++;
-        break;
-      default:
-        console.warn(
-          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
-        );
-    }
-  });
-
-  return amountsData;
-}
-
-function getStoreTableBodyStrForDOM(store, sortFunction) {
-  let storeDetailsTableToAddStr = "";
-  let products = store.rel_Products?.slice();
-
-  if (sortFunction) {
-    products = products.sort(sortFunction);
-  }
-
-  products?.forEach((product) => {
-    storeDetailsTableToAddStr += `
-              <tr class="product-table-item">
-                <td class="product-table-item__name">
-                  <div class="product-table-item__name-num-wrapper">
-                    <span class="product-table-item__name-text"
-                      >${product.Name}</span
-                    >
-                    <span class="product-table-item__num-text">${
-                      product.id
-                    }</span>
+  stores.forEach((store) => {
+    storesListStr += `
+              <div class="stores-list-item" data-store-id="${store.id}">
+                  <div class="stores-list-item__name-address-wrapper">
+                      <h3 class="stores-list-item__name-headline">
+                          ${store.Name}
+                      </h3>
+                      <span class="stores-list-item__address-text">
+                          ${store.Address}
+                      </span>
                   </div>
-                </td>
-                <td class="product-table-item__price">
-                  <div class="product-table-item__price-wrapper">
-                    <span class="product-table-item__price-value">${
-                      product.Price
-                    }</span>
-                    <span class="product-table-item__price-currency">USD</span>
+                  <div class="stores-list-item__area-data-wrapper">
+                      <span class="stores-list-item__area-number">
+                          ${store.FloorArea}
+                      </span>
+                      <span class="stores-list-item__area-unit">sq.m</span>
                   </div>
-                </td>
-                <td class="product-table-item__specs">
-                  <span
-                    class="product-table-item__specs-text"
-                    title="${product.Specs}"
-                    >${product.Specs}</span
-                  >
-                </td>
-                <td class="product-table-item__supplier-info">
-                  <span
-                    class="product-table-item__supplier-info-text"
-                    title="${product.SupplierInfo}"
-                    >${product.SupplierInfo}</span
-                  >
-                </td>
-                <td class="product-table-item__country-of-origin">
-                  <span class="product-table-item__country-of-origin-text"
-                    >${product["Country of origin"]}</span
-                  >
-                </td>
-                <td class="product-table-item__prod-company">
-                  <span class="product-table-item__prod-company-text"
-                    >${product["Prod. company"]}</span
-                  >
-                </td>
-                <td class="product-table-item__rating">
-                  <div class="product-table-item__stars-wrapper">
-                    ${getProductStarsStrForDOM(product)}
-                  </div>
-                </td>
-              </tr>
+              </div>
               `;
   });
 
-  return storeDetailsTableToAddStr;
+  return storesListStr;
+}
+
+function getStoreTableHeadStrForDOM(titlePairs) {
+  let tablesTitlesStr = "";
+  let titlesAmount = 0;
+
+  titlePairs.forEach(([key, value]) => {
+    if (key !== "Photo" && key !== "Status" && key !== "id") {
+      titlesAmount++;
+      const wrapperClassesStr =
+        key === "Price"
+          ? "products-table__product-field-wrapper products-table__product-field-wrapper_end"
+          : "products-table__product-field-wrapper";
+      tablesTitlesStr += `
+              <th class="products-table__product-field">
+                <div class="${wrapperClassesStr}">
+                  <button
+                    class="products-table__product-field-sort-btn"
+                    title="Sort"
+                    data-sort-key="${key}"
+                    data-sort-type="${typeof value}"
+                    data-sort-state="default"
+                  ></button>
+                  <span class="products-table__product-field-name"
+                    >${key.toString()}</span
+                  >
+                </div>
+              </th>
+              `;
+    }
+  });
+
+  const tableHeadStr = `<tr class="products-table__table-name-row">
+                                  <th colspan="${titlesAmount}" class="products-table__table-name">
+                                    Products
+                                  </th>
+                                </tr>
+                                <tr
+                                  class="products-table__product-specifications-row"
+                                  id="product-table-titles-wrapper"
+                                >${tablesTitlesStr}</tr>`;
+
+  return tableHeadStr;
+}
+
+function getStoreTableBodyStrForDOM(store) {
+  let products = store.rel_Products?.slice();
+
+  if (localStorage.getItem("currSortKey")) {
+    products = products.sort(getCompareProductsFunction());
+  }
+
+  /* TODO if (searchFiler) { ... } */
+
+  let productTableBodyStr = "";
+
+  products?.forEach((product) => {
+    productTableBodyStr += `
+      <tr class="product-table-item">
+        ${getProductRowStrForDOM(product)}
+      </tr>`;
+  });
+
+  return productTableBodyStr;
+}
+
+function getProductRowStrForDOM(product) {
+  let productTableDataStr = "";
+
+  Object.keys(product).forEach((productKey) => {
+    switch (productKey) {
+      case "Name":
+        productTableDataStr += `
+            <td class="product-table-item__name">
+              <div class="product-table-item__name-num-wrapper">
+                <span class="product-table-item__name-text"
+                  >${product.Name}</span
+                >
+                <span class="product-table-item__num-text">${product.id}</span>
+              </div>
+            </td>`;
+        break;
+      case "Price":
+        productTableDataStr += `
+            <td class="product-table-item__price">
+              <div class="product-table-item__price-wrapper">
+                <span class="product-table-item__price-value">${product.Price}</span>
+                <span class="product-table-item__price-currency">USD</span>
+              </div>
+            </td>`;
+        break;
+      case "Rating":
+        productTableDataStr += `
+            <td class="product-table-item__rating">
+              <div class="product-table-item__stars-wrapper">
+                ${getProductStarsStrForDOM(product)}
+              </div>
+            </td>`;
+        break;
+      default:
+        if (
+          productKey !== "Photo" &&
+          productKey !== "Status" &&
+          productKey !== "id"
+        ) {
+          productTableDataStr += `
+              <td class="product-table-item__standard-field">
+                <span
+                  class="product-table-item__standard-field-text"
+                  title="${product[productKey]}"
+                  >${product[productKey]}</span
+                >
+              </td>`;
+        }
+    }
+  });
+
+  return productTableDataStr;
 }
 
 function getProductStarsStrForDOM(product) {
-  let productStarsToAddStr = "";
+  let productStarsStr = "";
 
   for (let k = 0; k < 5; k++) {
     if (k < product.Rating) {
-      productStarsToAddStr += `<span class="yellow-star"></span>`;
+      productStarsStr += `<span class="yellow-star"></span>`;
     } else {
-      productStarsToAddStr += `<span class="empty-star"></span>`;
+      productStarsStr += `<span class="empty-star"></span>`;
     }
   }
 
-  productStarsToAddStr += `<span class="right-arrow"></span>`;
+  productStarsStr += `<span class="right-arrow"></span>`;
 
-  return productStarsToAddStr;
+  return productStarsStr;
 }
 
+// Functions for setting listeners to UI elements
 function setSearchStoresListeners() {
   const searchInput = document.querySelector("#search-store-line");
   const searchBtn = document.querySelector("#stores-search-btn");
@@ -357,10 +314,10 @@ function setSortBtnsListener() {
           currSortBtn.dataset.sortState = "asc";
           currSortBtn.classList.add("js-asc-sort-btn");
 
-          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
-            storeObj,
-            getCompareProductsFunction(sortType, sortKey, true)
-          );
+          localStorage.setItem("currSortType", sortType);
+          localStorage.setItem("currSortKey", sortKey);
+          localStorage.setItem("currSortOrder", "asc");
+          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 
           break;
         case "asc":
@@ -368,16 +325,17 @@ function setSortBtnsListener() {
           currSortBtn.classList.remove("js-asc-sort-btn");
           currSortBtn.classList.add("js-desc-sort-btn");
 
-          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
-            storeObj,
-            getCompareProductsFunction(sortType, sortKey, false)
-          );
+          localStorage.setItem("currSortType", sortType);
+          localStorage.setItem("currSortKey", sortKey);
+          localStorage.setItem("currSortOrder", "desc");
+          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 
           break;
         case "desc":
           currSortBtn.dataset.sortState = "default";
           currSortBtn.classList.remove("js-desc-sort-btn");
 
+          clearLocalStorageFromTableFilters();
           productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 
           break;
@@ -388,6 +346,11 @@ function setSortBtnsListener() {
       }
     }
   });
+}
+
+// Other supporting functions
+function getStoreObjById(storeId) {
+  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
 }
 
 function setAllSortBtnsToDefault() {
@@ -401,9 +364,42 @@ function setAllSortBtnsToDefault() {
   });
 }
 
-function getCompareProductsFunction(sortType, sortKey, isAsc) {
+function getStoreProductsAmounts(store) {
+  const amountsData = {
+    all: "rel_Products" in store ? store.rel_Products.length : 0,
+    ok: 0,
+    storage: 0,
+    outOfStock: 0,
+  };
+
+  store.rel_Products?.forEach((product) => {
+    switch (product.Status) {
+      case "OK":
+        amountsData.ok++;
+        break;
+      case "STORAGE":
+        amountsData.storage++;
+        break;
+      case "OUT_OF_STOCK":
+        amountsData.outOfStock++;
+        break;
+      default:
+        console.warn(
+          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
+        );
+    }
+  });
+
+  return amountsData;
+}
+
+function getCompareProductsFunction() {
+  const sortType = localStorage.getItem("currSortType");
+  const sortKey = localStorage.getItem("currSortKey");
+  const sortOrder = localStorage.getItem("currSortOrder");
+
   return (prodA, prodB) => {
-    if (isAsc) {
+    if (sortOrder === "asc") {
       return sortType === "number"
         ? prodA[sortKey] - prodB[sortKey]
         : prodA[sortKey].localeCompare(prodB[sortKey]);
@@ -415,8 +411,39 @@ function getCompareProductsFunction(sortType, sortKey, isAsc) {
   };
 }
 
+function clearLocalStorageFromTableFilters() {
+  localStorage.removeItem("currSortType");
+  localStorage.removeItem("currSortKey");
+  localStorage.removeItem("currSortOrder");
+}
+
+function transformDateFromISO(dateISO) {
+  const inputDate = new Date(dateISO);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const day = inputDate.getDate();
+  const month = months[inputDate.getMonth()];
+  const year = inputDate.getFullYear();
+
+  const formattedDate = `${month} ${day}, ${year}`;
+
+  return formattedDate;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   updateStoresList(storesData);
-
-  setSearchStoresListeners();
 });

@@ -625,10 +625,7 @@
   padding: 10px;
   vertical-align: middle;
 }
-.product-table-item__specs,
-.product-table-item__supplier-info,
-.product-table-item__country-of-origin,
-.product-table-item__prod-company {
+.product-table-item__standard-field {
   padding: 10px;
   vertical-align: middle;
   text-overflow: ellipsis;
@@ -639,10 +636,7 @@
   .product-table-item__name,
   .product-table-item__price,
   .product-table-item__rating,
-  .product-table-item__specs,
-  .product-table-item__supplier-info,
-  .product-table-item__country-of-origin,
-  .product-table-item__prod-company {
+  .product-table-item__standard-field {
     padding-inline: 5px;
   }
 }
@@ -691,13 +685,6 @@
   font-size: 12px;
 }
 
-.product-table-item__specs-text,
-.product-table-item__supplier-info-text,
-.product-table-item__country-of-origin-text,
-.product-table-item__prod-company-text {
-  font-size: 12px;
-}
-
 .product-table-item__stars-wrapper {
   display: flex;
   align-items: center;
@@ -724,6 +711,10 @@
   width: 20px;
   height: 20px;
   background: url("../icons/icon-arrow-right.png") no-repeat center/contain;
+}
+
+.product-table-item__standard-field-text {
+  font-size: 12px;
 }
 
 .store-details-footer {
