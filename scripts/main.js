@@ -171,17 +171,38 @@ function getStoreTableHeadStrForDOM(titlePairs) {
     }
   });
 
-  const tableHeadStr = `<tr class="products-table__table-name-row">
-                                  <th colspan="${titlesAmount}" class="products-table__table-name">
-                                    Products
-                                  </th>
-                                </tr>
-                                <tr
-                                  class="products-table__product-specifications-row"
-                                  id="product-table-titles-wrapper"
-                                >${tablesTitlesStr}</tr>`;
+  return getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr);
+}
 
-  return tableHeadStr;
+function getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
+  return `<tr class="products-table__table-name-row">
+            <th colspan="${titlesAmount}" class="products-table__table-name-headline">
+              <div class="product-table__name-search-wrapper">
+                <span class="products-table__table-name-text">
+                  Products
+                </span>
+                <div class="products-table__search-wrapper">
+                  <input
+                    type="search"
+                    class="products-table__search-line"
+                    name="search-product-line"
+                    placeholder="Enter value to search"
+                    id="search-product-line"
+                  />
+                  <button
+                    class="products-table__search-btn"
+                    id="products-search-btn"
+                    title="Search"
+                  ></button>
+                </div>
+              </div>
+            </th>
+          </tr>
+          <tr
+              class="products-table__product-specifications-row"
+              id="product-table-titles-wrapper"
+            >${tablesTitlesStr}
+          </tr>`;
 }
 
 function getStoreTableBodyStrForDOM(store) {
