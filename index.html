@@ -165,19 +165,29 @@
         </header>
         <main class="store-details-section">
           <div class="store-details-section__table-wrapper">
-            <table class="products-table">
+            <table
+              class="products-table"
+              id="products-table"
+              data-store-id="not selected"
+            >
               <thead class="products-table__head">
                 <tr class="products-table__table-name-row">
                   <th colspan="7" class="products-table__table-name">
                     Products
                   </th>
                 </tr>
-                <tr class="products-table__product-specifications-row">
+                <tr
+                  class="products-table__product-specifications-row"
+                  id="product-table-titles-wrapper"
+                >
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="Name"
+                        data-sort-type="string"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Name</span
@@ -189,8 +199,11 @@
                       class="products-table__product-field-wrapper products-table__product-field-wrapper_end"
                     >
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="Price"
+                        data-sort-type="number"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Price</span
@@ -200,8 +213,11 @@
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="Specs"
+                        data-sort-type="string"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Specs</span
@@ -211,8 +227,11 @@
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="SupplierInfo"
+                        data-sort-type="string"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >SupplierInfo</span
@@ -222,8 +241,11 @@
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="MadeIn"
+                        data-sort-type="string"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Country of origin</span
@@ -233,8 +255,11 @@
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="ProductionCompanyName"
+                        data-sort-type="string"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Prod. company</span
@@ -244,8 +269,11 @@
                   <th class="products-table__product-field">
                     <div class="products-table__product-field-wrapper">
                       <button
-                        class="products-table__produst-field-sort-btn"
+                        class="products-table__product-field-sort-btn"
                         title="Sort"
+                        data-sort-key="Rating"
+                        data-sort-type="number"
+                        data-sort-state="default"
                       ></button>
                       <span class="products-table__product-field-name"
                         >Rating</span

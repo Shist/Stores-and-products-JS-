@@ -58,11 +58,13 @@ function getStoresListStrForDOM(stores) {
 function updateAllStoreDetails(storeId) {
   highlightActiveStore(storeId);
 
+  document.querySelector("#products-table").dataset.storeId = storeId;
+
   showStoreDetailsTable();
 
-  const store = storesData.find(
-    (nextStore) => nextStore.id.toString() === storeId
-  );
+  setAllSortBtnsToDefault();
+
+  const store = getStoreObjById(storeId);
 
   updateStoreContacts(store);
 
@@ -93,6 +95,10 @@ function showStoreDetailsTable() {
 
   storeDetailsWrapper.classList.add("js-flex-element");
   noStoreDetailsWrapper.classList.add("js-hidden-element");
+}
+
+function getStoreObjById(storeId) {
+  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
 }
 
 function updateStoreContacts(store) {
@@ -181,10 +187,15 @@ function getStoreProductsAmounts(store) {
   return amountsData;
 }
 
-function getStoreTableStrForDOM(store) {
+function getStoreTableStrForDOM(store, sortFunction) {
   let storeDetailsTableToAddStr = "";
+  let products = store.rel_Products?.slice();
 
-  store.rel_Products?.forEach((product) => {
+  if (sortFunction) {
+    products = products.sort(sortFunction);
+  }
+
+  products?.forEach((product) => {
     storeDetailsTableToAddStr += `
               <tr class="product-table-item">
                 <td class="product-table-item__name">
@@ -276,8 +287,88 @@ function setSearchStoresListeners() {
   searchBtn.addEventListener("click", filterAndUpdateStoresList);
 }
 
+function setSortBtnsListener() {
+  const productTableTitlesWrapper = document.querySelector(
+    "#product-table-titles-wrapper"
+  );
+
+  productTableTitlesWrapper.addEventListener("click", (e) => {
+    if (e.target.classList.contains("products-table__product-field-sort-btn")) {
+      const currSortBtn = e.target;
+      const sortKey = currSortBtn.dataset.sortKey;
+      const sortType = currSortBtn.dataset.sortType;
+      const productsTable = document.querySelector("#products-table");
+      const productsTableBody = document.querySelector("#products-table-body");
+      const storeObj = getStoreObjById(productsTable.dataset.storeId);
+
+      switch (currSortBtn.dataset.sortState) {
+        case "default":
+          setAllSortBtnsToDefault();
+          currSortBtn.dataset.sortState = "asc";
+          currSortBtn.classList.add("js-asc-sort-btn");
+
+          productsTableBody.innerHTML = getStoreTableStrForDOM(
+            storeObj,
+            getCompareProductsFunction(sortType, sortKey, true)
+          );
+
+          break;
+        case "asc":
+          currSortBtn.dataset.sortState = "desc";
+          currSortBtn.classList.remove("js-asc-sort-btn");
+          currSortBtn.classList.add("js-desc-sort-btn");
+
+          productsTableBody.innerHTML = getStoreTableStrForDOM(
+            storeObj,
+            getCompareProductsFunction(sortType, sortKey, false)
+          );
+
+          break;
+        case "desc":
+          currSortBtn.dataset.sortState = "default";
+          currSortBtn.classList.remove("js-desc-sort-btn");
+
+          productsTableBody.innerHTML = getStoreTableStrForDOM(storeObj);
+
+          break;
+        default:
+          console.warn(
+            `One of sort buttons had unknown data-sort-state type: ${e.target.dataset.sortState}`
+          );
+      }
+    }
+  });
+}
+
+function getCompareProductsFunction(sortType, sortKey, isAsc) {
+  return (prodA, prodB) => {
+    if (isAsc) {
+      return sortType === "number"
+        ? prodA[sortKey] - prodB[sortKey]
+        : prodA[sortKey].localeCompare(prodB[sortKey]);
+    } else {
+      return sortType === "number"
+        ? prodB[sortKey] - prodA[sortKey]
+        : prodB[sortKey].localeCompare(prodA[sortKey]);
+    }
+  };
+}
+
+function setAllSortBtnsToDefault() {
+  const sortBtns = document.querySelectorAll(
+    ".products-table__product-field-sort-btn"
+  );
+
+  sortBtns.forEach((btn) => {
+    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
+    btn.dataset.sortState = "default";
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   updateStoresList(storesData);
 
   setSearchStoresListeners();
+
+  setSortBtnsListener();
 });

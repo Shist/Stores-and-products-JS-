@@ -17,6 +17,24 @@
   right: 0 !important;
 }
 
+.js-asc-sort-btn {
+  background-image: url("../icons/sort-asc.png") !important;
+  padding: 0 !important;
+  border: 1px black solid !important;
+}
+.js-asc-sort-btn:active {
+  background-image: url("../icons/sort-asc-active.png") !important;
+}
+
+.js-desc-sort-btn {
+  background-image: url("../icons/sort-desc.png") !important;
+  padding: 0 !important;
+  border: 1px black solid !important;
+}
+.js-desc-sort-btn:active {
+  background-image: url("../icons/sort-desc-active.png") !important;
+}
+
 .global-wrapper {
   margin: 0 auto;
   max-width: 1920px;
@@ -538,7 +556,7 @@
   justify-content: flex-end;
 }
 
-.products-table__produst-field-sort-btn {
+.products-table__product-field-sort-btn {
   padding: 1px;
   min-width: 24px;
   min-height: 24px;
@@ -547,32 +565,32 @@
   background: url("../icons/sort-default.png") center / 24px no-repeat;
   transition: 0.3s;
 }
-.products-table__produst-field-sort-btn:hover {
+.products-table__product-field-sort-btn:hover {
   padding: 0;
   border: 1px black solid;
   background-color: #d9d9d9;
 }
-.products-table__produst-field-sort-btn:active {
+.products-table__product-field-sort-btn:active {
   transition: none;
   background: url("../icons/sort-default-active.png") center / 24px no-repeat;
 }
 @media (max-width: 1280px) {
-  .products-table__produst-field-sort-btn {
+  .products-table__product-field-sort-btn {
     min-width: 20px;
     min-height: 20px;
     background-size: 20px;
   }
-  .products-table__produst-field-sort-btn:active {
+  .products-table__product-field-sort-btn:active {
     background-size: 20px;
   }
 }
 @media (max-width: 1024px) {
-  .products-table__produst-field-sort-btn {
+  .products-table__product-field-sort-btn {
     min-width: 16px;
     min-height: 16px;
     background-size: 16px;
   }
-  .products-table__produst-field-sort-btn:active {
+  .products-table__product-field-sort-btn:active {
     background-size: 16px;
   }
 }
