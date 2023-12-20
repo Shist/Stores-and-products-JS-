@@ -13,6 +13,10 @@
   background-color: #eff4f8 !important;
 }
 
+.js-right-zero {
+  right: 0 !important;
+}
+
 .global-wrapper {
   margin: 0 auto;
   max-width: 1920px;
@@ -64,12 +68,26 @@
   height: 28px;
   font-size: 16px;
 }
+.stores-list-header__search-line:focus {
+  border: 2px solid black;
+  outline: none;
+}
 .stores-list-header__search-line::-webkit-search-cancel-button {
   -webkit-appearance: none;
+  margin-right: 0;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  background: url("../icons/icon-cross.png") center / 20px no-repeat;
+  transition: 0.3s;
+}
+.stores-list-header__search-line::-webkit-search-cancel-button:hover {
+  background-color: #d9d9d9;
 }
 
 .stores-list-header__search-btn {
   position: absolute;
+  z-index: 2;
   right: 28px;
   top: 0;
   width: 28px;
@@ -85,6 +103,7 @@
 
 .stores-list-header__refresh-btn {
   position: absolute;
+  z-index: 1;
   right: 0;
   top: 0;
   width: 28px;

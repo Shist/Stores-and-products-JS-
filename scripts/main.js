@@ -255,6 +255,13 @@ function loadAllStoreDetailsToDOM(storeId) {
   productsTable.innerHTML = getStoreTableStrForDOM(store);
 }
 
+function setSearchStoresListeners() {
+  const searchInput = document.querySelector("#search-store-line");
+  const searchBtn = document.querySelector("#stores-search-btn");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadStoresListToDOM();
+
+  setSearchStoresListeners();
 });
