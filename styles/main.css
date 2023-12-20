@@ -254,6 +254,7 @@
   display: none;
   flex-direction: column;
   overflow-y: auto;
+  background-color: #fafafa;
 }
 
 .store-details-header {
@@ -444,10 +445,14 @@
 }
 
 .store-details-section {
-  margin-bottom: 5px;
-  padding: 10px;
+  margin-bottom: 15px;
   flex-grow: 1;
-  background-color: #e6e5e6;
+}
+
+.store-details-section__table-wrapper {
+  padding: 10px;
+  background-color: white;
+  border-bottom: 2px #cfdfec solid;
 }
 
 .products-table {

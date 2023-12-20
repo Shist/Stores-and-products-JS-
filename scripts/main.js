@@ -163,6 +163,82 @@ function loadStoreFiltersDataToDOM(store) {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
+function getProductStarsStrForDOM(product) {
+  let productStarsToAddStr = "";
+
+  for (let k = 0; k < 5; k++) {
+    if (k < product.Rating) {
+      productStarsToAddStr += `<span class="yellow-star"></span>`;
+    } else {
+      productStarsToAddStr += `<span class="empty-star"></span>`;
+    }
+  }
+
+  productStarsToAddStr += `<span class="right-arrow"></span>`;
+
+  return productStarsToAddStr;
+}
+
+function getStoreTableStrForDOM(store) {
+  let storeDetailsTableToAddStr = "";
+
+  store.rel_Products?.forEach((product) => {
+    storeDetailsTableToAddStr += `
+              <tr class="product-table-item">
+                <td class="product-table-item__name">
+                  <div class="product-table-item__name-num-wrapper">
+                    <span class="product-table-item__name-text"
+                      >${product.Name}</span
+                    >
+                    <span class="product-table-item__num-text">${
+                      product.id
+                    }</span>
+                  </div>
+                </td>
+                <td class="product-table-item__price">
+                  <div class="product-table-item__price-wrapper">
+                    <span class="product-table-item__price-value">${
+                      product.Price
+                    }</span>
+                    <span class="product-table-item__price-currency">USD</span>
+                  </div>
+                </td>
+                <td class="product-table-item__specs">
+                  <span
+                    class="product-table-item__specs-text"
+                    title="${product.Specs}"
+                    >${product.Specs}</span
+                  >
+                </td>
+                <td class="product-table-item__supplier-info">
+                  <span
+                    class="product-table-item__supplier-info-text"
+                    title="${product.SupplierInfo}"
+                    >${product.SupplierInfo}</span
+                  >
+                </td>
+                <td class="product-table-item__country-of-origin">
+                  <span class="product-table-item__country-of-origin-text"
+                    >${product.MadeIn}</span
+                  >
+                </td>
+                <td class="product-table-item__prod-company">
+                  <span class="product-table-item__prod-company-text"
+                    >${product.ProductionCompanyName}</span
+                  >
+                </td>
+                <td class="product-table-item__rating">
+                  <div class="product-table-item__stars-wrapper">
+                    ${getProductStarsStrForDOM(product)}
+                  </div>
+                </td>
+              </tr>
+              `;
+  });
+
+  return storeDetailsTableToAddStr;
+}
+
 function loadAllStoreDetailsToDOM(storeId) {
   highlightActiveStore(storeId);
 
@@ -174,13 +250,9 @@ function loadAllStoreDetailsToDOM(storeId) {
 
   loadStoreFiltersDataToDOM(store);
 
-  //   let storeDetailsTableToAddStr = "";
+  const productsTable = document.querySelector("#products-table-body");
 
-  //   store.rel_Products?.forEach((detail) => {
-  //     storeDetailsTableToAddStr += `
-
-  //             `;
-  //   });
+  productsTable.innerHTML = getStoreTableStrForDOM(store);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
