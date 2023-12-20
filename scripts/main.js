@@ -12,25 +12,25 @@ function toggleNoStoresLayout() {
   }
 }
 
-function getStoresListForDOM() {
+function getStoresListStrForDOM() {
   let storesListToAddStr = "";
 
   stores.forEach((store) => {
     storesListToAddStr += `
               <div class="stores-list-item" data-store-id=${store.id}>
-                  <div class="stores-list-item__name-address-wrapper" data-store-id=${store.id}>
-                      <h3 class="stores-list-item__name-headline" data-store-id=${store.id}>
+                  <div class="stores-list-item__name-address-wrapper">
+                      <h3 class="stores-list-item__name-headline">
                           ${store.Name}
                       </h3>
-                      <span class="stores-list-item__address-text" data-store-id=${store.id}>
+                      <span class="stores-list-item__address-text">
                           ${store.Address}
                       </span>
                   </div>
-                  <div class="stores-list-item__area-data-wrapper" data-store-id=${store.id}>
-                      <span class="stores-list-item__area-number" data-store-id=${store.id}>
+                  <div class="stores-list-item__area-data-wrapper">
+                      <span class="stores-list-item__area-number">
                           ${store.FloorArea}
                       </span>
-                      <span class="stores-list-item__area-unit" data-store-id=${store.id}>sq.m</span>
+                      <span class="stores-list-item__area-unit">sq.m</span>
                   </div>
               </div>
               `;
@@ -56,11 +56,13 @@ function loadStoresListToDOM() {
 
   const storesListSection = document.querySelector("#stores-list-layout");
 
-  storesListSection.innerHTML = getStoresListForDOM();
+  storesListSection.innerHTML = getStoresListStrForDOM();
 
   storesListSection.addEventListener("click", (e) => {
-    if ("storeId" in e.target.dataset) {
-      loadAllStoreDetailsToDOM(e.target.dataset.storeId);
+    const currItemCard = e.target.closest(".stores-list-item");
+
+    if ("storeId" in currItemCard.dataset) {
+      loadAllStoreDetailsToDOM(currItemCard.dataset.storeId);
     }
   });
 }
