@@ -110,7 +110,6 @@
 
 .stores-list-header__search-btn {
   position: absolute;
-  z-index: 2;
   right: 28px;
   top: 0;
   width: 28px;
@@ -130,7 +129,6 @@
 
 .stores-list-header__refresh-btn {
   position: absolute;
-  z-index: 1;
   right: 0;
   top: 0;
   width: 28px;
@@ -563,7 +561,6 @@
 
 .products-table__search-btn {
   position: absolute;
-  z-index: 2;
   right: 0;
   top: 0;
   width: 24px;
