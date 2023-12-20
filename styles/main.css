@@ -512,26 +512,83 @@
   border-block: 2px solid #e6e6e6;
   box-shadow: 0px 1px #e6e6e6, 0px -1px #e6e6e6;
 }
+@media (max-width: 640px) {
+  .products-table__product-specifications-row {
+    top: 280px;
+  }
+}
 
 .products-table__product-field {
   padding: 10px;
-  font-size: 16px;
   vertical-align: middle;
 }
-.products-table__product-field_start {
-  text-align: start;
-}
-.products-table__product-field_end {
-  text-align: end;
-}
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .products-table__product-field {
-    font-size: 14px;
+    padding-inline: 5px;
   }
 }
-@media (max-width: 640px) {
-  .products-table__product-field {
+
+.products-table__product-field-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 2px;
+}
+.products-table__product-field-wrapper_end {
+  justify-content: flex-end;
+}
+
+.products-table__produst-field-sort-btn {
+  padding: 1px;
+  min-width: 24px;
+  min-height: 24px;
+  border: none;
+  cursor: pointer;
+  background: url("../icons/sort-default.png") center / 24px no-repeat;
+  transition: 0.3s;
+}
+.products-table__produst-field-sort-btn:hover {
+  padding: 0;
+  border: 1px black solid;
+  background-color: #d9d9d9;
+}
+.products-table__produst-field-sort-btn:active {
+  transition: none;
+  background: url("../icons/sort-default-active.png") center / 24px no-repeat;
+}
+@media (max-width: 1280px) {
+  .products-table__produst-field-sort-btn {
+    min-width: 20px;
+    min-height: 20px;
+    background-size: 20px;
+  }
+  .products-table__produst-field-sort-btn:active {
+    background-size: 20px;
+  }
+}
+@media (max-width: 1024px) {
+  .products-table__produst-field-sort-btn {
+    min-width: 16px;
+    min-height: 16px;
+    background-size: 16px;
+  }
+  .products-table__produst-field-sort-btn:active {
+    background-size: 16px;
+  }
+}
+
+.products-table__product-field-name {
+  font-size: 14px;
+  text-align: start;
+}
+@media (max-width: 1280px) {
+  .products-table__product-field-name {
     font-size: 12px;
+  }
+}
+@media (max-width: 1024px) {
+  .products-table__product-field-name {
+    font-size: 10px;
   }
 }
 
@@ -559,6 +616,17 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+@media (max-width: 1280px) {
+  .product-table-item__name,
+  .product-table-item__price,
+  .product-table-item__rating,
+  .product-table-item__specs,
+  .product-table-item__supplier-info,
+  .product-table-item__country-of-origin,
+  .product-table-item__prod-company {
+    padding-inline: 5px;
+  }
 }
 
 .product-table-item__name-num-wrapper {
