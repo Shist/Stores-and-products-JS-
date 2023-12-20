@@ -79,11 +79,15 @@
   width: 28px;
   height: 28px;
   cursor: pointer;
-  background: url("../icons/icon-cross.png") center / 20px no-repeat;
+  background: url("../icons/icon-cross.png") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__search-line::-webkit-search-cancel-button:hover {
   background-color: #d9d9d9;
+}
+.stores-list-header__search-line::-webkit-search-cancel-button:active {
+  transition: none;
+  background: url("../icons/icon-cross-active.png") center / 28px no-repeat;
 }
 
 .stores-list-header__search-btn {
@@ -95,11 +99,15 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-search.png") center / 20px no-repeat;
+  background: url("../icons/icon-search.png") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__search-btn:hover {
   background-color: #d9d9d9;
+}
+.stores-list-header__search-btn:active {
+  transition: none;
+  background: url("../icons/icon-search-active.png") center / 28px no-repeat;
 }
 
 .stores-list-header__refresh-btn {
@@ -111,11 +119,15 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-refresh.png") center / 20px no-repeat;
+  background: url("../icons/icon-refresh.png") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__refresh-btn:hover {
   background-color: #d9d9d9;
+}
+.stores-list-header__refresh-btn:active {
+  transition: none;
+  background: url("../icons/icon-refresh-active.png") center / 28px no-repeat;
 }
 
 .small-btns-wrapper {
@@ -175,6 +187,7 @@
   background-color: #efefef;
 }
 .stores-list-item:active {
+  transition: none;
   background-color: #396793;
   color: white;
 }
