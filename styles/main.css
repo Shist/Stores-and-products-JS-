@@ -59,6 +59,7 @@
 
 .stores-list-header__search-wrapper {
   position: relative;
+  max-width: 283px;
 }
 
 .stores-list-header__search-line {

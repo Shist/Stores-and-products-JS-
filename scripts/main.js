@@ -1,8 +1,24 @@
 "use strict";
 
-import { stores } from "../data/data.js";
+import { storesData } from "../data/data.js";
 
-function toggleNoStoresLayout() {
+function updateStoresList(stores) {
+  toggleNoStoresLayout(stores);
+
+  const storesListSection = document.querySelector("#stores-list-layout");
+
+  storesListSection.innerHTML = getStoresListStrForDOM(stores);
+
+  storesListSection.addEventListener("click", (e) => {
+    const currItemCard = e.target.closest(".stores-list-item");
+
+    if ("storeId" in currItemCard.dataset) {
+      updateAllStoreDetails(currItemCard.dataset.storeId);
+    }
+  });
+}
+
+function toggleNoStoresLayout(stores) {
   const noStoresLayout = document.querySelector("#no-stores-list-layout");
 
   if (stores.length) {
@@ -12,7 +28,7 @@ function toggleNoStoresLayout() {
   }
 }
 
-function getStoresListStrForDOM() {
+function getStoresListStrForDOM(stores) {
   let storesListToAddStr = "";
 
   stores.forEach((store) => {
@@ -39,6 +55,24 @@ function getStoresListStrForDOM() {
   return storesListToAddStr;
 }
 
+function updateAllStoreDetails(storeId) {
+  highlightActiveStore(storeId);
+
+  showStoreDetailsTable();
+
+  const store = storesData.find(
+    (nextStore) => nextStore.id.toString() === storeId
+  );
+
+  updateStoreContacts(store);
+
+  updateStoreFiltersData(store);
+
+  const productsTable = document.querySelector("#products-table-body");
+
+  productsTable.innerHTML = getStoreTableStrForDOM(store);
+}
+
 function highlightActiveStore(storeId) {
   const storeItems = document.querySelectorAll(".stores-list-item");
 
@@ -51,22 +85,6 @@ function highlightActiveStore(storeId) {
   });
 }
 
-function loadStoresListToDOM() {
-  toggleNoStoresLayout();
-
-  const storesListSection = document.querySelector("#stores-list-layout");
-
-  storesListSection.innerHTML = getStoresListStrForDOM();
-
-  storesListSection.addEventListener("click", (e) => {
-    const currItemCard = e.target.closest(".stores-list-item");
-
-    if ("storeId" in currItemCard.dataset) {
-      loadAllStoreDetailsToDOM(currItemCard.dataset.storeId);
-    }
-  });
-}
-
 function showStoreDetailsTable() {
   const storeDetailsWrapper = document.querySelector("#store-details-wrapper");
   const noStoreDetailsWrapper = document.querySelector(
@@ -75,6 +93,20 @@ function showStoreDetailsTable() {
 
   storeDetailsWrapper.classList.add("js-flex-element");
   noStoreDetailsWrapper.classList.add("js-hidden-element");
+}
+
+function updateStoreContacts(store) {
+  const storeEmailField = document.querySelector("#store-email");
+  const storeEstDateField = document.querySelector("#store-est-date");
+  const storePhoneField = document.querySelector("#store-phone");
+  const storeFloorAreaField = document.querySelector("#store-floor-area");
+  const storeAddressField = document.querySelector("#store-address");
+
+  storeEmailField.textContent = store.Email;
+  storeEstDateField.textContent = transformDateFromISO(store.Established);
+  storeAddressField.textContent = store.Address;
+  storePhoneField.textContent = store.PhoneNumber;
+  storeFloorAreaField.textContent = store.FloorArea;
 }
 
 function transformDateFromISO(dateISO) {
@@ -104,18 +136,20 @@ function transformDateFromISO(dateISO) {
   return formattedDate;
 }
 
-function loadStoreContactsToDOM(store) {
-  const storeEmailField = document.querySelector("#store-email");
-  const storeEstDateField = document.querySelector("#store-est-date");
-  const storePhoneField = document.querySelector("#store-phone");
-  const storeFloorAreaField = document.querySelector("#store-floor-area");
-  const storeAddressField = document.querySelector("#store-address");
+function updateStoreFiltersData(store) {
+  const prodAmountField = document.querySelector("#all-prod-amount");
+  const prodOkAmountField = document.querySelector("#ok-prod-amount");
+  const prodStorageAmountField = document.querySelector("#storage-prod-amount");
+  const prodOutOfStockAmountField = document.querySelector(
+    "#out-of-stock-prod-amount"
+  );
 
-  storeEmailField.textContent = store.Email;
-  storeEstDateField.textContent = transformDateFromISO(store.Established);
-  storeAddressField.textContent = store.Address;
-  storePhoneField.textContent = store.PhoneNumber;
-  storeFloorAreaField.textContent = store.FloorArea;
+  const amountsData = getStoreProductsAmounts(store);
+
+  prodAmountField.textContent = amountsData.all;
+  prodOkAmountField.textContent = amountsData.ok;
+  prodStorageAmountField.textContent = amountsData.storage;
+  prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
 function getStoreProductsAmounts(store) {
@@ -145,38 +179,6 @@ function getStoreProductsAmounts(store) {
   });
 
   return amountsData;
-}
-
-function loadStoreFiltersDataToDOM(store) {
-  const prodAmountField = document.querySelector("#all-prod-amount");
-  const prodOkAmountField = document.querySelector("#ok-prod-amount");
-  const prodStorageAmountField = document.querySelector("#storage-prod-amount");
-  const prodOutOfStockAmountField = document.querySelector(
-    "#out-of-stock-prod-amount"
-  );
-
-  const amountsData = getStoreProductsAmounts(store);
-
-  prodAmountField.textContent = amountsData.all;
-  prodOkAmountField.textContent = amountsData.ok;
-  prodStorageAmountField.textContent = amountsData.storage;
-  prodOutOfStockAmountField.textContent = amountsData.outOfStock;
-}
-
-function getProductStarsStrForDOM(product) {
-  let productStarsToAddStr = "";
-
-  for (let k = 0; k < 5; k++) {
-    if (k < product.Rating) {
-      productStarsToAddStr += `<span class="yellow-star"></span>`;
-    } else {
-      productStarsToAddStr += `<span class="empty-star"></span>`;
-    }
-  }
-
-  productStarsToAddStr += `<span class="right-arrow"></span>`;
-
-  return productStarsToAddStr;
 }
 
 function getStoreTableStrForDOM(store) {
@@ -239,29 +241,43 @@ function getStoreTableStrForDOM(store) {
   return storeDetailsTableToAddStr;
 }
 
-function loadAllStoreDetailsToDOM(storeId) {
-  highlightActiveStore(storeId);
+function getProductStarsStrForDOM(product) {
+  let productStarsToAddStr = "";
 
-  showStoreDetailsTable();
+  for (let k = 0; k < 5; k++) {
+    if (k < product.Rating) {
+      productStarsToAddStr += `<span class="yellow-star"></span>`;
+    } else {
+      productStarsToAddStr += `<span class="empty-star"></span>`;
+    }
+  }
 
-  const store = stores.find((nextStore) => nextStore.id.toString() === storeId);
+  productStarsToAddStr += `<span class="right-arrow"></span>`;
 
-  loadStoreContactsToDOM(store);
-
-  loadStoreFiltersDataToDOM(store);
-
-  const productsTable = document.querySelector("#products-table-body");
-
-  productsTable.innerHTML = getStoreTableStrForDOM(store);
+  return productStarsToAddStr;
 }
 
 function setSearchStoresListeners() {
   const searchInput = document.querySelector("#search-store-line");
   const searchBtn = document.querySelector("#stores-search-btn");
+
+  const filterAndUpdateStoresList = () => {
+    const filteredStoresList = storesData.filter(
+      (store) =>
+        store.Name.toLowerCase().includes(searchInput.value) ||
+        store.Address.toLowerCase().includes(searchInput.value) ||
+        store.FloorArea.toString().includes(searchInput.value)
+    );
+
+    updateStoresList(filteredStoresList);
+  };
+
+  searchInput.addEventListener("search", filterAndUpdateStoresList);
+  searchBtn.addEventListener("click", filterAndUpdateStoresList);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadStoresListToDOM();
+  updateStoresList(storesData);
 
   setSearchStoresListeners();
 });
