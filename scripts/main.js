@@ -33,7 +33,7 @@ function getStoresListStrForDOM(stores) {
 
   stores.forEach((store) => {
     storesListToAddStr += `
-              <div class="stores-list-item" data-store-id=${store.id}>
+              <div class="stores-list-item" data-store-id="${store.id}">
                   <div class="stores-list-item__name-address-wrapper">
                       <h3 class="stores-list-item__name-headline">
                           ${store.Name}
@@ -58,21 +58,29 @@ function getStoresListStrForDOM(stores) {
 function updateAllStoreDetails(storeId) {
   highlightActiveStore(storeId);
 
-  document.querySelector("#products-table").dataset.storeId = storeId;
+  localStorage.setItem("currStoreId", storeId);
 
   showStoreDetailsTable();
 
-  setAllSortBtnsToDefault();
+  const storeObj = getStoreObjById(storeId);
 
-  const store = getStoreObjById(storeId);
+  updateStoreContacts(storeObj);
 
-  updateStoreContacts(store);
+  updateStoreFiltersData(storeObj);
 
-  updateStoreFiltersData(store);
+  const productsTableHead = document.querySelector("#products-table-head");
 
-  const productsTable = document.querySelector("#products-table-body");
+  if (storeObj.rel_Products?.length) {
+    productsTableHead.innerHTML = getStoreTableHeadStrForDOM(
+      Object.entries(storeObj.rel_Products[0])
+    );
+  }
 
-  productsTable.innerHTML = getStoreTableStrForDOM(store);
+  setSortBtnsListener();
+
+  const productsTableBody = document.querySelector("#products-table-body");
+
+  productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 }
 
 function highlightActiveStore(storeId) {
@@ -95,6 +103,49 @@ function showStoreDetailsTable() {
 
   storeDetailsWrapper.classList.add("js-flex-element");
   noStoreDetailsWrapper.classList.add("js-hidden-element");
+}
+
+function getStoreTableHeadStrForDOM(titlePairs) {
+  let tablesTitlesToAddStr = "";
+  let titlesAmount = 0;
+
+  titlePairs.forEach(([title, value]) => {
+    if (title !== "Photo" && title !== "Status" && title !== "id") {
+      titlesAmount++;
+      const wrapperClassesStr =
+        title === "Price"
+          ? "products-table__product-field-wrapper products-table__product-field-wrapper_end"
+          : "products-table__product-field-wrapper";
+      tablesTitlesToAddStr += `
+              <th class="products-table__product-field">
+                <div class="${wrapperClassesStr}">
+                  <button
+                    class="products-table__product-field-sort-btn"
+                    title="Sort"
+                    data-sort-key="${title}"
+                    data-sort-type="${typeof value}"
+                    data-sort-state="default"
+                  ></button>
+                  <span class="products-table__product-field-name"
+                    >${title.toString()}</span
+                  >
+                </div>
+              </th>
+              `;
+    }
+  });
+
+  const tableHeadToAddStr = `<tr class="products-table__table-name-row">
+                                  <th colspan="${titlesAmount}" class="products-table__table-name">
+                                    Products
+                                  </th>
+                                </tr>
+                                <tr
+                                  class="products-table__product-specifications-row"
+                                  id="product-table-titles-wrapper"
+                                >${tablesTitlesToAddStr}</tr>`;
+
+  return tableHeadToAddStr;
 }
 
 function getStoreObjById(storeId) {
@@ -187,7 +238,7 @@ function getStoreProductsAmounts(store) {
   return amountsData;
 }
 
-function getStoreTableStrForDOM(store, sortFunction) {
+function getStoreTableBodyStrForDOM(store, sortFunction) {
   let storeDetailsTableToAddStr = "";
   let products = store.rel_Products?.slice();
 
@@ -232,12 +283,12 @@ function getStoreTableStrForDOM(store, sortFunction) {
                 </td>
                 <td class="product-table-item__country-of-origin">
                   <span class="product-table-item__country-of-origin-text"
-                    >${product.MadeIn}</span
+                    >${product["Country of origin"]}</span
                   >
                 </td>
                 <td class="product-table-item__prod-company">
                   <span class="product-table-item__prod-company-text"
-                    >${product.ProductionCompanyName}</span
+                    >${product["Prod. company"]}</span
                   >
                 </td>
                 <td class="product-table-item__rating">
@@ -297,9 +348,8 @@ function setSortBtnsListener() {
       const currSortBtn = e.target;
       const sortKey = currSortBtn.dataset.sortKey;
       const sortType = currSortBtn.dataset.sortType;
-      const productsTable = document.querySelector("#products-table");
       const productsTableBody = document.querySelector("#products-table-body");
-      const storeObj = getStoreObjById(productsTable.dataset.storeId);
+      const storeObj = getStoreObjById(localStorage.getItem("currStoreId"));
 
       switch (currSortBtn.dataset.sortState) {
         case "default":
@@ -307,7 +357,7 @@ function setSortBtnsListener() {
           currSortBtn.dataset.sortState = "asc";
           currSortBtn.classList.add("js-asc-sort-btn");
 
-          productsTableBody.innerHTML = getStoreTableStrForDOM(
+          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
             storeObj,
             getCompareProductsFunction(sortType, sortKey, true)
           );
@@ -318,7 +368,7 @@ function setSortBtnsListener() {
           currSortBtn.classList.remove("js-asc-sort-btn");
           currSortBtn.classList.add("js-desc-sort-btn");
 
-          productsTableBody.innerHTML = getStoreTableStrForDOM(
+          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
             storeObj,
             getCompareProductsFunction(sortType, sortKey, false)
           );
@@ -328,7 +378,7 @@ function setSortBtnsListener() {
           currSortBtn.dataset.sortState = "default";
           currSortBtn.classList.remove("js-desc-sort-btn");
 
-          productsTableBody.innerHTML = getStoreTableStrForDOM(storeObj);
+          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(storeObj);
 
           break;
         default:
@@ -337,6 +387,17 @@ function setSortBtnsListener() {
           );
       }
     }
+  });
+}
+
+function setAllSortBtnsToDefault() {
+  const sortBtns = document.querySelectorAll(
+    ".products-table__product-field-sort-btn"
+  );
+
+  sortBtns.forEach((btn) => {
+    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
+    btn.dataset.sortState = "default";
   });
 }
 
@@ -354,21 +415,8 @@ function getCompareProductsFunction(sortType, sortKey, isAsc) {
   };
 }
 
-function setAllSortBtnsToDefault() {
-  const sortBtns = document.querySelectorAll(
-    ".products-table__product-field-sort-btn"
-  );
-
-  sortBtns.forEach((btn) => {
-    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
-    btn.dataset.sortState = "default";
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   updateStoresList(storesData);
 
   setSearchStoresListeners();
-
-  setSortBtnsListener();
 });
