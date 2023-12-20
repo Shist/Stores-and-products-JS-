@@ -6,8 +6,6 @@ import { storesData } from "../data/data.js";
 function updateStoresList(stores) {
   updateNoStoresLayout(stores);
 
-  setSearchStoresListeners();
-
   const storesListSection = document.querySelector("#stores-list-layout");
 
   storesListSection.innerHTML = getStoresListStrForDOM(stores);
@@ -518,4 +516,6 @@ function transformDateFromISO(dateISO) {
 
 document.addEventListener("DOMContentLoaded", () => {
   updateStoresList(storesData);
+
+  setSearchStoresListeners();
 });

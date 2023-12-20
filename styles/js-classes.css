@@ -1,0 +1,36 @@
+.js-hidden-element {
+  display: none;
+}
+
+.js-flex-element {
+  display: flex;
+}
+
+.js-selected-item {
+  padding: 8px;
+  border: 2px #396793 solid;
+  color: black;
+  background-color: #eff4f8;
+}
+
+.js-right-zero {
+  right: 0;
+}
+
+.js-asc-sort-btn {
+  background-image: url("../icons/sort-asc.png");
+  padding: 0;
+  border: 1px black solid;
+}
+.js-asc-sort-btn:active {
+  background-image: url("../icons/sort-asc-active.png");
+}
+
+.js-desc-sort-btn {
+  background-image: url("../icons/sort-desc.png");
+  padding: 0;
+  border: 1px black solid;
+}
+.js-desc-sort-btn:active {
+  background-image: url("../icons/sort-desc-active.png");
+}
