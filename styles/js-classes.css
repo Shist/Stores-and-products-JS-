@@ -18,19 +18,19 @@
 }
 
 .js-asc-sort-btn {
-  background-image: url("../icons/sort-asc.png");
+  background-image: url("../icons/sort-asc.svg");
   padding: 0;
   border: 1px black solid;
 }
 .js-asc-sort-btn:active {
-  background-image: url("../icons/sort-asc-active.png");
+  background-image: url("../icons/sort-asc-active.svg");
 }
 
 .js-desc-sort-btn {
-  background-image: url("../icons/sort-desc.png");
+  background-image: url("../icons/sort-desc.svg");
   padding: 0;
   border: 1px black solid;
 }
 .js-desc-sort-btn:active {
-  background-image: url("../icons/sort-desc-active.png");
+  background-image: url("../icons/sort-desc-active.svg");
 }

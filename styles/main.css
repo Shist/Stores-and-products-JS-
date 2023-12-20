@@ -60,7 +60,7 @@
   width: 28px;
   height: 28px;
   cursor: pointer;
-  background: url("../icons/icon-cross.png") center / 28px no-repeat;
+  background: url("../icons/icon-cross.svg") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__search-line::-webkit-search-cancel-button:hover {
@@ -68,7 +68,7 @@
 }
 .stores-list-header__search-line::-webkit-search-cancel-button:active {
   transition: none;
-  background: url("../icons/icon-cross-active.png") center / 28px no-repeat;
+  background: url("../icons/icon-cross-active.svg") center / 28px no-repeat;
 }
 
 .stores-list-header__search-btn {
@@ -79,7 +79,7 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-search.png") center / 28px no-repeat;
+  background: url("../icons/icon-search.svg") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__search-btn:hover {
@@ -87,7 +87,7 @@
 }
 .stores-list-header__search-btn:active {
   transition: none;
-  background: url("../icons/icon-search-active.png") center / 28px no-repeat;
+  background: url("../icons/icon-search-active.svg") center / 28px no-repeat;
 }
 
 .stores-list-header__refresh-btn {
@@ -98,7 +98,7 @@
   height: 28px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-refresh.png") center / 28px no-repeat;
+  background: url("../icons/icon-refresh.svg") center / 28px no-repeat;
   transition: 0.3s;
 }
 .stores-list-header__refresh-btn:hover {
@@ -106,7 +106,7 @@
 }
 .stores-list-header__refresh-btn:active {
   transition: none;
-  background: url("../icons/icon-refresh-active.png") center / 28px no-repeat;
+  background: url("../icons/icon-refresh-active.svg") center / 28px no-repeat;
 }
 
 .small-btns-wrapper {
@@ -132,11 +132,11 @@
   background-color: #bbd2e5;
 }
 .small-btn_top-arrow {
-  background: #d0e0ed url("../icons/icon-arrow-up.png") no-repeat center /
+  background: #d0e0ed url("../icons/icon-arrow-up.svg") no-repeat center /
     contain;
 }
 .small-btn_pin {
-  background: #d0e0ed url("../icons/icon-thumbtack.png") no-repeat center /
+  background: #d0e0ed url("../icons/icon-thumbtack.svg") no-repeat center /
     contain;
 }
 
@@ -252,7 +252,7 @@
 .footer-create-btn__icon-plus {
   width: 16px;
   height: 16px;
-  background: url("../icons/icon-plus.png") no-repeat center/contain;
+  background: url("../icons/icon-plus.svg") no-repeat center/contain;
 }
 
 .footer-create-btn__text-create {
@@ -427,13 +427,13 @@
   height: 50px;
 }
 .products-filter-btn__icon_ok {
-  background: url("../icons/icon-ok.png") no-repeat center/contain;
+  background: url("../icons/icon-ok.svg") no-repeat center/contain;
 }
 .products-filter-btn__icon_warning {
-  background: url("../icons/icon-warning.png") no-repeat center/contain;
+  background: url("../icons/icon-warning.svg") no-repeat center/contain;
 }
 .products-filter-btn__icon_error {
-  background: url("../icons/icon-error.png") no-repeat center/contain;
+  background: url("../icons/icon-error.svg") no-repeat center/contain;
 }
 
 .products-filter-btn__description {
@@ -511,7 +511,7 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
-  background: url("../icons/icon-cross.png") center / 24px no-repeat;
+  background: url("../icons/icon-cross.svg") center / 24px no-repeat;
   transition: 0.3s;
 }
 .products-table__search-line::-webkit-search-cancel-button:hover {
@@ -519,7 +519,7 @@
 }
 .products-table__search-line::-webkit-search-cancel-button:active {
   transition: none;
-  background: url("../icons/icon-cross-active.png") center / 24px no-repeat;
+  background: url("../icons/icon-cross-active.svg") center / 24px no-repeat;
 }
 
 .products-table__search-btn {
@@ -530,7 +530,7 @@
   height: 24px;
   border: none;
   cursor: pointer;
-  background: url("../icons/icon-search.png") center / 24px no-repeat;
+  background: url("../icons/icon-search.svg") center / 24px no-repeat;
   transition: 0.3s;
 }
 .products-table__search-btn:hover {
@@ -538,7 +538,7 @@
 }
 .products-table__search-btn:active {
   transition: none;
-  background: url("../icons/icon-search-active.png") center / 24px no-repeat;
+  background: url("../icons/icon-search-active.svg") center / 24px no-repeat;
 }
 
 .products-table__product-specifications-row {
@@ -580,7 +580,7 @@
   min-height: 24px;
   border: none;
   cursor: pointer;
-  background: url("../icons/sort-default.png") center / 24px no-repeat;
+  background: url("../icons/sort-default.svg") center / 24px no-repeat;
   transition: 0.3s;
 }
 .products-table__product-field-sort-btn:hover {
@@ -590,7 +590,7 @@
 }
 .products-table__product-field-sort-btn:active {
   transition: none;
-  background: url("../icons/sort-default-active.png") center / 24px no-repeat;
+  background: url("../icons/sort-default-active.svg") center / 24px no-repeat;
 }
 @media (max-width: 1280px) {
   .products-table__product-field-sort-btn {
@@ -725,20 +725,20 @@
 .yellow-star {
   width: 20px;
   height: 20px;
-  background: url("../icons/icon-yellow-star.png") no-repeat center/contain;
+  background: url("../icons/icon-yellow-star.svg") no-repeat center/contain;
 }
 
 .empty-star {
   width: 20px;
   height: 20px;
-  background: url("../icons/icon-empty-star.png") no-repeat center/contain;
+  background: url("../icons/icon-empty-star.svg") no-repeat center/contain;
 }
 
 .right-arrow {
   margin-left: auto;
   width: 20px;
   height: 20px;
-  background: url("../icons/icon-arrow-right.png") no-repeat center/contain;
+  background: url("../icons/icon-arrow-right.svg") no-repeat center/contain;
 }
 
 .product-table-item__standard-field-text {
@@ -779,7 +779,7 @@
 .footer-delete-btn__icon-trash {
   width: 16px;
   height: 16px;
-  background: url("../icons/icon-trash.png") no-repeat center/contain;
+  background: url("../icons/icon-trash.svg") no-repeat center/contain;
 }
 
 .footer-delete-btn__text-delete {
