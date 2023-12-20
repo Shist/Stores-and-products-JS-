@@ -674,6 +674,16 @@
   background-color: #efefef;
 }
 
+.product-table-empty-item {
+  border-block: 2px #e6e6e6 solid;
+}
+
+.product-table-empty-item__no-data {
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+}
+
 .product-table-item__name,
 .product-table-item__price,
 .product-table-item__rating {

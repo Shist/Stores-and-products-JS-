@@ -177,6 +177,8 @@ function getStoreTableHeadStrForDOM(titlePairs) {
     }
   });
 
+  localStorage.setItem("currTableColumnsAmount", titlesAmount);
+
   return getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr);
 }
 
@@ -226,6 +228,17 @@ function getStoreTableBodyStrForDOM(products) {
         ${getProductRowStrForDOM(product)}
       </tr>`;
   });
+
+  if (!productTableBodyStr) {
+    productTableBodyStr = `
+      <tr class="product-table-empty-item">
+        <td colspan="${localStorage.getItem(
+          "currTableColumnsAmount"
+        )}" class="product-table-empty-item__no-data">
+          No data
+        </td>
+      </tr>`;
+  }
 
   return productTableBodyStr;
 }
