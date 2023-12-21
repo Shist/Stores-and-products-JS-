@@ -13,46 +13,10 @@ function updateStoresList(stores) {
   storesListSection.addEventListener("click", (e) => {
     const currItemCard = e.target.closest(".stores-list-item");
 
-    if ("storeId" in currItemCard.dataset) {
+    if (currItemCard && "storeId" in currItemCard.dataset) {
       updateAllStoreDetails(currItemCard.dataset.storeId);
     }
   });
-}
-
-function updateAllStoreDetails(storeId) {
-  localStorage.setItem("currStoreId", storeId);
-
-  clearLocalStorageFromTableFilters();
-
-  highlightActiveStore(storeId);
-
-  updateStoreDetailsTable();
-
-  const storeObj = getStoreObjById(storeId);
-
-  updateStoreContacts(storeObj);
-
-  const productsTableHead = document.querySelector("#products-table-head");
-
-  if (storeObj.rel_Products?.length) {
-    productsTableHead.innerHTML = getStoreTableHeadStrForDOM(
-      Object.entries(storeObj.rel_Products[0])
-    );
-  }
-
-  setSortBtnsListener();
-
-  setSearchProductsListeners();
-
-  updateProductsTableAndFilters(storeObj.rel_Products);
-}
-
-function updateProductsTableAndFilters(products) {
-  updateStoreFiltersData(products);
-
-  const productsTableBody = document.querySelector("#products-table-body");
-
-  productsTableBody.innerHTML = getStoreTableBodyStrForDOM(products);
 }
 
 function updateNoStoresLayout(stores) {
@@ -65,19 +29,47 @@ function updateNoStoresLayout(stores) {
   }
 }
 
-function highlightActiveStore(storeId) {
+function updateAllStoreDetails(storeId) {
+  localStorage.setItem("currStoreId", storeId);
+
+  clearSortFiltersFromLocalStorage();
+
+  highlightActiveStoreCard(storeId);
+
+  updateStoreDetailsVisibility();
+
+  const storeObj = getStoreObjById(storeId);
+
+  updateStoreContacts(storeObj);
+
+  const productsTableHead = document.querySelector("#products-table-head");
+
+  if (storeObj.rel_Products?.length) {
+    productsTableHead.innerHTML = getProductsTableHeadStrForDOM(
+      Object.entries(storeObj.rel_Products[0])
+    );
+  }
+
+  setSortBtnsListener();
+
+  setSearchProductsListeners();
+
+  updateProductsFiltersAndTable();
+}
+
+function highlightActiveStoreCard(storeId) {
   const storeItems = document.querySelectorAll(".stores-list-item");
 
   storeItems.forEach((storeItem) => {
-    storeItem.classList.remove("js-selected-item");
+    storeItem?.classList.remove("js-selected-item");
 
-    if (storeItem.dataset.storeId === storeId) {
+    if (storeItem && storeItem.dataset.storeId === storeId) {
       storeItem.classList.add("js-selected-item");
     }
   });
 }
 
-function updateStoreDetailsTable() {
+function updateStoreDetailsVisibility() {
   const storeDetailsWrapper = document.querySelector("#store-details-wrapper");
   const noStoreDetailsWrapper = document.querySelector(
     "#no-store-details-wrapper"
@@ -106,7 +98,30 @@ function updateStoreContacts(store) {
   storeFloorAreaField.textContent = store.FloorArea;
 }
 
-function updateStoreFiltersData(products) {
+function setAllSortBtnsToDefault() {
+  const sortBtns = document.querySelectorAll(
+    ".products-table__product-field-sort-btn"
+  );
+
+  sortBtns.forEach((btn) => {
+    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
+    btn.dataset.sortState = "default";
+  });
+}
+
+function updateProductsTableBody() {
+  const productsTableBody = document.querySelector("#products-table-body");
+
+  productsTableBody.innerHTML = getProductsTableBodyStrForDOM();
+}
+
+function updateProductsFiltersAndTable() {
+  updateProductsFilters();
+
+  updateProductsTableBody();
+}
+
+function updateProductsFilters() {
   const prodAmountField = document.querySelector("#all-prod-amount");
   const prodOkAmountField = document.querySelector("#ok-prod-amount");
   const prodStorageAmountField = document.querySelector("#storage-prod-amount");
@@ -114,7 +129,7 @@ function updateStoreFiltersData(products) {
     "#out-of-stock-prod-amount"
   );
 
-  const amountsData = getStoreProductsAmounts(products);
+  const amountsData = getStoreProductsAmounts();
 
   prodAmountField.textContent = amountsData.all;
   prodOkAmountField.textContent = amountsData.ok;
@@ -150,18 +165,20 @@ function getStoresListStrForDOM(stores) {
   return storesListStr;
 }
 
-function getStoreTableHeadStrForDOM(titlePairs) {
-  let tablesTitlesStr = "";
-  let titlesAmount = 0;
+function getProductsTableHeadStrForDOM(headerPairs) {
+  let tablesHeadersStr = "";
+  let headersAmount = 0;
 
-  titlePairs.forEach(([key, value]) => {
+  headerPairs.forEach(([key, value]) => {
     if (key !== "Photo" && key !== "Status" && key !== "id") {
-      titlesAmount++;
+      headersAmount++;
+
       const wrapperClassesStr =
         key === "Price"
           ? "products-table__product-field-wrapper products-table__product-field-wrapper_end"
           : "products-table__product-field-wrapper";
-      tablesTitlesStr += `
+
+      tablesHeadersStr += `
               <th class="products-table__product-field">
                 <div class="${wrapperClassesStr}">
                   <button
@@ -180,12 +197,12 @@ function getStoreTableHeadStrForDOM(titlePairs) {
     }
   });
 
-  localStorage.setItem("currTableColumnsAmount", titlesAmount);
+  localStorage.setItem("currTableColumnsAmount", headersAmount);
 
-  return getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr);
+  return getProductsTableHeadWrapperStrForDOM(headersAmount, tablesHeadersStr);
 }
 
-function getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
+function getProductsTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
   return `<tr class="products-table__table-name-row">
             <th colspan="${titlesAmount}" class="products-table__table-name-headline">
               <div class="product-table__name-search-wrapper">
@@ -216,16 +233,16 @@ function getStoreTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
           </tr>`;
 }
 
-function getStoreTableBodyStrForDOM(products) {
-  const productsCopy = products.slice();
+function getProductsTableBodyStrForDOM() {
+  const filteredProducts = getCurrFilteredProductsList();
 
   if (localStorage.getItem("currSortKey")) {
-    productsCopy.sort(getCompareProductsFunction());
+    filteredProducts.sort(getCompareProductsFunction());
   }
 
   let productTableBodyStr = "";
 
-  productsCopy?.forEach((product) => {
+  filteredProducts?.forEach((product) => {
     productTableBodyStr += `
       <tr class="product-table-item">
         ${getProductRowStrForDOM(product)}
@@ -346,20 +363,17 @@ function setSortBtnsListener() {
       const currSortBtn = e.target;
       const sortKey = currSortBtn.dataset.sortKey;
       const sortType = currSortBtn.dataset.sortType;
-      const productsTableBody = document.querySelector("#products-table-body");
 
       switch (currSortBtn.dataset.sortState) {
         case "default":
           setAllSortBtnsToDefault();
+
           currSortBtn.dataset.sortState = "asc";
           currSortBtn.classList.add("js-asc-sort-btn");
 
-          localStorage.setItem("currSortType", sortType);
-          localStorage.setItem("currSortKey", sortKey);
-          localStorage.setItem("currSortOrder", "asc");
-          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
-            getCurrFilteredProductList()
-          );
+          setSortFiltersToLocalStorage(sortType, sortKey, "asc");
+
+          updateProductsTableBody();
 
           break;
         case "asc":
@@ -367,22 +381,18 @@ function setSortBtnsListener() {
           currSortBtn.classList.remove("js-asc-sort-btn");
           currSortBtn.classList.add("js-desc-sort-btn");
 
-          localStorage.setItem("currSortType", sortType);
-          localStorage.setItem("currSortKey", sortKey);
-          localStorage.setItem("currSortOrder", "desc");
-          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
-            getCurrFilteredProductList()
-          );
+          setSortFiltersToLocalStorage(sortType, sortKey, "desc");
+
+          updateProductsTableBody();
 
           break;
         case "desc":
           currSortBtn.dataset.sortState = "default";
           currSortBtn.classList.remove("js-desc-sort-btn");
 
-          clearLocalStorageFromTableFilters();
-          productsTableBody.innerHTML = getStoreTableBodyStrForDOM(
-            getCurrFilteredProductList()
-          );
+          clearSortFiltersFromLocalStorage();
+
+          updateProductsTableBody();
 
           break;
         default:
@@ -399,7 +409,7 @@ function setSearchProductsListeners() {
   const searchBtn = document.querySelector("#products-search-btn");
 
   const filterAndUpdateProductsList = () => {
-    updateProductsTableAndFilters(getCurrFilteredProductList());
+    updateProductsFiltersAndTable();
   };
 
   searchInput.addEventListener("search", filterAndUpdateProductsList);
@@ -407,89 +417,14 @@ function setSearchProductsListeners() {
 }
 
 // Other supporting functions
-function getStoreObjById(storeId) {
-  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
-}
-
-function getCurrFilteredProductList() {
-  const searchInput = document.querySelector("#search-product-line");
-  const currStore = getStoreObjById(localStorage.getItem("currStoreId"));
-
-  return currStore.rel_Products?.filter(
-    (product) =>
-      product.Name.toLowerCase().includes(searchInput.value) ||
-      product.id.toString().includes(searchInput.value) ||
-      product.Price.toString().includes(searchInput.value) ||
-      product.Specs.toLowerCase().includes(searchInput.value) ||
-      product.SupplierInfo.toLowerCase().includes(searchInput.value) ||
-      product["Country of origin"].toLowerCase().includes(searchInput.value) ||
-      product["Prod. company"].toLowerCase().includes(searchInput.value) ||
-      product.Rating.toString().includes(searchInput.value)
-  );
-}
-
-function setAllSortBtnsToDefault() {
-  const sortBtns = document.querySelectorAll(
-    ".products-table__product-field-sort-btn"
-  );
-
-  sortBtns.forEach((btn) => {
-    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
-    btn.dataset.sortState = "default";
-  });
-}
-
-function getStoreProductsAmounts(products) {
-  const amountsData = {
-    all: products.length,
-    ok: 0,
-    storage: 0,
-    outOfStock: 0,
-  };
-
-  products.forEach((product) => {
-    switch (product.Status) {
-      case "OK":
-        amountsData.ok++;
-        break;
-      case "STORAGE":
-        amountsData.storage++;
-        break;
-      case "OUT_OF_STOCK":
-        amountsData.outOfStock++;
-        break;
-      default:
-        console.warn(
-          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
-        );
-    }
-  });
-
-  return amountsData;
-}
-
-function getCompareProductsFunction() {
-  const sortType = localStorage.getItem("currSortType");
-  const sortKey = localStorage.getItem("currSortKey");
-  const sortOrder = localStorage.getItem("currSortOrder");
-
-  return (prodA, prodB) => {
-    if (sortOrder === "asc") {
-      return sortType === "number"
-        ? prodA[sortKey] - prodB[sortKey]
-        : prodA[sortKey].localeCompare(prodB[sortKey]);
-    } else {
-      return sortType === "number"
-        ? prodB[sortKey] - prodA[sortKey]
-        : prodB[sortKey].localeCompare(prodA[sortKey]);
-    }
-  };
-}
-
-function clearLocalStorageFromTableFilters() {
+function clearSortFiltersFromLocalStorage() {
   localStorage.removeItem("currSortType");
   localStorage.removeItem("currSortKey");
   localStorage.removeItem("currSortOrder");
+}
+
+function getStoreObjById(storeId) {
+  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
 }
 
 function transformDateFromISO(dateISO) {
@@ -517,6 +452,78 @@ function transformDateFromISO(dateISO) {
   const formattedDate = `${month} ${day}, ${year}`;
 
   return formattedDate;
+}
+
+function setSortFiltersToLocalStorage(sortType, sortKey, sortOrder) {
+  localStorage.setItem("currSortType", sortType);
+  localStorage.setItem("currSortKey", sortKey);
+  localStorage.setItem("currSortOrder", sortOrder);
+}
+
+function getCompareProductsFunction() {
+  const sortType = localStorage.getItem("currSortType");
+  const sortKey = localStorage.getItem("currSortKey");
+  const sortOrder = localStorage.getItem("currSortOrder");
+
+  return (prodA, prodB) => {
+    if (sortOrder === "asc") {
+      return sortType === "number"
+        ? prodA[sortKey] - prodB[sortKey]
+        : prodA[sortKey].localeCompare(prodB[sortKey]);
+    } else {
+      return sortType === "number"
+        ? prodB[sortKey] - prodA[sortKey]
+        : prodB[sortKey].localeCompare(prodA[sortKey]);
+    }
+  };
+}
+
+function getCurrFilteredProductsList() {
+  const searchInput = document.querySelector("#search-product-line");
+  const currStore = getStoreObjById(localStorage.getItem("currStoreId"));
+
+  return currStore.rel_Products?.filter(
+    (product) =>
+      product.Name.toLowerCase().includes(searchInput.value) ||
+      product.id.toString().includes(searchInput.value) ||
+      product.Price.toString().includes(searchInput.value) ||
+      product.Specs.toLowerCase().includes(searchInput.value) ||
+      product.SupplierInfo.toLowerCase().includes(searchInput.value) ||
+      product["Country of origin"].toLowerCase().includes(searchInput.value) ||
+      product["Prod. company"].toLowerCase().includes(searchInput.value) ||
+      product.Rating.toString().includes(searchInput.value)
+  );
+}
+
+function getStoreProductsAmounts() {
+  const products = getCurrFilteredProductsList();
+
+  const amountsData = {
+    all: products.length,
+    ok: 0,
+    storage: 0,
+    outOfStock: 0,
+  };
+
+  products.forEach((product) => {
+    switch (product.Status) {
+      case "OK":
+        amountsData.ok++;
+        break;
+      case "STORAGE":
+        amountsData.storage++;
+        break;
+      case "OUT_OF_STOCK":
+        amountsData.outOfStock++;
+        break;
+      default:
+        console.warn(
+          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
+        );
+    }
+  });
+
+  return amountsData;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
