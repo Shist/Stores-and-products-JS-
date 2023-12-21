@@ -26,7 +26,7 @@ function updateAllStoreDetails(storeId) {
 
   highlightActiveStore(storeId);
 
-  showStoreDetailsTable();
+  updateStoreDetailsTable();
 
   const storeObj = getStoreObjById(storeId);
 
@@ -77,14 +77,19 @@ function highlightActiveStore(storeId) {
   });
 }
 
-function showStoreDetailsTable() {
+function updateStoreDetailsTable() {
   const storeDetailsWrapper = document.querySelector("#store-details-wrapper");
   const noStoreDetailsWrapper = document.querySelector(
     "#no-store-details-wrapper"
   );
 
-  storeDetailsWrapper.classList.add("js-flex-element");
-  noStoreDetailsWrapper.classList.add("js-hidden-element");
+  if (localStorage.getItem("currStoreId")) {
+    storeDetailsWrapper.classList.add("js-flex-element");
+    noStoreDetailsWrapper.classList.add("js-hidden-element");
+  } else {
+    storeDetailsWrapper.classList.remove("js-flex-element");
+    noStoreDetailsWrapper.classList.remoev("js-hidden-element");
+  }
 }
 
 function updateStoreContacts(store) {
