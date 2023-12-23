@@ -472,19 +472,19 @@ function setSearchStoresListeners() {
     `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
   );
 
-  const filterAndUpdateStoresList = () => {
-    const filteredStoresList = storesData.filter(
-      (store) =>
-        store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-        store.Address.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-        store.FloorArea.toString().includes(searchInput.value)
-    );
+  searchInput.addEventListener("search", onStoresSearchClick);
+  searchBtn.addEventListener("click", onStoresSearchClick);
+}
 
-    updateStoresList(filteredStoresList);
-  };
+function onStoresSearchClick() {
+  const filteredStoresList = storesData.filter(
+    (store) =>
+      store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+      store.Address.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+      store.FloorArea.toString().includes(searchInput.value)
+  );
 
-  searchInput.addEventListener("search", filterAndUpdateStoresList);
-  searchBtn.addEventListener("click", filterAndUpdateStoresList);
+  updateStoresList(filteredStoresList);
 }
 
 function setStoresCardsClickListener() {
@@ -516,59 +516,56 @@ function setSortBtnsListener() {
     `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}`
   );
 
-  productTableTitlesWrapper.addEventListener("click", (e) => {
-    if (e.target.classList.contains(CONSTANTS.SORT_BTN_CLASS)) {
-      const currSortBtn = e.target;
-      const sortKey =
-        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
-      const sortType =
-        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.CAMEL];
+  productTableTitlesWrapper.addEventListener("click", onSortBtnClick);
+}
 
-      switch (currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
-        case "default":
-          setAllSortBtnsToDefault();
+function onSortBtnClick(e) {
+  if (e.target.classList.contains(CONSTANTS.SORT_BTN_CLASS)) {
+    const currSortBtn = e.target;
+    const sortKey =
+      currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
+    const sortType =
+      currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.CAMEL];
 
-          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            "asc";
-          currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
+    switch (currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
+      case "default":
+        setAllSortBtnsToDefault();
 
-          setSortFiltersToLocalStorage(sortType, sortKey, "asc");
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "asc";
+        currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
 
-          updateProductsTableBody();
+        setSortFiltersToLocalStorage(sortType, sortKey, "asc");
+        updateProductsTableBody();
 
-          break;
-        case "asc":
-          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            "desc";
-          currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
-          currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
+        break;
+      case "asc":
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "desc";
+        currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
+        currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
-          setSortFiltersToLocalStorage(sortType, sortKey, "desc");
+        setSortFiltersToLocalStorage(sortType, sortKey, "desc");
+        updateProductsTableBody();
 
-          updateProductsTableBody();
+        break;
+      case "desc":
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+          "default";
+        currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
-          break;
-        case "desc":
-          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            "default";
-          currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
+        clearSortFiltersFromLocalStorage();
+        updateProductsTableBody();
 
-          clearSortFiltersFromLocalStorage();
-
-          updateProductsTableBody();
-
-          break;
-        default:
-          console.warn(
-            `One of sort buttons had unknown data-${
-              CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB
-            } type: ${
-              e.target.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]
-            }`
-          );
-      }
+        break;
+      default:
+        console.warn(
+          `One of sort buttons had unknown data-${
+            CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB
+          } type: ${
+            e.target.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]
+          }`
+        );
     }
-  });
+  }
 }
 
 function setSearchProductsListeners() {
@@ -579,12 +576,8 @@ function setSearchProductsListeners() {
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}`
   );
 
-  const filterAndUpdateProductsList = () => {
-    updateProductsFiltersAndTable();
-  };
-
-  searchInput.addEventListener("search", filterAndUpdateProductsList);
-  searchBtn.addEventListener("click", filterAndUpdateProductsList);
+  searchInput.addEventListener("search", updateProductsFiltersAndTable);
+  searchBtn.addEventListener("click", updateProductsFiltersAndTable);
 }
 
 // Other supporting functions
