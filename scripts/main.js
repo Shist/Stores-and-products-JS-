@@ -9,8 +9,6 @@ function updateStoresList(stores) {
   updateNoStoresLayout(stores);
 
   storesListSection.innerHTML = getStoresListStrForDOM(stores);
-
-  storesListSection.addEventListener("click", onStoreCardClick);
 }
 
 function updateNoStoresLayout(stores) {
@@ -20,14 +18,6 @@ function updateNoStoresLayout(stores) {
     noStoresLayout.classList.add("js-hidden-element");
   } else {
     noStoresLayout.classList.remove("js-hidden-element");
-  }
-}
-
-function onStoreCardClick(e) {
-  const currItemCard = e.target.closest(".stores-list-item");
-
-  if (currItemCard && "storeId" in currItemCard.dataset) {
-    updateAllStoreDetails(currItemCard.dataset.storeId);
   }
 }
 
@@ -355,6 +345,20 @@ function setSearchStoresListeners() {
   searchBtn.addEventListener("click", filterAndUpdateStoresList);
 }
 
+function setStoresCardsClickListener() {
+  const storesListSection = document.querySelector("#stores-list-layout");
+
+  storesListSection.addEventListener("click", onStoreCardClick);
+}
+
+function onStoreCardClick(e) {
+  const currItemCard = e.target.closest(".stores-list-item");
+
+  if (currItemCard && "storeId" in currItemCard.dataset) {
+    updateAllStoreDetails(currItemCard.dataset.storeId);
+  }
+}
+
 function setSortBtnsListener() {
   const productTableTitlesWrapper = document.querySelector(
     "#product-table-titles-wrapper"
@@ -532,4 +536,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateStoresList(storesData);
 
   setSearchStoresListeners();
+
+  setStoresCardsClickListener();
 });
