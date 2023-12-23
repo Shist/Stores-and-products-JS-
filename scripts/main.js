@@ -58,15 +58,15 @@ function updateAllStoreDetails(storeId) {
 }
 
 function highlightActiveStoreCard(storeId) {
-  const storeItems = document.querySelectorAll(".stores-list-item");
+  const storesListLayout = document.querySelector("#stores-list-layout");
 
-  storeItems.forEach((storeItem) => {
-    storeItem?.classList.remove("js-selected-item");
+  storesListLayout
+    .querySelector(".js-selected-item")
+    ?.classList.remove("js-selected-item");
 
-    if (storeItem && storeItem.dataset.storeId === storeId) {
-      storeItem.classList.add("js-selected-item");
-    }
-  });
+  storesListLayout
+    .querySelector(`[data-store-id="${storeId}"]`)
+    ?.classList.add("js-selected-item");
 }
 
 function updateStoreDetailsVisibility() {
