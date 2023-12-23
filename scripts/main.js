@@ -88,7 +88,7 @@ function updateStoresList(stores) {
 
   updateNoStoresLayout(stores);
 
-  storesListSection.innerHTML = getStoresListStrForDOM(stores);
+  storesListSection.innerHTML = getStructureForStoresList(stores);
 
   if (currStoreId) {
     highlightActiveStoreCard(currStoreId);
@@ -112,7 +112,7 @@ function renderProductsTableHead() {
     `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD}`
   );
 
-  productsTableHead.innerHTML = getProductsTableHeadStrForDOM();
+  productsTableHead.innerHTML = getStructureForTableHead();
 
   setSortBtnsListener();
 
@@ -128,7 +128,7 @@ function updateAllStoreDetails() {
 
   updateStoreContacts();
 
-  updateProductsFiltersAndTable();
+  updateProductsFiltersAndTableBody();
 }
 
 function setProductsTableHeadToDefault() {
@@ -224,7 +224,7 @@ function setProductSearchLineToDefault() {
   document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`).value = "";
 }
 
-function updateProductsFiltersAndTable() {
+function updateProductsFiltersAndTableBody() {
   updateProductsFilters();
 
   updateProductsTableBody();
@@ -244,7 +244,7 @@ function updateProductsFilters() {
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OUT_OF_STOCK}`
   );
 
-  const amountsData = getStoreProductsAmounts();
+  const amountsData = getCurrProductsAmounts();
 
   prodAmountField.textContent = amountsData.all;
   prodOkAmountField.textContent = amountsData.ok;
@@ -257,11 +257,11 @@ function updateProductsTableBody() {
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
-  productsTableBody.innerHTML = getProductsTableBodyStrForDOM();
+  productsTableBody.innerHTML = getStructureForTableBody();
 }
 
 // Functions for preparing HTML structures for DOM
-function getStoresListStrForDOM(stores) {
+function getStructureForStoresList(stores) {
   return stores.reduce((storesStr, nextStore) => {
     storesStr += `
               <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
@@ -285,7 +285,7 @@ function getStoresListStrForDOM(stores) {
   }, "");
 }
 
-function getProductsTableHeadStrForDOM() {
+function getStructureForTableHead() {
   return `<tr class="products-table__table-name-row">
             <th colspan="${
               CONSTANTS.PRODUCTS_TABLE_COLUMNS.length
@@ -314,11 +314,11 @@ function getProductsTableHeadStrForDOM() {
           <tr
               class="products-table__product-specifications-row"
               id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}"
-            >${getProductsTableHeadersStrForDOM()}
+            >${getStructureForTableHeaders()}
           </tr>`;
 }
 
-function getProductsTableHeadersStrForDOM() {
+function getStructureForTableHeaders() {
   return CONSTANTS.PRODUCTS_TABLE_COLUMNS.reduce(
     (tablesHeadersStr, [columnName, columnType, alignType]) => {
       const wrapperClassesStr =
@@ -349,7 +349,7 @@ function getProductsTableHeadersStrForDOM() {
   );
 }
 
-function getProductsTableBodyStrForDOM() {
+function getStructureForTableBody() {
   const filteredProducts = getCurrFilteredProductsList();
   let productTableBodyStr = "";
 
@@ -361,7 +361,7 @@ function getProductsTableBodyStrForDOM() {
     productTableBodyStr = filteredProducts?.reduce((neededStr, product) => {
       neededStr += `
         <tr class="product-table-item">
-          ${getProductRowStrForDOM(product)}
+          ${getStructureForTableRow(product)}
         </tr>`;
       return neededStr;
     }, "");
@@ -379,7 +379,7 @@ function getProductsTableBodyStrForDOM() {
   return productTableBodyStr;
 }
 
-function getProductRowStrForDOM(product) {
+function getStructureForTableRow(product) {
   return CONSTANTS.PRODUCTS_TABLE_COLUMNS.reduce(
     (productTableDataStr, [productKey, ,]) => {
       switch (productKey) {
@@ -437,7 +437,7 @@ function getTableStructureForPriceField(productPrice) {
 function getTableStructureForRatingField(productRating) {
   return `<td class="product-table-item__rating">
             <div class="product-table-item__stars-wrapper">
-              ${getProductStarsStrForDOM(productRating)}
+              ${getStructureForRatingStars(productRating)}
             </div>
           </td>`;
 }
@@ -452,7 +452,7 @@ function getTableStructureForStandardField(productField) {
           </td>`;
 }
 
-function getProductStarsStrForDOM(productRating) {
+function getStructureForRatingStars(productRating) {
   return (
     Array(5)
       .fill()
@@ -475,11 +475,11 @@ function setSearchStoresListeners() {
     `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
   );
 
-  searchInput.addEventListener("search", onStoresSearchClick);
-  searchBtn.addEventListener("click", onStoresSearchClick);
+  searchInput.addEventListener("search", onSearchStoresClick);
+  searchBtn.addEventListener("click", onSearchStoresClick);
 }
 
-function onStoresSearchClick() {
+function onSearchStoresClick() {
   const filteredStoresList = storesData.filter(
     (store) =>
       store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
@@ -579,21 +579,11 @@ function setSearchProductsListeners() {
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}`
   );
 
-  searchInput.addEventListener("search", updateProductsFiltersAndTable);
-  searchBtn.addEventListener("click", updateProductsFiltersAndTable);
+  searchInput.addEventListener("search", updateProductsFiltersAndTableBody);
+  searchBtn.addEventListener("click", updateProductsFiltersAndTableBody);
 }
 
 // Other supporting functions
-function clearSortFiltersFromLocalStorage() {
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE);
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
-}
-
-function clearCurrStoreIdFromLocalStorage() {
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
-}
-
 function getStoreObjById(storeId) {
   return storesData.find((nextStore) => nextStore.id.toString() === storeId);
 }
@@ -602,6 +592,16 @@ function setSortFiltersToLocalStorage(sortType, sortKey, sortOrder) {
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE, sortType);
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY, sortKey);
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER, sortOrder);
+}
+
+function clearSortFiltersFromLocalStorage() {
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
+}
+
+function clearCurrStoreIdFromLocalStorage() {
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
 }
 
 function getCompareProductsFunction() {
@@ -655,7 +655,7 @@ function getCurrFilteredProductsList() {
   );
 }
 
-function getStoreProductsAmounts() {
+function getCurrProductsAmounts() {
   const products = getCurrFilteredProductsList();
 
   const amountsData = {
