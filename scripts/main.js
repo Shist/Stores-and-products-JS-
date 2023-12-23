@@ -107,33 +107,39 @@ function updateNoStoresLayout(stores) {
   }
 }
 
-function updateAllStoreDetails(storeId) {
-  const storeObj = getStoreObjById(storeId);
-
+function renderProductsTableHead() {
   const productsTableHead = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD}`
   );
-
-  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID, storeId);
-
-  clearSortFiltersFromLocalStorage();
-
-  highlightActiveStoreCard(storeId);
-
-  updateStoreDetailsVisibility();
-
-  updateStoreContacts(storeObj);
 
   productsTableHead.innerHTML = getProductsTableHeadStrForDOM();
 
   setSortBtnsListener();
 
   setSearchProductsListeners();
+}
+
+function updateAllStoreDetails() {
+  setProductsTableHeadToDefault();
+
+  highlightActiveStoreCard();
+
+  updateStoreDetailsVisibility();
+
+  updateStoreContacts();
 
   updateProductsFiltersAndTable();
 }
 
-function highlightActiveStoreCard(storeId) {
+function setProductsTableHeadToDefault() {
+  clearSortFiltersFromLocalStorage();
+
+  setAllSortBtnsToDefault();
+
+  setProductSearchLineToDefault();
+}
+
+function highlightActiveStoreCard() {
   const storesListLayout = document.querySelector(
     `#${CONSTANTS.STORES_LAYOUT_ID}`
   );
@@ -144,7 +150,9 @@ function highlightActiveStoreCard(storeId) {
 
   storesListLayout
     .querySelector(
-      `[data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${storeId}"]`
+      `[data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
+      )}"]`
     )
     ?.classList.add(CONSTANTS.JS_CLASS.SELECTED_ITEM);
 }
@@ -166,7 +174,11 @@ function updateStoreDetailsVisibility() {
   }
 }
 
-function updateStoreContacts(store) {
+function updateStoreContacts() {
+  const store = getStoreObjById(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  );
+
   const storeEmailField = document.querySelector(
     `#${CONSTANTS.STORE_LABELS_ID.EMAIL}`
   );
@@ -208,12 +220,8 @@ function setAllSortBtnsToDefault() {
   });
 }
 
-function updateProductsTableBody() {
-  const productsTableBody = document.querySelector(
-    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
-  );
-
-  productsTableBody.innerHTML = getProductsTableBodyStrForDOM();
+function setProductSearchLineToDefault() {
+  document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`).value = "";
 }
 
 function updateProductsFiltersAndTable() {
@@ -244,6 +252,14 @@ function updateProductsFilters() {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
+function updateProductsTableBody() {
+  const productsTableBody = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+  );
+
+  productsTableBody.innerHTML = getProductsTableBodyStrForDOM();
+}
+
 // Functions for preparing HTML structures for DOM
 function getStoresListStrForDOM(stores) {
   return stores.reduce((storesStr, nextStore) => {
@@ -270,40 +286,10 @@ function getStoresListStrForDOM(stores) {
 }
 
 function getProductsTableHeadStrForDOM() {
-  let tablesHeadersStr = "";
-
-  CONSTANTS.PRODUCTS_TABLE_COLUMNS.forEach(
-    ([columnName, columnType, alignType]) => {
-      const wrapperClassesStr =
-        alignType === "align-start"
-          ? "products-table__product-field-wrapper"
-          : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
-
-      tablesHeadersStr += `
-              <th class="products-table__product-field">
-                <div class="${wrapperClassesStr}">
-                  <button
-                    class="${CONSTANTS.SORT_BTN_CLASS}"
-                    title="Sort"
-                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnName}"
-                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.KEBAB}="${columnType}"
-                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="default"
-                  ></button>
-                  <span class="products-table__product-field-name"
-                    >${columnName}</span
-                  >
-                </div>
-              </th>
-              `;
-    }
-  );
-
-  return getProductsTableHeadWrapperStrForDOM(tablesHeadersStr);
-}
-
-function getProductsTableHeadWrapperStrForDOM(tablesTitlesStr) {
   return `<tr class="products-table__table-name-row">
-            <th colspan="${CONSTANTS.PRODUCTS_TABLE_COLUMNS.length}" class="products-table__table-name-headline">
+            <th colspan="${
+              CONSTANTS.PRODUCTS_TABLE_COLUMNS.length
+            }" class="products-table__table-name-headline">
               <div class="product-table__name-search-wrapper">
                 <span class="products-table__table-name-text">
                   Products
@@ -328,25 +314,55 @@ function getProductsTableHeadWrapperStrForDOM(tablesTitlesStr) {
           <tr
               class="products-table__product-specifications-row"
               id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}"
-            >${tablesTitlesStr}
+            >${getProductsTableHeadersStrForDOM()}
           </tr>`;
 }
 
-function getProductsTableBodyStrForDOM() {
-  let productTableBodyStr = "";
+function getProductsTableHeadersStrForDOM() {
+  return CONSTANTS.PRODUCTS_TABLE_COLUMNS.reduce(
+    (tablesHeadersStr, [columnName, columnType, alignType]) => {
+      const wrapperClassesStr =
+        alignType === "align-start"
+          ? "products-table__product-field-wrapper"
+          : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
 
+      tablesHeadersStr += `
+            <th class="products-table__product-field">
+              <div class="${wrapperClassesStr}">
+                <button
+                  class="${CONSTANTS.SORT_BTN_CLASS}"
+                  title="Sort"
+                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnName}"
+                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.KEBAB}="${columnType}"
+                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="default"
+                ></button>
+                <span class="products-table__product-field-name"
+                  >${columnName}</span
+                >
+              </div>
+            </th>
+            `;
+
+      return tablesHeadersStr;
+    },
+    ""
+  );
+}
+
+function getProductsTableBodyStrForDOM() {
   const filteredProducts = getCurrFilteredProductsList();
 
   if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY)) {
     filteredProducts.sort(getCompareProductsFunction());
   }
 
-  filteredProducts?.forEach((product) => {
-    productTableBodyStr += `
+  let productTableBodyStr = filteredProducts?.reduce((neededStr, product) => {
+    neededStr += `
       <tr class="product-table-item">
         ${getProductRowStrForDOM(product)}
       </tr>`;
-  });
+    return neededStr;
+  }, "");
 
   if (!productTableBodyStr) {
     productTableBodyStr = `
@@ -469,9 +485,12 @@ function onStoreCardClick(e) {
     currItemCard &&
     CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL in currItemCard.dataset
   ) {
-    updateAllStoreDetails(
+    localStorage.setItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID,
       currItemCard.dataset[CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL]
     );
+
+    updateAllStoreDetails();
   }
 }
 
@@ -662,4 +681,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setSearchStoresListeners();
 
   setStoresCardsClickListener();
+
+  renderProductsTableHead();
 });
