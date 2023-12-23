@@ -2,10 +2,69 @@
 
 import { storesData } from "../data/data.js";
 
+const CONSTANTS = {
+  STORES_LAYOUT_ID: "stores-list-layout",
+  NO_STORES_LAYOUT_ID: "no-stores-list-layout",
+  STORES_LIST_ITEM_CLASS: "stores-list-item",
+  STORES_SEARCH_ID: {
+    LINE: "stores-search-line",
+    BTN: "stores-search-btn",
+  },
+  STORE_DETAILS_WRAPPER_ID: "store-details-wrapper",
+  NO_STORE_DETAILS_WRAPPER_ID: "no-store-details-wrapper",
+  STORE_LABELS_ID: {
+    EMAIL: "store-email",
+    EST_DATE: "store-est-date",
+    PHONE: "store-phone",
+    FLOOR_AREA: "store-floor-area",
+    ADDRESS: "store-address",
+  },
+  PRODUCTS_AMOUNTS_ID: {
+    ALL: "all-prod-amount",
+    OK: "ok-prod-amount",
+    STORAGE: "storage-prod-amount",
+    OUT_OF_STOCK: "out-of-stock-prod-amount",
+  },
+  PRODUCTS_TABLE_ID: {
+    HEAD: "products-table-head",
+    HEAD_TITLES_WRAPPER: "product-table-titles-wrapper",
+    BODY: "products-table-body",
+  },
+  PRODUCTS_SEARCH_ID: {
+    LINE: "products-search-line",
+    BTN: "products-search-btn",
+  },
+  SORT_BTN_CLASS: "products-table__product-field-sort-btn",
+  LOCAL_STORAGE_ID: {
+    CURR_STORE_ID: "currStoreId",
+    CURR_COLUMNS_AMOUNT: "currTableColumnsAmount",
+    CURR_SORT_KEY: "currSortKey",
+    CURR_SORT_TYPE: "currSortType",
+    CURR_SORT_ORDER: "currSortOrder",
+  },
+  JS_CLASS: {
+    HIDDEN_ELEMENT: "js-hidden-element",
+    FLEX_ELEMENT: "js-flex-element",
+    SELECTED_ITEM: "js-selected-item",
+    ASC_SORT_BTN: "js-asc-sort-btn",
+    DESC_SORT_BTN: "js-desc-sort-btn",
+  },
+  DATA_ATTRIBUTE: {
+    STORE_ID: {
+      KEBAB: "store-id",
+      CAMEL: "storeId",
+    },
+  },
+};
+
 // Functions for updating UI
 function updateStoresList(stores) {
-  const storesListSection = document.querySelector("#stores-list-layout");
-  const currStoreId = localStorage.getItem("currStoreId");
+  const storesListSection = document.querySelector(
+    `#${CONSTANTS.STORES_LAYOUT_ID}`
+  );
+  const currStoreId = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
+  );
 
   updateNoStoresLayout(stores);
 
@@ -17,21 +76,25 @@ function updateStoresList(stores) {
 }
 
 function updateNoStoresLayout(stores) {
-  const noStoresLayout = document.querySelector("#no-stores-list-layout");
+  const noStoresLayout = document.querySelector(
+    `#${CONSTANTS.NO_STORES_LAYOUT_ID}`
+  );
 
   if (stores.length) {
-    noStoresLayout.classList.add("js-hidden-element");
+    noStoresLayout.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   } else {
-    noStoresLayout.classList.remove("js-hidden-element");
+    noStoresLayout.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   }
 }
 
 function updateAllStoreDetails(storeId) {
   const storeObj = getStoreObjById(storeId);
 
-  const productsTableHead = document.querySelector("#products-table-head");
+  const productsTableHead = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD}`
+  );
 
-  localStorage.setItem("currStoreId", storeId);
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID, storeId);
 
   clearSortFiltersFromLocalStorage();
 
@@ -55,38 +118,54 @@ function updateAllStoreDetails(storeId) {
 }
 
 function highlightActiveStoreCard(storeId) {
-  const storesListLayout = document.querySelector("#stores-list-layout");
+  const storesListLayout = document.querySelector(
+    `#${CONSTANTS.STORES_LAYOUT_ID}`
+  );
 
   storesListLayout
-    .querySelector(".js-selected-item")
-    ?.classList.remove("js-selected-item");
+    .querySelector(`.${CONSTANTS.JS_CLASS.SELECTED_ITEM}`)
+    ?.classList.remove(CONSTANTS.JS_CLASS.SELECTED_ITEM);
 
   storesListLayout
-    .querySelector(`[data-store-id="${storeId}"]`)
-    ?.classList.add("js-selected-item");
+    .querySelector(
+      `[data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${storeId}"]`
+    )
+    ?.classList.add(CONSTANTS.JS_CLASS.SELECTED_ITEM);
 }
 
 function updateStoreDetailsVisibility() {
-  const storeDetailsWrapper = document.querySelector("#store-details-wrapper");
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
   const noStoreDetailsWrapper = document.querySelector(
-    "#no-store-details-wrapper"
+    `#${CONSTANTS.NO_STORE_DETAILS_WRAPPER_ID}`
   );
 
-  if (localStorage.getItem("currStoreId")) {
-    storeDetailsWrapper.classList.add("js-flex-element");
-    noStoreDetailsWrapper.classList.add("js-hidden-element");
+  if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)) {
+    storeDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+    noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   } else {
-    storeDetailsWrapper.classList.remove("js-flex-element");
-    noStoreDetailsWrapper.classList.remoev("js-hidden-element");
+    storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+    noStoreDetailsWrapper.classList.remoev(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   }
 }
 
 function updateStoreContacts(store) {
-  const storeEmailField = document.querySelector("#store-email");
-  const storeEstDateField = document.querySelector("#store-est-date");
-  const storePhoneField = document.querySelector("#store-phone");
-  const storeFloorAreaField = document.querySelector("#store-floor-area");
-  const storeAddressField = document.querySelector("#store-address");
+  const storeEmailField = document.querySelector(
+    `#${CONSTANTS.STORE_LABELS_ID.EMAIL}`
+  );
+  const storeEstDateField = document.querySelector(
+    `#${CONSTANTS.STORE_LABELS_ID.EST_DATE}`
+  );
+  const storePhoneField = document.querySelector(
+    `#${CONSTANTS.STORE_LABELS_ID.PHONE}`
+  );
+  const storeFloorAreaField = document.querySelector(
+    `#${CONSTANTS.STORE_LABELS_ID.FLOOR_AREA}`
+  );
+  const storeAddressField = document.querySelector(
+    `#${CONSTANTS.STORE_LABELS_ID.ADDRESS}`
+  );
 
   storeEmailField.textContent = store.Email;
   storeEstDateField.textContent = new Date(
@@ -102,18 +181,21 @@ function updateStoreContacts(store) {
 }
 
 function setAllSortBtnsToDefault() {
-  const sortBtns = document.querySelectorAll(
-    ".products-table__product-field-sort-btn"
-  );
+  const sortBtns = document.querySelectorAll(`.${CONSTANTS.SORT_BTN_CLASS}`);
 
   sortBtns.forEach((btn) => {
-    btn.classList.remove("js-asc-sort-btn", "js-desc-sort-btn");
+    btn.classList.remove(
+      CONSTANTS.JS_CLASS.ASC_SORT_BTN,
+      CONSTANTS.JS_CLASS.DESC_SORT_BTN
+    );
     btn.dataset.sortState = "default";
   });
 }
 
 function updateProductsTableBody() {
-  const productsTableBody = document.querySelector("#products-table-body");
+  const productsTableBody = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+  );
 
   productsTableBody.innerHTML = getProductsTableBodyStrForDOM();
 }
@@ -125,11 +207,17 @@ function updateProductsFiltersAndTable() {
 }
 
 function updateProductsFilters() {
-  const prodAmountField = document.querySelector("#all-prod-amount");
-  const prodOkAmountField = document.querySelector("#ok-prod-amount");
-  const prodStorageAmountField = document.querySelector("#storage-prod-amount");
+  const prodAmountField = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
+  );
+  const prodOkAmountField = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OK}`
+  );
+  const prodStorageAmountField = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.STORAGE}`
+  );
   const prodOutOfStockAmountField = document.querySelector(
-    "#out-of-stock-prod-amount"
+    `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OUT_OF_STOCK}`
   );
 
   const amountsData = getStoreProductsAmounts();
@@ -146,20 +234,20 @@ function getStoresListStrForDOM(stores) {
 
   stores.forEach((store) => {
     storesListStr += `
-              <div class="stores-list-item" data-store-id="${store.id}">
-                  <div class="stores-list-item__name-address-wrapper">
-                      <h3 class="stores-list-item__name-headline">
+              <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${store.id}">
+                  <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-address-wrapper">
+                      <h3 class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-headline">
                           ${store.Name}
                       </h3>
-                      <span class="stores-list-item__address-text">
+                      <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__address-text">
                           ${store.Address}
                       </span>
                   </div>
-                  <div class="stores-list-item__area-data-wrapper">
-                      <span class="stores-list-item__area-number">
+                  <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-data-wrapper">
+                      <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-number">
                           ${store.FloorArea}
                       </span>
-                      <span class="stores-list-item__area-unit">sq.m</span>
+                      <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-unit">sq.m</span>
                   </div>
               </div>
               `;
@@ -185,7 +273,7 @@ function getProductsTableHeadStrForDOM(headerPairs) {
               <th class="products-table__product-field">
                 <div class="${wrapperClassesStr}">
                   <button
-                    class="products-table__product-field-sort-btn"
+                    class="${CONSTANTS.SORT_BTN_CLASS}"
                     title="Sort"
                     data-sort-key="${key}"
                     data-sort-type="${typeof value}"
@@ -200,7 +288,10 @@ function getProductsTableHeadStrForDOM(headerPairs) {
     }
   });
 
-  localStorage.setItem("currTableColumnsAmount", headersAmount);
+  localStorage.setItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT,
+    headersAmount
+  );
 
   return getProductsTableHeadWrapperStrForDOM(headersAmount, tablesHeadersStr);
 }
@@ -216,13 +307,13 @@ function getProductsTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
                   <input
                     type="search"
                     class="products-table__search-line"
-                    name="search-product-line"
+                    name="${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}"
                     placeholder="Enter value to search"
-                    id="search-product-line"
+                    id="${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}"
                   />
                   <button
                     class="products-table__search-btn"
-                    id="products-search-btn"
+                    id="${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}"
                     title="Search"
                   ></button>
                 </div>
@@ -231,7 +322,7 @@ function getProductsTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
           </tr>
           <tr
               class="products-table__product-specifications-row"
-              id="product-table-titles-wrapper"
+              id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}"
             >${tablesTitlesStr}
           </tr>`;
 }
@@ -241,7 +332,7 @@ function getProductsTableBodyStrForDOM() {
 
   const filteredProducts = getCurrFilteredProductsList();
 
-  if (localStorage.getItem("currSortKey")) {
+  if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY)) {
     filteredProducts.sort(getCompareProductsFunction());
   }
 
@@ -256,7 +347,7 @@ function getProductsTableBodyStrForDOM() {
     productTableBodyStr = `
       <tr class="product-table-empty-item">
         <td colspan="${localStorage.getItem(
-          "currTableColumnsAmount"
+          CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT
         )}" class="product-table-empty-item__no-data">
           No data
         </td>
@@ -338,8 +429,12 @@ function getProductStarsStrForDOM(product) {
 
 // Functions for setting listeners to UI elements
 function setSearchStoresListeners() {
-  const searchInput = document.querySelector("#search-store-line");
-  const searchBtn = document.querySelector("#stores-search-btn");
+  const searchInput = document.querySelector(
+    `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
+  );
+  const searchBtn = document.querySelector(
+    `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
+  );
 
   const filterAndUpdateStoresList = () => {
     const filteredStoresList = storesData.filter(
@@ -357,26 +452,33 @@ function setSearchStoresListeners() {
 }
 
 function setStoresCardsClickListener() {
-  const storesListSection = document.querySelector("#stores-list-layout");
+  const storesListSection = document.querySelector(
+    `#${CONSTANTS.STORES_LAYOUT_ID}`
+  );
 
   storesListSection.addEventListener("click", onStoreCardClick);
 }
 
 function onStoreCardClick(e) {
-  const currItemCard = e.target.closest(".stores-list-item");
+  const currItemCard = e.target.closest(`.${CONSTANTS.STORES_LIST_ITEM_CLASS}`);
 
-  if (currItemCard && "storeId" in currItemCard.dataset) {
-    updateAllStoreDetails(currItemCard.dataset.storeId);
+  if (
+    currItemCard &&
+    CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL in currItemCard.dataset
+  ) {
+    updateAllStoreDetails(
+      currItemCard.dataset[`${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL}`]
+    );
   }
 }
 
 function setSortBtnsListener() {
   const productTableTitlesWrapper = document.querySelector(
-    "#product-table-titles-wrapper"
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}`
   );
 
   productTableTitlesWrapper.addEventListener("click", (e) => {
-    if (e.target.classList.contains("products-table__product-field-sort-btn")) {
+    if (e.target.classList.contains(CONSTANTS.SORT_BTN_CLASS)) {
       const currSortBtn = e.target;
       const sortKey = currSortBtn.dataset.sortKey;
       const sortType = currSortBtn.dataset.sortType;
@@ -386,7 +488,7 @@ function setSortBtnsListener() {
           setAllSortBtnsToDefault();
 
           currSortBtn.dataset.sortState = "asc";
-          currSortBtn.classList.add("js-asc-sort-btn");
+          currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
 
           setSortFiltersToLocalStorage(sortType, sortKey, "asc");
 
@@ -395,8 +497,8 @@ function setSortBtnsListener() {
           break;
         case "asc":
           currSortBtn.dataset.sortState = "desc";
-          currSortBtn.classList.remove("js-asc-sort-btn");
-          currSortBtn.classList.add("js-desc-sort-btn");
+          currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
+          currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
           setSortFiltersToLocalStorage(sortType, sortKey, "desc");
 
@@ -405,7 +507,7 @@ function setSortBtnsListener() {
           break;
         case "desc":
           currSortBtn.dataset.sortState = "default";
-          currSortBtn.classList.remove("js-desc-sort-btn");
+          currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
           clearSortFiltersFromLocalStorage();
 
@@ -422,8 +524,12 @@ function setSortBtnsListener() {
 }
 
 function setSearchProductsListeners() {
-  const searchInput = document.querySelector("#search-product-line");
-  const searchBtn = document.querySelector("#products-search-btn");
+  const searchInput = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+  );
+  const searchBtn = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}`
+  );
 
   const filterAndUpdateProductsList = () => {
     updateProductsFiltersAndTable();
@@ -435,9 +541,14 @@ function setSearchProductsListeners() {
 
 // Other supporting functions
 function clearSortFiltersFromLocalStorage() {
-  localStorage.removeItem("currSortType");
-  localStorage.removeItem("currSortKey");
-  localStorage.removeItem("currSortOrder");
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
+}
+
+function clearCurrStoreFromLocalStorage() {
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT);
 }
 
 function getStoreObjById(storeId) {
@@ -445,15 +556,21 @@ function getStoreObjById(storeId) {
 }
 
 function setSortFiltersToLocalStorage(sortType, sortKey, sortOrder) {
-  localStorage.setItem("currSortType", sortType);
-  localStorage.setItem("currSortKey", sortKey);
-  localStorage.setItem("currSortOrder", sortOrder);
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE, sortType);
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY, sortKey);
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER, sortOrder);
 }
 
 function getCompareProductsFunction() {
-  const sortType = localStorage.getItem("currSortType");
-  const sortKey = localStorage.getItem("currSortKey");
-  const sortOrder = localStorage.getItem("currSortOrder");
+  const sortType = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE
+  );
+  const sortKey = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
+  );
+  const sortOrder = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
+  );
 
   return (prodA, prodB) => {
     if (sortOrder === "asc") {
@@ -469,8 +586,12 @@ function getCompareProductsFunction() {
 }
 
 function getCurrFilteredProductsList() {
-  const searchInput = document.querySelector("#search-product-line");
-  const currStore = getStoreObjById(localStorage.getItem("currStoreId"));
+  const searchInput = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+  );
+  const currStore = getStoreObjById(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  );
 
   return currStore.rel_Products?.filter(
     (product) =>
@@ -523,7 +644,7 @@ function getStoreProductsAmounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  localStorage.clear();
+  clearCurrStoreFromLocalStorage();
 
   updateStoresList(storesData);
 
