@@ -462,7 +462,11 @@ function getStructureForRatingStars(productRating) {
         } else {
           return neededStr + `<span class="empty-star"></span>`;
         }
-      }, "") + `<span class="right-arrow"></span>`
+      }, "") +
+    `<div class="arrow-cross-wrapper">
+        <span class="right-arrow"></span>
+        <span class="cross-btn"></span>
+    </div>`
   );
 }
 

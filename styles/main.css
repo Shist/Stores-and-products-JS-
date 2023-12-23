@@ -740,11 +740,31 @@
   background: url("../icons/icon-empty-star.svg") no-repeat center/contain;
 }
 
-.right-arrow {
+.arrow-cross-wrapper {
   margin-left: auto;
-  width: 20px;
-  height: 20px;
+  display: flex;
+  align-items: center;
+  column-gap: 2px;
+}
+
+.right-arrow {
+  width: 10px;
+  height: 10px;
   background: url("../icons/icon-arrow-right.svg") no-repeat center/contain;
+}
+
+.cross-btn {
+  margin-left: auto;
+  width: 25px;
+  height: 25px;
+  background: url("../icons/icon-cross.svg") no-repeat center/contain;
+}
+.cross-btn:hover {
+  background-color: #d9d9d9;
+}
+.cross-btn:active {
+  transition: none;
+  background: url("../icons/icon-cross-active.svg") no-repeat center/contain;
 }
 
 .product-table-item__standard-field-text {
