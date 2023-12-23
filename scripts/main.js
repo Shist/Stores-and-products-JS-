@@ -381,42 +381,23 @@ function getProductRowStrForDOM(product) {
     (productTableDataStr, [productKey, ,]) => {
       switch (productKey) {
         case "Name":
-          productTableDataStr += `
-            <td class="product-table-item__name">
-              <div class="product-table-item__name-num-wrapper">
-                <span class="product-table-item__name-text"
-                  >${product.Name}</span
-                >
-                <span class="product-table-item__num-text">${product.id}</span>
-              </div>
-            </td>`;
+          productTableDataStr += getTableStructureForNameField(
+            product.Name,
+            product.id
+          );
           break;
         case "Price":
-          productTableDataStr += `
-            <td class="product-table-item__price">
-              <div class="product-table-item__price-wrapper">
-                <span class="product-table-item__price-value">${product.Price}</span>
-                <span class="product-table-item__price-currency">USD</span>
-              </div>
-            </td>`;
+          productTableDataStr += getTableStructureForPriceField(product.Price);
           break;
         case "Rating":
-          productTableDataStr += `
-            <td class="product-table-item__rating">
-              <div class="product-table-item__stars-wrapper">
-                ${getProductStarsStrForDOM(product)}
-              </div>
-            </td>`;
+          productTableDataStr += getTableStructureForRatingField(
+            product.Rating
+          );
           break;
         default:
-          productTableDataStr += `
-              <td class="product-table-item__standard-field">
-                <span
-                  class="product-table-item__standard-field-text"
-                  title="${product[productKey]}"
-                  >${product[productKey]}</span
-                >
-              </td>`;
+          productTableDataStr += getTableStructureForStandardField(
+            product[productKey]
+          );
       }
       return productTableDataStr;
     },
@@ -424,12 +405,56 @@ function getProductRowStrForDOM(product) {
   );
 }
 
-function getProductStarsStrForDOM(product) {
+function getTableStructureForNameField(productName, productId) {
+  return `<td class="product-table-item__name">
+            <div class="product-table-item__name-num-wrapper">
+              <span class="product-table-item__name-text">
+                ${productName}
+              </span>
+              <span class="product-table-item__num-text">
+                ${productId}
+              </span>
+            </div>
+          </td>`;
+}
+
+function getTableStructureForPriceField(productPrice) {
+  return `<td class="product-table-item__price">
+            <div class="product-table-item__price-wrapper">
+              <span class="product-table-item__price-value">
+                ${productPrice}
+              </span>
+              <span class="product-table-item__price-currency">
+                USD
+              </span>
+            </div>
+          </td>`;
+}
+
+function getTableStructureForRatingField(productRating) {
+  return `<td class="product-table-item__rating">
+            <div class="product-table-item__stars-wrapper">
+              ${getProductStarsStrForDOM(productRating)}
+            </div>
+          </td>`;
+}
+
+function getTableStructureForStandardField(productField) {
+  return `<td class="product-table-item__standard-field">
+            <span
+            class="product-table-item__standard-field-text"
+            title="${productField}">
+              ${productField}
+            </span>
+          </td>`;
+}
+
+function getProductStarsStrForDOM(productRating) {
   return (
     Array(5)
       .fill()
       .reduce((neededStr, _, index) => {
-        if (index < product.Rating) {
+        if (index < productRating) {
           return neededStr + `<span class="yellow-star"></span>`;
         } else {
           return neededStr + `<span class="empty-star"></span>`;
