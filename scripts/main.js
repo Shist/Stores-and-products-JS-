@@ -230,30 +230,27 @@ function updateProductsFilters() {
 
 // Functions for preparing HTML structures for DOM
 function getStoresListStrForDOM(stores) {
-  let storesListStr = "";
-
-  stores.forEach((store) => {
-    storesListStr += `
-              <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${store.id}">
+  return stores.reduce((storesStr, nextStore) => {
+    storesStr += `
+              <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-address-wrapper">
                       <h3 class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-headline">
-                          ${store.Name}
+                          ${nextStore.Name}
                       </h3>
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__address-text">
-                          ${store.Address}
+                          ${nextStore.Address}
                       </span>
                   </div>
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-data-wrapper">
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-number">
-                          ${store.FloorArea}
+                          ${nextStore.FloorArea}
                       </span>
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-unit">sq.m</span>
                   </div>
               </div>
               `;
-  });
-
-  return storesListStr;
+    return storesStr;
+  }, "");
 }
 
 function getProductsTableHeadStrForDOM(headerPairs) {
