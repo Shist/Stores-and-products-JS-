@@ -351,18 +351,21 @@ function getProductsTableHeadersStrForDOM() {
 
 function getProductsTableBodyStrForDOM() {
   const filteredProducts = getCurrFilteredProductsList();
+  let productTableBodyStr = "";
 
   if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY)) {
     filteredProducts.sort(getCompareProductsFunction());
   }
 
-  let productTableBodyStr = filteredProducts?.reduce((neededStr, product) => {
-    neededStr += `
-      <tr class="product-table-item">
-        ${getProductRowStrForDOM(product)}
-      </tr>`;
-    return neededStr;
-  }, "");
+  if (Array.isArray(filteredProducts)) {
+    productTableBodyStr = filteredProducts?.reduce((neededStr, product) => {
+      neededStr += `
+        <tr class="product-table-item">
+          ${getProductRowStrForDOM(product)}
+        </tr>`;
+      return neededStr;
+    }, "");
+  }
 
   if (!productTableBodyStr) {
     productTableBodyStr = `
