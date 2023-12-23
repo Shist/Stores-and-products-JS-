@@ -377,12 +377,11 @@ function getProductsTableBodyStrForDOM() {
 }
 
 function getProductRowStrForDOM(product) {
-  let productTableDataStr = "";
-
-  Object.keys(product).forEach((productKey) => {
-    switch (productKey) {
-      case "Name":
-        productTableDataStr += `
+  return CONSTANTS.PRODUCTS_TABLE_COLUMNS.reduce(
+    (productTableDataStr, [productKey, ,]) => {
+      switch (productKey) {
+        case "Name":
+          productTableDataStr += `
             <td class="product-table-item__name">
               <div class="product-table-item__name-num-wrapper">
                 <span class="product-table-item__name-text"
@@ -391,30 +390,25 @@ function getProductRowStrForDOM(product) {
                 <span class="product-table-item__num-text">${product.id}</span>
               </div>
             </td>`;
-        break;
-      case "Price":
-        productTableDataStr += `
+          break;
+        case "Price":
+          productTableDataStr += `
             <td class="product-table-item__price">
               <div class="product-table-item__price-wrapper">
                 <span class="product-table-item__price-value">${product.Price}</span>
                 <span class="product-table-item__price-currency">USD</span>
               </div>
             </td>`;
-        break;
-      case "Rating":
-        productTableDataStr += `
+          break;
+        case "Rating":
+          productTableDataStr += `
             <td class="product-table-item__rating">
               <div class="product-table-item__stars-wrapper">
                 ${getProductStarsStrForDOM(product)}
               </div>
             </td>`;
-        break;
-      default:
-        if (
-          productKey !== "Photo" &&
-          productKey !== "Status" &&
-          productKey !== "id"
-        ) {
+          break;
+        default:
           productTableDataStr += `
               <td class="product-table-item__standard-field">
                 <span
@@ -423,11 +417,11 @@ function getProductRowStrForDOM(product) {
                   >${product[productKey]}</span
                 >
               </td>`;
-        }
-    }
-  });
-
-  return productTableDataStr;
+      }
+      return productTableDataStr;
+    },
+    ""
+  );
 }
 
 function getProductStarsStrForDOM(product) {
