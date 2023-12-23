@@ -425,19 +425,17 @@ function getProductRowStrForDOM(product) {
 }
 
 function getProductStarsStrForDOM(product) {
-  let productStarsStr = "";
-
-  for (let k = 0; k < 5; k++) {
-    if (k < product.Rating) {
-      productStarsStr += `<span class="yellow-star"></span>`;
-    } else {
-      productStarsStr += `<span class="empty-star"></span>`;
-    }
-  }
-
-  productStarsStr += `<span class="right-arrow"></span>`;
-
-  return productStarsStr;
+  return (
+    Array(5)
+      .fill()
+      .reduce((neededStr, _, index) => {
+        if (index < product.Rating) {
+          return neededStr + `<span class="yellow-star"></span>`;
+        } else {
+          return neededStr + `<span class="empty-star"></span>`;
+        }
+      }, "") + `<span class="right-arrow"></span>`
+  );
 }
 
 // Functions for setting listeners to UI elements
