@@ -5,10 +5,15 @@ import { storesData } from "../data/data.js";
 // Functions for updating UI
 function updateStoresList(stores) {
   const storesListSection = document.querySelector("#stores-list-layout");
+  const currStoreId = localStorage.getItem("currStoreId");
 
   updateNoStoresLayout(stores);
 
   storesListSection.innerHTML = getStoresListStrForDOM(stores);
+
+  if (currStoreId) {
+    highlightActiveStoreCard(currStoreId);
+  }
 }
 
 function updateNoStoresLayout(stores) {
@@ -518,6 +523,8 @@ function getStoreProductsAmounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  localStorage.clear();
+
   updateStoresList(storesData);
 
   setSearchStoresListeners();
