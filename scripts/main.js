@@ -339,8 +339,8 @@ function setSearchStoresListeners() {
   const filterAndUpdateStoresList = () => {
     const filteredStoresList = storesData.filter(
       (store) =>
-        store.Name.toLowerCase().includes(searchInput.value) ||
-        store.Address.toLowerCase().includes(searchInput.value) ||
+        store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+        store.Address.toLowerCase().includes(searchInput.value.toLowerCase()) ||
         store.FloorArea.toString().includes(searchInput.value)
     );
 
@@ -469,13 +469,19 @@ function getCurrFilteredProductsList() {
 
   return currStore.rel_Products?.filter(
     (product) =>
-      product.Name.toLowerCase().includes(searchInput.value) ||
+      product.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
       product.id.toString().includes(searchInput.value) ||
       product.Price.toString().includes(searchInput.value) ||
-      product.Specs.toLowerCase().includes(searchInput.value) ||
-      product.SupplierInfo.toLowerCase().includes(searchInput.value) ||
-      product["Country of origin"].toLowerCase().includes(searchInput.value) ||
-      product["Prod. company"].toLowerCase().includes(searchInput.value) ||
+      product.Specs.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+      product.SupplierInfo.toLowerCase().includes(
+        searchInput.value.toLowerCase()
+      ) ||
+      product["Country of origin"]
+        .toLowerCase()
+        .includes(searchInput.value.toLowerCase()) ||
+      product["Prod. company"]
+        .toLowerCase()
+        .includes(searchInput.value.toLowerCase()) ||
       product.Rating.toString().includes(searchInput.value)
   );
 }
