@@ -10,13 +10,7 @@ function updateStoresList(stores) {
 
   storesListSection.innerHTML = getStoresListStrForDOM(stores);
 
-  storesListSection.addEventListener("click", (e) => {
-    const currItemCard = e.target.closest(".stores-list-item");
-
-    if (currItemCard && "storeId" in currItemCard.dataset) {
-      updateAllStoreDetails(currItemCard.dataset.storeId);
-    }
-  });
+  storesListSection.addEventListener("click", onStoreCardClick);
 }
 
 function updateNoStoresLayout(stores) {
@@ -26,6 +20,14 @@ function updateNoStoresLayout(stores) {
     noStoresLayout.classList.add("js-hidden-element");
   } else {
     noStoresLayout.classList.remove("js-hidden-element");
+  }
+}
+
+function onStoreCardClick(e) {
+  const currItemCard = e.target.closest(".stores-list-item");
+
+  if (currItemCard && "storeId" in currItemCard.dataset) {
+    updateAllStoreDetails(currItemCard.dataset.storeId);
   }
 }
 
