@@ -84,7 +84,13 @@ function updateStoreContacts(store) {
   const storeAddressField = document.querySelector("#store-address");
 
   storeEmailField.textContent = store.Email;
-  storeEstDateField.textContent = transformDateFromISO(store.Established);
+  storeEstDateField.textContent = new Date(
+    store.Established
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
   storeAddressField.textContent = store.Address;
   storePhoneField.textContent = store.PhoneNumber;
   storeFloorAreaField.textContent = store.FloorArea;
@@ -431,33 +437,6 @@ function clearSortFiltersFromLocalStorage() {
 
 function getStoreObjById(storeId) {
   return storesData.find((nextStore) => nextStore.id.toString() === storeId);
-}
-
-function transformDateFromISO(dateISO) {
-  const inputDate = new Date(dateISO);
-
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const day = inputDate.getDate();
-  const month = months[inputDate.getMonth()];
-  const year = inputDate.getFullYear();
-
-  const formattedDate = `${month} ${day}, ${year}`;
-
-  return formattedDate;
 }
 
 function setSortFiltersToLocalStorage(sortType, sortKey, sortOrder) {
