@@ -475,11 +475,13 @@ function setSearchStoresListeners() {
     `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
   );
 
-  searchInput.addEventListener("search", onSearchStoresClick);
-  searchBtn.addEventListener("click", onSearchStoresClick);
+  searchInput.addEventListener("search", () =>
+    onSearchStoresClick(searchInput)
+  );
+  searchBtn.addEventListener("click", () => onSearchStoresClick(searchInput));
 }
 
-function onSearchStoresClick() {
+function onSearchStoresClick(searchInput) {
   const filteredStoresList = storesData.filter(
     (store) =>
       store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
