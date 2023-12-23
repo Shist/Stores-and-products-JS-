@@ -4,9 +4,9 @@ import { storesData } from "../data/data.js";
 
 // Functions for updating UI
 function updateStoresList(stores) {
-  updateNoStoresLayout(stores);
-
   const storesListSection = document.querySelector("#stores-list-layout");
+
+  updateNoStoresLayout(stores);
 
   storesListSection.innerHTML = getStoresListStrForDOM(stores);
 
@@ -30,6 +30,10 @@ function updateNoStoresLayout(stores) {
 }
 
 function updateAllStoreDetails(storeId) {
+  const storeObj = getStoreObjById(storeId);
+
+  const productsTableHead = document.querySelector("#products-table-head");
+
   localStorage.setItem("currStoreId", storeId);
 
   clearSortFiltersFromLocalStorage();
@@ -38,11 +42,7 @@ function updateAllStoreDetails(storeId) {
 
   updateStoreDetailsVisibility();
 
-  const storeObj = getStoreObjById(storeId);
-
   updateStoreContacts(storeObj);
-
-  const productsTableHead = document.querySelector("#products-table-head");
 
   if (storeObj.rel_Products?.length) {
     productsTableHead.innerHTML = getProductsTableHeadStrForDOM(
@@ -234,13 +234,13 @@ function getProductsTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
 }
 
 function getProductsTableBodyStrForDOM() {
+  let productTableBodyStr = "";
+
   const filteredProducts = getCurrFilteredProductsList();
 
   if (localStorage.getItem("currSortKey")) {
     filteredProducts.sort(getCompareProductsFunction());
   }
-
-  let productTableBodyStr = "";
 
   filteredProducts?.forEach((product) => {
     productTableBodyStr += `
