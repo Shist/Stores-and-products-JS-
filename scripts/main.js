@@ -30,6 +30,15 @@ const CONSTANTS = {
     HEAD_TITLES_WRAPPER: "product-table-titles-wrapper",
     BODY: "products-table-body",
   },
+  PRODUCTS_TABLE_COLUMNS: [
+    ["Name", "string", "align-start"],
+    ["Price", "number", "align-end"],
+    ["Specs", "string", "align-start"],
+    ["SupplierInfo", "string", "align-start"],
+    ["Country of origin", "string", "align-start"],
+    ["Prod. company", "string", "align-start"],
+    ["Rating", "number", "align-start"],
+  ],
   PRODUCTS_SEARCH_ID: {
     LINE: "products-search-line",
     BTN: "products-search-btn",
@@ -37,7 +46,6 @@ const CONSTANTS = {
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
   LOCAL_STORAGE_ID: {
     CURR_STORE_ID: "currStoreId",
-    CURR_COLUMNS_AMOUNT: "currTableColumnsAmount",
     CURR_SORT_KEY: "currSortKey",
     CURR_SORT_TYPE: "currSortType",
     CURR_SORT_ORDER: "currSortOrder",
@@ -53,6 +61,18 @@ const CONSTANTS = {
     STORE_ID: {
       KEBAB: "store-id",
       CAMEL: "storeId",
+    },
+    SORT_KEY: {
+      KEBAB: "sort-key",
+      CAMEL: "sortKey",
+    },
+    SORT_TYPE: {
+      KEBAB: "sort-type",
+      CAMEL: "sortType",
+    },
+    SORT_STATE: {
+      KEBAB: "sort-state",
+      CAMEL: "sortState",
     },
   },
 };
@@ -104,11 +124,7 @@ function updateAllStoreDetails(storeId) {
 
   updateStoreContacts(storeObj);
 
-  if (storeObj.rel_Products?.length) {
-    productsTableHead.innerHTML = getProductsTableHeadStrForDOM(
-      Object.entries(storeObj.rel_Products[0])
-    );
-  }
+  productsTableHead.innerHTML = getProductsTableHeadStrForDOM();
 
   setSortBtnsListener();
 
@@ -188,7 +204,7 @@ function setAllSortBtnsToDefault() {
       CONSTANTS.JS_CLASS.ASC_SORT_BTN,
       CONSTANTS.JS_CLASS.DESC_SORT_BTN
     );
-    btn.dataset.sortState = "default";
+    btn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "default";
   });
 }
 
@@ -253,18 +269,15 @@ function getStoresListStrForDOM(stores) {
   }, "");
 }
 
-function getProductsTableHeadStrForDOM(headerPairs) {
+function getProductsTableHeadStrForDOM() {
   let tablesHeadersStr = "";
-  let headersAmount = 0;
 
-  headerPairs.forEach(([key, value]) => {
-    if (key !== "Photo" && key !== "Status" && key !== "id") {
-      headersAmount++;
-
+  CONSTANTS.PRODUCTS_TABLE_COLUMNS.forEach(
+    ([columnName, columnType, alignType]) => {
       const wrapperClassesStr =
-        key === "Price"
-          ? "products-table__product-field-wrapper products-table__product-field-wrapper_end"
-          : "products-table__product-field-wrapper";
+        alignType === "align-start"
+          ? "products-table__product-field-wrapper"
+          : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
 
       tablesHeadersStr += `
               <th class="products-table__product-field">
@@ -272,30 +285,25 @@ function getProductsTableHeadStrForDOM(headerPairs) {
                   <button
                     class="${CONSTANTS.SORT_BTN_CLASS}"
                     title="Sort"
-                    data-sort-key="${key}"
-                    data-sort-type="${typeof value}"
-                    data-sort-state="default"
+                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnName}"
+                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.KEBAB}="${columnType}"
+                    data-${CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="default"
                   ></button>
                   <span class="products-table__product-field-name"
-                    >${key.toString()}</span
+                    >${columnName}</span
                   >
                 </div>
               </th>
               `;
     }
-  });
-
-  localStorage.setItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT,
-    headersAmount
   );
 
-  return getProductsTableHeadWrapperStrForDOM(headersAmount, tablesHeadersStr);
+  return getProductsTableHeadWrapperStrForDOM(tablesHeadersStr);
 }
 
-function getProductsTableHeadWrapperStrForDOM(titlesAmount, tablesTitlesStr) {
+function getProductsTableHeadWrapperStrForDOM(tablesTitlesStr) {
   return `<tr class="products-table__table-name-row">
-            <th colspan="${titlesAmount}" class="products-table__table-name-headline">
+            <th colspan="${CONSTANTS.PRODUCTS_TABLE_COLUMNS.length}" class="products-table__table-name-headline">
               <div class="product-table__name-search-wrapper">
                 <span class="products-table__table-name-text">
                   Products
@@ -343,9 +351,7 @@ function getProductsTableBodyStrForDOM() {
   if (!productTableBodyStr) {
     productTableBodyStr = `
       <tr class="product-table-empty-item">
-        <td colspan="${localStorage.getItem(
-          CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT
-        )}" class="product-table-empty-item__no-data">
+        <td colspan="${CONSTANTS.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
           No data
         </td>
       </tr>`;
@@ -464,7 +470,7 @@ function onStoreCardClick(e) {
     CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL in currItemCard.dataset
   ) {
     updateAllStoreDetails(
-      currItemCard.dataset[`${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL}`]
+      currItemCard.dataset[CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL]
     );
   }
 }
@@ -477,14 +483,17 @@ function setSortBtnsListener() {
   productTableTitlesWrapper.addEventListener("click", (e) => {
     if (e.target.classList.contains(CONSTANTS.SORT_BTN_CLASS)) {
       const currSortBtn = e.target;
-      const sortKey = currSortBtn.dataset.sortKey;
-      const sortType = currSortBtn.dataset.sortType;
+      const sortKey =
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
+      const sortType =
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.CAMEL];
 
-      switch (currSortBtn.dataset.sortState) {
+      switch (currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
         case "default":
           setAllSortBtnsToDefault();
 
-          currSortBtn.dataset.sortState = "asc";
+          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            "asc";
           currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
 
           setSortFiltersToLocalStorage(sortType, sortKey, "asc");
@@ -493,7 +502,8 @@ function setSortBtnsListener() {
 
           break;
         case "asc":
-          currSortBtn.dataset.sortState = "desc";
+          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            "desc";
           currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
           currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
@@ -503,7 +513,8 @@ function setSortBtnsListener() {
 
           break;
         case "desc":
-          currSortBtn.dataset.sortState = "default";
+          currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            "default";
           currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
           clearSortFiltersFromLocalStorage();
@@ -513,7 +524,11 @@ function setSortBtnsListener() {
           break;
         default:
           console.warn(
-            `One of sort buttons had unknown data-sort-state type: ${e.target.dataset.sortState}`
+            `One of sort buttons had unknown data-${
+              CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB
+            } type: ${
+              e.target.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]
+            }`
           );
       }
     }
@@ -543,9 +558,8 @@ function clearSortFiltersFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
 
-function clearCurrStoreFromLocalStorage() {
+function clearCurrStoreIdFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_COLUMNS_AMOUNT);
 }
 
 function getStoreObjById(storeId) {
@@ -641,7 +655,7 @@ function getStoreProductsAmounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  clearCurrStoreFromLocalStorage();
+  clearCurrStoreIdFromLocalStorage();
 
   updateStoresList(storesData);
 
