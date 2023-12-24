@@ -665,6 +665,12 @@ function clearSortFiltersFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
 
+function clearAllOldDataFromLocalStorage() {
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
+  clearSortFiltersFromLocalStorage();
+}
+
 function getCompareProductsFunction() {
   const sortType = localStorage.getItem(
     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE
@@ -763,7 +769,7 @@ function getCurrProductsAmounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  localStorage.clear();
+  clearAllOldDataFromLocalStorage();
 
   updateStoresList(storesData);
 
