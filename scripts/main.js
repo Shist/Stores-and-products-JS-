@@ -142,6 +142,8 @@ function updateAllStoreDetails() {
 }
 
 function setProductsTableHeadToDefault() {
+  setCurrFilterBtn(CONSTANTS.FILTER_ID.ALL);
+
   clearSortFiltersFromLocalStorage();
 
   setAllSortBtnsToDefault();
@@ -554,9 +556,6 @@ function onStoreCardClick(e) {
       CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID,
       currItemCard.dataset[CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL]
     );
-
-    setCurrFilterBtn(CONSTANTS.FILTER_ID.ALL);
-
     updateAllStoreDetails();
   }
 }
@@ -572,7 +571,11 @@ function setFiltersBtnsListener() {
 function onFilterBtnClick(e) {
   const newFilterBtn = e.target.closest(`.${CONSTANTS.FILTER_BTN_CLASS}`);
 
-  if (newFilterBtn) {
+  if (
+    newFilterBtn &&
+    newFilterBtn.id !==
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID)
+  ) {
     setCurrFilterBtn(newFilterBtn.id);
 
     updateProductsTableBody();
