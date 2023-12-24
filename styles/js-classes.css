@@ -17,6 +17,11 @@
   right: 0;
 }
 
+.js-filter-off {
+  background-color: #eff4f8;
+  border: 3px #eff4f8 solid;
+}
+
 .js-asc-sort-btn {
   background-image: url("../icons/sort-asc.svg");
   padding: 0;

@@ -19,6 +19,14 @@ const CONSTANTS = {
     FLOOR_AREA: "store-floor-area",
     ADDRESS: "store-address",
   },
+  FILTER_WRAPPER_ID: "filters-wrapper",
+  FILTER_BTN_CLASS: "products-filter-btn",
+  FILTER_ID: {
+    ALL: "filter-all",
+    OK: "filter-ok",
+    STORAGE: "filter-storage",
+    OUT_OF_STOCK: "filter-out-of-stock",
+  },
   PRODUCTS_AMOUNTS_ID: {
     ALL: "all-prod-amount",
     OK: "ok-prod-amount",
@@ -46,6 +54,7 @@ const CONSTANTS = {
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
   LOCAL_STORAGE_ID: {
     CURR_STORE_ID: "currStoreId",
+    CURR_FILTER_ID: "currFilterId",
     CURR_SORT_KEY: "currSortKey",
     CURR_SORT_TYPE: "currSortType",
     CURR_SORT_ORDER: "currSortOrder",
@@ -56,6 +65,7 @@ const CONSTANTS = {
     SELECTED_ITEM: "js-selected-item",
     ASC_SORT_BTN: "js-asc-sort-btn",
     DESC_SORT_BTN: "js-desc-sort-btn",
+    FILTER_OFF: "js-filter-off",
   },
   DATA_ATTRIBUTE: {
     STORE_ID: {
@@ -224,6 +234,24 @@ function setProductSearchLineToDefault() {
   document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`).value = "";
 }
 
+function setCurrFilterBtn(filterBtnId) {
+  const filterToOff = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
+  );
+
+  if (filterToOff) {
+    document
+      .querySelector(`#${filterToOff}`)
+      ?.classList.add(CONSTANTS.JS_CLASS.FILTER_OFF);
+  }
+
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID, filterBtnId);
+
+  document
+    .querySelector(`#${filterBtnId}`)
+    ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
+}
+
 function updateProductsFiltersAndTableBody() {
   updateProductsFilters();
 
@@ -350,21 +378,32 @@ function getStructureForTableHeaders() {
 }
 
 function getStructureForTableBody() {
-  const filteredProducts = getCurrFilteredProductsList();
+  const currStore = getStoreObjById(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  );
+  const foundFilteredProducts = getProductsListAfterFilter(
+    getProductsListAfterSearch(currStore.rel_Products)
+  );
+  const currSortKey = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
+  );
   let productTableBodyStr = "";
 
-  if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY)) {
-    filteredProducts.sort(getCompareProductsFunction());
+  if (currSortKey) {
+    foundFilteredProducts.sort(getCompareProductsFunction());
   }
 
-  if (Array.isArray(filteredProducts)) {
-    productTableBodyStr = filteredProducts?.reduce((neededStr, product) => {
-      neededStr += `
+  if (Array.isArray(foundFilteredProducts)) {
+    productTableBodyStr = foundFilteredProducts?.reduce(
+      (neededStr, product) => {
+        neededStr += `
         <tr class="product-table-item">
           ${getStructureForTableRow(product)}
         </tr>`;
-      return neededStr;
-    }, "");
+        return neededStr;
+      },
+      ""
+    );
   }
 
   if (!productTableBodyStr) {
@@ -516,7 +555,27 @@ function onStoreCardClick(e) {
       currItemCard.dataset[CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL]
     );
 
+    setCurrFilterBtn(CONSTANTS.FILTER_ID.ALL);
+
     updateAllStoreDetails();
+  }
+}
+
+function setFiltersBtnsListener() {
+  const filtersWrapper = document.querySelector(
+    `#${CONSTANTS.FILTER_WRAPPER_ID}`
+  );
+
+  filtersWrapper.addEventListener("click", onFilterBtnClick);
+}
+
+function onFilterBtnClick(e) {
+  const newFilterBtn = e.target.closest(`.${CONSTANTS.FILTER_BTN_CLASS}`);
+
+  if (newFilterBtn) {
+    setCurrFilterBtn(newFilterBtn.id);
+
+    updateProductsTableBody();
   }
 }
 
@@ -606,10 +665,6 @@ function clearSortFiltersFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
 
-function clearCurrStoreIdFromLocalStorage() {
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
-}
-
 function getCompareProductsFunction() {
   const sortType = localStorage.getItem(
     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE
@@ -634,15 +689,12 @@ function getCompareProductsFunction() {
   };
 }
 
-function getCurrFilteredProductsList() {
+function getProductsListAfterSearch(productsList) {
   const searchInput = document.querySelector(
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
   );
-  const currStore = getStoreObjById(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  );
 
-  return currStore.rel_Products?.filter(
+  return productsList?.filter(
     (product) =>
       product.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
       product.id.toString().includes(searchInput.value) ||
@@ -661,8 +713,26 @@ function getCurrFilteredProductsList() {
   );
 }
 
+function getProductsListAfterFilter(productsList) {
+  const currFilter = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
+  );
+
+  if (currFilter && currFilter !== "filter-all") {
+    return productsList?.filter((product) => {
+      return CONSTANTS.FILTER_ID[product.Status] === currFilter;
+    });
+  } else {
+    return productsList;
+  }
+}
+
 function getCurrProductsAmounts() {
-  const products = getCurrFilteredProductsList();
+  const products = getProductsListAfterSearch(
+    getStoreObjById(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+    ).rel_Products
+  );
 
   const amountsData = {
     all: products.length,
@@ -693,13 +763,15 @@ function getCurrProductsAmounts() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  clearCurrStoreIdFromLocalStorage();
+  localStorage.clear();
 
   updateStoresList(storesData);
 
   setSearchStoresListeners();
 
   setStoresCardsClickListener();
+
+  setFiltersBtnsListener();
 
   renderProductsTableHead();
 });

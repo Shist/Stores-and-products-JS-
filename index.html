@@ -120,10 +120,14 @@
               <button class="small-btn small-btn_pin" title="Pin"></button>
             </div>
           </div>
-          <div class="store-details-header__filters-wrapper">
+          <div
+            class="store-details-header__filters-wrapper"
+            id="filters-wrapper"
+          >
             <button
-              class="store-details-header__all-products-btn"
+              class="products-filter-btn store-details-header__all-products-btn js-filter-off"
               title="All products"
+              id="filter-all"
             >
               <span
                 class="store-details-header__products-amount"
@@ -133,8 +137,9 @@
             </button>
             <div class="vertical-gray-separator"></div>
             <button
-              class="products-filter-btn products-filter-btn_ok"
+              class="products-filter-btn products-spec-filter-btn products-spec-filter-btn_ok js-filter-off"
               title="Ok products"
+              id="filter-ok"
             >
               <span
                 class="products-filter-btn__icon products-filter-btn__icon_ok"
@@ -146,8 +151,9 @@
               ></span>
             </button>
             <button
-              class="products-filter-btn products-filter-btn_warn"
+              class="products-filter-btn products-spec-filter-btn products-spec-filter-btn_warn js-filter-off"
               title="Storage products"
+              id="filter-storage"
             >
               <span
                 class="products-filter-btn__icon products-filter-btn__icon_warning"
@@ -159,8 +165,9 @@
               ></span>
             </button>
             <button
-              class="products-filter-btn products-filter-btn_error"
+              class="products-filter-btn products-spec-filter-btn products-spec-filter-btn_error js-filter-off"
               title="Out of stock products"
+              id="filter-out-of-stock"
             >
               <span
                 class="products-filter-btn__icon products-filter-btn__icon_error"
