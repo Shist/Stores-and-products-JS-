@@ -917,15 +917,15 @@
 }
 
 .modal-window__headline {
+  padding: 10px;
   font-size: 20px;
   color: gray;
-  padding: 10px;
-  border-bottom: 1px gray solid;
+  border-bottom: 1px #e6e6e6 solid;
   text-align: center;
 }
 
 .modal-window__form {
-  padding: 10px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   row-gap: 15px;
@@ -934,7 +934,7 @@
 .modal-window__field-wrapper {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 8px;
 }
 
 .modal-window__field-label {
@@ -949,16 +949,42 @@
 .modal-window__field-input {
   font-size: 18px;
 }
+.modal-window__field-input::placeholder {
+  font-style: italic;
+}
 
 .modal-window__btns-wrapper {
+  padding: 10px;
   display: flex;
   justify-content: flex-end;
   column-gap: 5px;
-  padding: 10px;
+  background-color: #2c3744;
 }
 
-.modal-window__btn-create {
+.modal-window__btn {
+  padding: 5px;
+  font-size: 18px;
+  max-width: 80px;
+  width: 100%;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  transition: 0.3s;
 }
-
-.modal-window__btn-cancel {
+.modal-window__btn:hover {
+  background-color: #3c6d9c;
+  border: 3px #3c6d9c solid;
+}
+.modal-window__btn:active {
+  transition: none;
+  color: #3c6d9c;
+  background-color: #8fbfeb;
+}
+.modal-window__btn_confirm {
+  background-color: #4c89c3;
+  border: 3px #4c89c3 solid;
+}
+.modal-window__btn_cancel {
+  background-color: #2c3744;
+  border: 3px #2c3744 solid;
 }

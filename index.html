@@ -273,7 +273,9 @@
           <div class="modal-window__field-wrapper">
             <span class="modal-window__field-label">Established:</span>
             <input
-              type="date"
+              type="text"
+              onfocus="(this.type='date')"
+              onblur="(this.type='text')"
               class="modal-window__field-input"
               placeholder="MMM d, y"
               name="Store established date"
@@ -292,8 +294,12 @@
           </div>
         </form>
         <div class="modal-window__btns-wrapper">
-          <button class="modal-window__btn-create">Create</button>
-          <button class="modal-window__btn-cancel">Cancel</button>
+          <button class="modal-window__btn modal-window__btn_confirm">
+            Create
+          </button>
+          <button class="modal-window__btn modal-window__btn_cancel">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
