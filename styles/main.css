@@ -916,6 +916,12 @@
   background-color: white;
   border-radius: 5px;
 }
+@media (max-height: 700px) {
+  .modal-window__wrapper {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
 
 .modal-window__headline {
   padding: 10px;
