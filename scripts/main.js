@@ -3,6 +3,10 @@
 import { storesData } from "../data/data.js";
 
 const CONSTANTS = {
+  SERVER: {
+    API_PREFIX: "http://localhost:3000/api",
+    STORES: "/Stores",
+  },
   STORES_LAYOUT_ID: "stores-list-layout",
   NO_STORES_LAYOUT_ID: "no-stores-list-layout",
   STORES_LIST_ITEM_CLASS: "stores-list-item",
@@ -527,14 +531,30 @@ function setSearchStoresListeners() {
 }
 
 function onSearchStoresClick(searchInput) {
-  const filteredStoresList = storesData.filter(
-    (store) =>
-      store.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-      store.Address.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-      store.FloorArea.toString().includes(searchInput.value)
-  );
+  // TODO: Make some busy indicator here
+  fetchStoresList()
+    .then((storesList) => {
+      if (Array.isArray(storesList)) {
+        const filteredStoresList = storesList.filter(
+          (store) =>
+            store.Name.toLowerCase().includes(
+              searchInput.value.toLowerCase()
+            ) ||
+            store.Address.toLowerCase().includes(
+              searchInput.value.toLowerCase()
+            ) ||
+            store.FloorArea.toString().includes(searchInput.value)
+        );
 
-  updateStoresList(filteredStoresList);
+        updateStoresList(filteredStoresList);
+      }
+    })
+    .catch((error) => {
+      // TODO: Show something to user on UI
+    })
+    .finally(() => {
+      // TODO: Hide busy indicator
+    });
 }
 
 function setStoresCardsClickListener() {
@@ -771,10 +791,47 @@ function getCurrProductsAmounts() {
   return amountsData;
 }
 
+// Functions for working with server
+async function fetchData(endPoint) {
+  try {
+    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`);
+
+    if (!response.ok) {
+      throw new Error(`Response status - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error while fetching data: ${error.message}`);
+    throw new Error(error.message);
+  }
+}
+
+async function fetchStoresList() {
+  try {
+    return await fetchData(CONSTANTS.SERVER.STORES);
+  } catch (error) {
+    console.error(`Error while fetching stores list: ${error.message}`);
+    throw new Error(`Error while fetching stores list: ${error.message}`);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   clearAllOldDataFromLocalStorage();
 
-  updateStoresList(storesData);
+  // TODO: Make some busy indicator here
+  fetchStoresList()
+    .then((storesList) => {
+      if (Array.isArray(storesList)) {
+        updateStoresList(storesList);
+      }
+    })
+    .catch((error) => {
+      // TODO: Show something to user on UI
+    })
+    .finally(() => {
+      // TODO: Hide busy indicator
+    });
 
   setSearchStoresListeners();
 
