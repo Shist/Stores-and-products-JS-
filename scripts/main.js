@@ -95,7 +95,7 @@ const CONSTANTS = {
 
 // Functions for updating UI
 // In this function the storesList is already searched (if needed)
-function updateStoresList(readyStoresList) {
+function updateStoresList(storesList) {
   const storesListSection = document.querySelector(
     `#${CONSTANTS.STORES_LAYOUT_ID}`
   );
@@ -103,21 +103,22 @@ function updateStoresList(readyStoresList) {
     CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
   );
 
-  updateNoStoresLayout(readyStoresList);
+  updateNoStoresLayout(storesList);
 
-  storesListSection.innerHTML = getStructureForStoresList(readyStoresList);
+  storesListSection.innerHTML = getStructureForStoresList(storesList);
 
   if (currStoreId) {
     highlightActiveStoreCard(currStoreId);
   }
 }
 
-function updateNoStoresLayout(readyStoresList) {
+// In this function the storesList is already searched (if needed)
+function updateNoStoresLayout(storesList) {
   const noStoresLayout = document.querySelector(
     `#${CONSTANTS.NO_STORES_LAYOUT_ID}`
   );
 
-  if (readyStoresList.length) {
+  if (storesList.length) {
     noStoresLayout.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   } else {
     noStoresLayout.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
@@ -286,7 +287,8 @@ function setCurrFilterBtn(filterBtnId) {
     ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
 }
 
-function updateProductsFilters(readyProductsList) {
+// In this function the productsList is already searched (if needed), but never filtered or sorted
+function updateProductsFilters(productsList) {
   const prodAmountField = document.querySelector(
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
   );
@@ -300,7 +302,7 @@ function updateProductsFilters(readyProductsList) {
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OUT_OF_STOCK}`
   );
 
-  const amountsData = getCurrProductsAmounts(readyProductsList);
+  const amountsData = getCurrProductsAmounts(productsList);
 
   prodAmountField.textContent = amountsData.all;
   prodOkAmountField.textContent = amountsData.ok;
@@ -309,17 +311,18 @@ function updateProductsFilters(readyProductsList) {
 }
 
 // In this function the productsList is already filtered / sorted / searched (if needed)
-function updateProductsTableBody(readyProductsList) {
+function updateProductsTableBody(productsList) {
   const productsTableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
-  productsTableBody.innerHTML = getStructureForTableBody(readyProductsList);
+  productsTableBody.innerHTML = getStructureForTableBody(productsList);
 }
 
 // Functions for preparing HTML structures for DOM
-function getStructureForStoresList(readyStoresList) {
-  return readyStoresList.reduce((storesStr, nextStore) => {
+// In this function the storesList is already searched (if needed)
+function getStructureForStoresList(storesList) {
+  return storesList.reduce((storesStr, nextStore) => {
     storesStr += `
               <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-address-wrapper">
@@ -405,11 +408,12 @@ function getStructureForTableHeaders() {
   );
 }
 
-function getStructureForTableBody(readyProductsList) {
+// In this function the productsList is already filtered / sorted / searched (if needed)
+function getStructureForTableBody(productsList) {
   let productTableBodyStr = "";
 
-  if (Array.isArray(readyProductsList)) {
-    productTableBodyStr = readyProductsList?.reduce((neededStr, product) => {
+  if (Array.isArray(productsList)) {
+    productTableBodyStr = productsList?.reduce((neededStr, product) => {
       neededStr += `
         <tr class="product-table-item">
           ${getStructureForTableRow(product)}
@@ -802,12 +806,13 @@ function clearAllOldDataFromLocalStorage() {
   clearSortFiltersFromLocalStorage();
 }
 
-function getProductsListAfterSearch(filteredSortedProductsList) {
+// In this function the productsList is already filtered / sorted (if needed), but not searched yet
+function getProductsListAfterSearch(productsList) {
   const searchInput = document.querySelector(
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
   );
 
-  return filteredSortedProductsList?.filter(
+  return productsList?.filter(
     (product) =>
       product.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
       product.id.toString().includes(searchInput.value) ||
@@ -824,15 +829,16 @@ function getProductsListAfterSearch(filteredSortedProductsList) {
   );
 }
 
-function getCurrProductsAmounts(readyProductsList) {
+// In this function the productsList is already searched (if needed), but never filtered or sorted
+function getCurrProductsAmounts(productsList) {
   const amountsData = {
-    all: readyProductsList.length,
+    all: productsList.length,
     ok: 0,
     storage: 0,
     outOfStock: 0,
   };
 
-  readyProductsList.forEach((product) => {
+  productsList.forEach((product) => {
     switch (product.Status) {
       case "OK":
         amountsData.ok++;
