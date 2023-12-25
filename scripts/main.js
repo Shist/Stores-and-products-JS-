@@ -946,7 +946,7 @@ async function fetchSpecificProductsListByStoreId(storeId) {
       );
     }
 
-    if (sortKey && sortKey !== "DEFAULT") {
+    if (sortKey && sortOrder && sortOrder !== CONSTANTS.SORT_ORDER.DEFAULT) {
       filters.push(
         CONSTANTS.SERVER.PRODUCTS_ORDER.replace("{sortKey}", sortKey).replace(
           "{sortOrder}",
