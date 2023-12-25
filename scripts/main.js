@@ -146,12 +146,14 @@ function updateAllStoreDetails() {
   updateStoreContacts();
 
   // TODO: Make some busy indicator here
-  fetchProductsListByStoreId(
+  fetchAllProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
-    .then((productsList) => {
-      if (Array.isArray(productsList)) {
-        updateProductsFiltersAndTableBody(productsList);
+    .then((allProductsList) => {
+      if (Array.isArray(allProductsList)) {
+        updateProductsFilters(allProductsList);
+
+        updateProductsTableBody(allProductsList);
       }
     })
     .catch((error) => {
@@ -284,13 +286,6 @@ function setCurrFilterBtn(filterBtnId) {
     ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
 }
 
-// In this function the productsList is already filtered / sorted / searched (if needed)
-function updateProductsFiltersAndTableBody(readyProductsList) {
-  updateProductsFilters(readyProductsList);
-
-  updateProductsTableBody(readyProductsList);
-}
-
 function updateProductsFilters(readyProductsList) {
   const prodAmountField = document.querySelector(
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
@@ -313,6 +308,7 @@ function updateProductsFilters(readyProductsList) {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
+// In this function the productsList is already filtered / sorted / searched (if needed)
 function updateProductsTableBody(readyProductsList) {
   const productsTableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
@@ -609,7 +605,7 @@ function onFilterBtnClick(e) {
     setCurrFilterBtn(newFilterBtn.id);
 
     // TODO: Make some busy indicator here
-    fetchProductsListByStoreId(
+    fetchSpecificProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
     )
       .then((filteredSortedProductsList) => {
@@ -655,7 +651,7 @@ function onSortBtnClick(e) {
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
 
         // TODO: Make some busy indicator here
-        fetchProductsListByStoreId(
+        fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((filteredSortedProductsList) => {
@@ -684,7 +680,7 @@ function onSortBtnClick(e) {
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
 
         // TODO: Make some busy indicator here
-        fetchProductsListByStoreId(
+        fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((filteredSortedProductsList) => {
@@ -712,7 +708,7 @@ function onSortBtnClick(e) {
         clearSortFiltersFromLocalStorage();
 
         // TODO: Make some busy indicator here
-        fetchProductsListByStoreId(
+        fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((filteredSortedProductsList) => {
@@ -757,19 +753,30 @@ function setSearchProductsListeners() {
 }
 
 function onSearchProductsClick() {
-  // TODO: Make some busy indicator here
-  fetchProductsListByStoreId(
+  const allProductsPromise = fetchAllProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  )
-    .then((filteredSortedProductsList) => {
-      if (Array.isArray(filteredSortedProductsList)) {
-        const readyProductsList = getProductsListAfterSearch(
-          filteredSortedProductsList
-        );
+  ).then((allProductsList) => {
+    if (Array.isArray(allProductsList)) {
+      const readyProductsList = getProductsListAfterSearch(allProductsList);
 
-        updateProductsFiltersAndTableBody(readyProductsList);
-      }
-    })
+      updateProductsFilters(readyProductsList);
+    }
+  });
+
+  const specificProductsPromise = fetchSpecificProductsListByStoreId(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  ).then((filteredSortedProductsList) => {
+    if (Array.isArray(filteredSortedProductsList)) {
+      const readyProductsList = getProductsListAfterSearch(
+        filteredSortedProductsList
+      );
+
+      updateProductsTableBody(readyProductsList);
+    }
+  });
+
+  // TODO: Make some busy indicator here
+  Promise.all([allProductsPromise, specificProductsPromise])
     .catch((error) => {
       // TODO: Show something to user on UI
     })
@@ -898,7 +905,22 @@ async function fetchStoreById(storeId) {
   }
 }
 
-async function fetchProductsListByStoreId(storeId) {
+async function fetchAllProductsListByStoreId(storeId) {
+  try {
+    return await fetchData(
+      CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace("{storeId}", storeId)
+    );
+  } catch (error) {
+    console.error(
+      `Error while fetching all products list with id=${storeId} : ${error.message}`
+    );
+    throw new Error(
+      `Error while fetching all products list with id=${storeId} : ${error.message}`
+    );
+  }
+}
+
+async function fetchSpecificProductsListByStoreId(storeId) {
   try {
     let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
       "{storeId}",
@@ -937,15 +959,13 @@ async function fetchProductsListByStoreId(storeId) {
       neededURL += `?filter={${filters.join(",")}}`;
     }
 
-    console.log(`neededURL: ${neededURL}`);
-
     return await fetchData(neededURL);
   } catch (error) {
     console.error(
-      `Error while fetching products list of store with id=${storeId} : ${error.message}`
+      `Error while fetching specific products list of store with id=${storeId} : ${error.message}`
     );
     throw new Error(
-      `Error while fetching products list of store with id=${storeId} : ${error.message}`
+      `Error while fetching specific products list of store with id=${storeId} : ${error.message}`
     );
   }
 }
