@@ -1,11 +1,13 @@
 "use strict";
 
-import { storesData } from "../data/data.js";
-
 const CONSTANTS = {
   SERVER: {
     API_PREFIX: "http://localhost:3000/api",
     STORES: "/Stores",
+    STORE_BY_ID: "/Stores/{storeId}",
+    PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
+    PRODUCTS_FILTER: `"where":{"Status":"{filterType}"}`,
+    PRODUCTS_ORDER: `"order":"{sortKey} {sortOrder}"`,
   },
   STORES_LAYOUT_ID: "stores-list-layout",
   NO_STORES_LAYOUT_ID: "no-stores-list-layout",
@@ -43,24 +45,28 @@ const CONSTANTS = {
     BODY: "products-table-body",
   },
   PRODUCTS_TABLE_COLUMNS: [
-    ["Name", "string", "align-start"],
-    ["Price", "number", "align-end"],
-    ["Specs", "string", "align-start"],
-    ["SupplierInfo", "string", "align-start"],
-    ["Country of origin", "string", "align-start"],
-    ["Prod. company", "string", "align-start"],
-    ["Rating", "number", "align-start"],
+    ["Name", "Name", "align-start"],
+    ["Price", "Price", "align-end"],
+    ["Specs", "Specs", "align-start"],
+    ["SupplierInfo", "SupplierInfo", "align-start"],
+    ["MadeIn", "Country of origin", "align-start"],
+    ["ProductionCompanyName", "Prod. company", "align-start"],
+    ["Rating", "Rating", "align-start"],
   ],
   PRODUCTS_SEARCH_ID: {
     LINE: "products-search-line",
     BTN: "products-search-btn",
   },
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
+  SORT_ORDER: {
+    ASC: "asc",
+    DESC: "desc",
+    DEFAULT: "default",
+  },
   LOCAL_STORAGE_ID: {
     CURR_STORE_ID: "currStoreId",
     CURR_FILTER_ID: "currFilterId",
     CURR_SORT_KEY: "currSortKey",
-    CURR_SORT_TYPE: "currSortType",
     CURR_SORT_ORDER: "currSortOrder",
   },
   JS_CLASS: {
@@ -80,10 +86,6 @@ const CONSTANTS = {
       KEBAB: "sort-key",
       CAMEL: "sortKey",
     },
-    SORT_TYPE: {
-      KEBAB: "sort-type",
-      CAMEL: "sortType",
-    },
     SORT_STATE: {
       KEBAB: "sort-state",
       CAMEL: "sortState",
@@ -92,7 +94,8 @@ const CONSTANTS = {
 };
 
 // Functions for updating UI
-function updateStoresList(stores) {
+// In this function the storesList is already searched (if needed)
+function updateStoresList(readyStoresList) {
   const storesListSection = document.querySelector(
     `#${CONSTANTS.STORES_LAYOUT_ID}`
   );
@@ -100,21 +103,21 @@ function updateStoresList(stores) {
     CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
   );
 
-  updateNoStoresLayout(stores);
+  updateNoStoresLayout(readyStoresList);
 
-  storesListSection.innerHTML = getStructureForStoresList(stores);
+  storesListSection.innerHTML = getStructureForStoresList(readyStoresList);
 
   if (currStoreId) {
     highlightActiveStoreCard(currStoreId);
   }
 }
 
-function updateNoStoresLayout(stores) {
+function updateNoStoresLayout(readyStoresList) {
   const noStoresLayout = document.querySelector(
     `#${CONSTANTS.NO_STORES_LAYOUT_ID}`
   );
 
-  if (stores.length) {
+  if (readyStoresList.length) {
     noStoresLayout.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   } else {
     noStoresLayout.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
@@ -142,7 +145,21 @@ function updateAllStoreDetails() {
 
   updateStoreContacts();
 
-  updateProductsFiltersAndTableBody();
+  // TODO: Make some busy indicator here
+  fetchProductsListByStoreId(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  )
+    .then((productsList) => {
+      if (Array.isArray(productsList)) {
+        updateProductsFiltersAndTableBody(productsList);
+      }
+    })
+    .catch((error) => {
+      // TODO: Show something to user on UI
+    })
+    .finally(() => {
+      // TODO: Hide busy indicator
+    });
 }
 
 function setProductsTableHeadToDefault() {
@@ -191,37 +208,45 @@ function updateStoreDetailsVisibility() {
 }
 
 function updateStoreContacts() {
-  const store = getStoreObjById(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  );
+  // TODO: Make some busy indicator here
+  fetchStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
+    .then((store) => {
+      if (store) {
+        const storeEmailField = document.querySelector(
+          `#${CONSTANTS.STORE_LABELS_ID.EMAIL}`
+        );
+        const storeEstDateField = document.querySelector(
+          `#${CONSTANTS.STORE_LABELS_ID.EST_DATE}`
+        );
+        const storePhoneField = document.querySelector(
+          `#${CONSTANTS.STORE_LABELS_ID.PHONE}`
+        );
+        const storeFloorAreaField = document.querySelector(
+          `#${CONSTANTS.STORE_LABELS_ID.FLOOR_AREA}`
+        );
+        const storeAddressField = document.querySelector(
+          `#${CONSTANTS.STORE_LABELS_ID.ADDRESS}`
+        );
 
-  const storeEmailField = document.querySelector(
-    `#${CONSTANTS.STORE_LABELS_ID.EMAIL}`
-  );
-  const storeEstDateField = document.querySelector(
-    `#${CONSTANTS.STORE_LABELS_ID.EST_DATE}`
-  );
-  const storePhoneField = document.querySelector(
-    `#${CONSTANTS.STORE_LABELS_ID.PHONE}`
-  );
-  const storeFloorAreaField = document.querySelector(
-    `#${CONSTANTS.STORE_LABELS_ID.FLOOR_AREA}`
-  );
-  const storeAddressField = document.querySelector(
-    `#${CONSTANTS.STORE_LABELS_ID.ADDRESS}`
-  );
-
-  storeEmailField.textContent = store.Email;
-  storeEstDateField.textContent = new Date(
-    store.Established
-  ).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  storeAddressField.textContent = store.Address;
-  storePhoneField.textContent = store.PhoneNumber;
-  storeFloorAreaField.textContent = store.FloorArea;
+        storeEmailField.textContent = store.Email;
+        storeEstDateField.textContent = new Date(
+          store.Established
+        ).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        storeAddressField.textContent = store.Address;
+        storePhoneField.textContent = store.PhoneNumber;
+        storeFloorAreaField.textContent = store.FloorArea;
+      }
+    })
+    .catch((error) => {
+      // TODO: Show something to user on UI
+    })
+    .finally(() => {
+      // TODO: Hide busy indicator
+    });
 }
 
 function setAllSortBtnsToDefault() {
@@ -232,7 +257,8 @@ function setAllSortBtnsToDefault() {
       CONSTANTS.JS_CLASS.ASC_SORT_BTN,
       CONSTANTS.JS_CLASS.DESC_SORT_BTN
     );
-    btn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "default";
+    btn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      CONSTANTS.SORT_ORDER.DEFAULT;
   });
 }
 
@@ -258,13 +284,14 @@ function setCurrFilterBtn(filterBtnId) {
     ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
 }
 
-function updateProductsFiltersAndTableBody() {
-  updateProductsFilters();
+// In this function the productsList is already filtered / sorted / searched (if needed)
+function updateProductsFiltersAndTableBody(readyProductsList) {
+  updateProductsFilters(readyProductsList);
 
-  updateProductsTableBody();
+  updateProductsTableBody(readyProductsList);
 }
 
-function updateProductsFilters() {
+function updateProductsFilters(readyProductsList) {
   const prodAmountField = document.querySelector(
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
   );
@@ -278,7 +305,7 @@ function updateProductsFilters() {
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OUT_OF_STOCK}`
   );
 
-  const amountsData = getCurrProductsAmounts();
+  const amountsData = getCurrProductsAmounts(readyProductsList);
 
   prodAmountField.textContent = amountsData.all;
   prodOkAmountField.textContent = amountsData.ok;
@@ -286,17 +313,17 @@ function updateProductsFilters() {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
-function updateProductsTableBody() {
+function updateProductsTableBody(readyProductsList) {
   const productsTableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
-  productsTableBody.innerHTML = getStructureForTableBody();
+  productsTableBody.innerHTML = getStructureForTableBody(readyProductsList);
 }
 
 // Functions for preparing HTML structures for DOM
-function getStructureForStoresList(stores) {
-  return stores.reduce((storesStr, nextStore) => {
+function getStructureForStoresList(readyStoresList) {
+  return readyStoresList.reduce((storesStr, nextStore) => {
     storesStr += `
               <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-address-wrapper">
@@ -354,7 +381,7 @@ function getStructureForTableHead() {
 
 function getStructureForTableHeaders() {
   return CONSTANTS.PRODUCTS_TABLE_COLUMNS.reduce(
-    (tablesHeadersStr, [columnName, columnType, alignType]) => {
+    (tablesHeadersStr, [columnKey, columnName, alignType]) => {
       const wrapperClassesStr =
         alignType === "align-start"
           ? "products-table__product-field-wrapper"
@@ -366,9 +393,8 @@ function getStructureForTableHeaders() {
                 <button
                   class="${CONSTANTS.SORT_BTN_CLASS}"
                   title="Sort"
-                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnName}"
-                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.KEBAB}="${columnType}"
-                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="default"
+                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnKey}"
+                  data-${CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="${CONSTANTS.SORT_ORDER.DEFAULT}"
                 ></button>
                 <span class="products-table__product-field-name"
                   >${columnName}</span
@@ -383,33 +409,17 @@ function getStructureForTableHeaders() {
   );
 }
 
-function getStructureForTableBody() {
-  const currStore = getStoreObjById(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  );
-  const foundFilteredProducts = getProductsListAfterFilter(
-    getProductsListAfterSearch(currStore.rel_Products)
-  );
-  const currSortKey = localStorage.getItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
-  );
+function getStructureForTableBody(readyProductsList) {
   let productTableBodyStr = "";
 
-  if (currSortKey) {
-    foundFilteredProducts.sort(getCompareProductsFunction());
-  }
-
-  if (Array.isArray(foundFilteredProducts)) {
-    productTableBodyStr = foundFilteredProducts?.reduce(
-      (neededStr, product) => {
-        neededStr += `
+  if (Array.isArray(readyProductsList)) {
+    productTableBodyStr = readyProductsList?.reduce((neededStr, product) => {
+      neededStr += `
         <tr class="product-table-item">
           ${getStructureForTableRow(product)}
         </tr>`;
-        return neededStr;
-      },
-      ""
-    );
+      return neededStr;
+    }, "");
   }
 
   if (!productTableBodyStr) {
@@ -535,7 +545,7 @@ function onSearchStoresClick(searchInput) {
   fetchStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
-        const filteredStoresList = storesList.filter(
+        const readyStoresList = storesList.filter(
           (store) =>
             store.Name.toLowerCase().includes(
               searchInput.value.toLowerCase()
@@ -546,7 +556,7 @@ function onSearchStoresClick(searchInput) {
             store.FloorArea.toString().includes(searchInput.value)
         );
 
-        updateStoresList(filteredStoresList);
+        updateStoresList(readyStoresList);
       }
     })
     .catch((error) => {
@@ -598,7 +608,25 @@ function onFilterBtnClick(e) {
   ) {
     setCurrFilterBtn(newFilterBtn.id);
 
-    updateProductsTableBody();
+    // TODO: Make some busy indicator here
+    fetchProductsListByStoreId(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+    )
+      .then((filteredSortedProductsList) => {
+        if (Array.isArray(filteredSortedProductsList)) {
+          const readyProductsList = getProductsListAfterSearch(
+            filteredSortedProductsList
+          );
+
+          updateProductsTableBody(readyProductsList);
+        }
+      })
+      .catch((error) => {
+        // TODO: Show something to user on UI
+      })
+      .finally(() => {
+        // TODO: Hide busy indicator
+      });
   }
 }
 
@@ -615,36 +643,93 @@ function onSortBtnClick(e) {
     const currSortBtn = e.target;
     const sortKey =
       currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
-    const sortType =
-      currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_TYPE.CAMEL];
 
     switch (currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
-      case "default":
+      case CONSTANTS.SORT_ORDER.DEFAULT:
         setAllSortBtnsToDefault();
 
-        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "asc";
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+          CONSTANTS.SORT_ORDER.ASC;
         currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
 
-        setSortFiltersToLocalStorage(sortType, sortKey, "asc");
-        updateProductsTableBody();
+        setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
+
+        // TODO: Make some busy indicator here
+        fetchProductsListByStoreId(
+          localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+        )
+          .then((filteredSortedProductsList) => {
+            if (Array.isArray(filteredSortedProductsList)) {
+              const readyProductsList = getProductsListAfterSearch(
+                filteredSortedProductsList
+              );
+
+              updateProductsTableBody(readyProductsList);
+            }
+          })
+          .catch((error) => {
+            // TODO: Show something to user on UI
+          })
+          .finally(() => {
+            // TODO: Hide busy indicator
+          });
 
         break;
-      case "asc":
-        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = "desc";
+      case CONSTANTS.SORT_ORDER.ASC:
+        currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+          CONSTANTS.SORT_ORDER.DESC;
         currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
         currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
-        setSortFiltersToLocalStorage(sortType, sortKey, "desc");
-        updateProductsTableBody();
+        setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
+
+        // TODO: Make some busy indicator here
+        fetchProductsListByStoreId(
+          localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+        )
+          .then((filteredSortedProductsList) => {
+            if (Array.isArray(filteredSortedProductsList)) {
+              const readyProductsList = getProductsListAfterSearch(
+                filteredSortedProductsList
+              );
+
+              updateProductsTableBody(readyProductsList);
+            }
+          })
+          .catch((error) => {
+            // TODO: Show something to user on UI
+          })
+          .finally(() => {
+            // TODO: Hide busy indicator
+          });
 
         break;
-      case "desc":
+      case CONSTANTS.SORT_ORDER.DESC:
         currSortBtn.dataset[CONSTANTS.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-          "default";
+          CONSTANTS.SORT_ORDER.DEFAULT;
         currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
         clearSortFiltersFromLocalStorage();
-        updateProductsTableBody();
+
+        // TODO: Make some busy indicator here
+        fetchProductsListByStoreId(
+          localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+        )
+          .then((filteredSortedProductsList) => {
+            if (Array.isArray(filteredSortedProductsList)) {
+              const readyProductsList = getProductsListAfterSearch(
+                filteredSortedProductsList
+              );
+
+              updateProductsTableBody(readyProductsList);
+            }
+          })
+          .catch((error) => {
+            // TODO: Show something to user on UI
+          })
+          .finally(() => {
+            // TODO: Hide busy indicator
+          });
 
         break;
       default:
@@ -667,23 +752,39 @@ function setSearchProductsListeners() {
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}`
   );
 
-  searchInput.addEventListener("search", updateProductsFiltersAndTableBody);
-  searchBtn.addEventListener("click", updateProductsFiltersAndTableBody);
+  searchInput.addEventListener("search", onSearchProductsClick);
+  searchBtn.addEventListener("click", onSearchProductsClick);
+}
+
+function onSearchProductsClick() {
+  // TODO: Make some busy indicator here
+  fetchProductsListByStoreId(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+  )
+    .then((filteredSortedProductsList) => {
+      if (Array.isArray(filteredSortedProductsList)) {
+        const readyProductsList = getProductsListAfterSearch(
+          filteredSortedProductsList
+        );
+
+        updateProductsFiltersAndTableBody(readyProductsList);
+      }
+    })
+    .catch((error) => {
+      // TODO: Show something to user on UI
+    })
+    .finally(() => {
+      // TODO: Hide busy indicator
+    });
 }
 
 // Other supporting functions
-function getStoreObjById(storeId) {
-  return storesData.find((nextStore) => nextStore.id.toString() === storeId);
-}
-
-function setSortFiltersToLocalStorage(sortType, sortKey, sortOrder) {
-  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE, sortType);
+function setSortFiltersToLocalStorage(sortKey, sortOrder) {
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY, sortKey);
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER, sortOrder);
 }
 
 function clearSortFiltersFromLocalStorage() {
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
@@ -694,36 +795,12 @@ function clearAllOldDataFromLocalStorage() {
   clearSortFiltersFromLocalStorage();
 }
 
-function getCompareProductsFunction() {
-  const sortType = localStorage.getItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_TYPE
-  );
-  const sortKey = localStorage.getItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
-  );
-  const sortOrder = localStorage.getItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
-  );
-
-  return (prodA, prodB) => {
-    if (sortOrder === "asc") {
-      return sortType === "number"
-        ? prodA[sortKey] - prodB[sortKey]
-        : prodA[sortKey].localeCompare(prodB[sortKey]);
-    } else {
-      return sortType === "number"
-        ? prodB[sortKey] - prodA[sortKey]
-        : prodB[sortKey].localeCompare(prodA[sortKey]);
-    }
-  };
-}
-
-function getProductsListAfterSearch(productsList) {
+function getProductsListAfterSearch(filteredSortedProductsList) {
   const searchInput = document.querySelector(
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
   );
 
-  return productsList?.filter(
+  return filteredSortedProductsList?.filter(
     (product) =>
       product.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
       product.id.toString().includes(searchInput.value) ||
@@ -732,45 +809,23 @@ function getProductsListAfterSearch(productsList) {
       product.SupplierInfo.toLowerCase().includes(
         searchInput.value.toLowerCase()
       ) ||
-      product["Country of origin"]
-        .toLowerCase()
-        .includes(searchInput.value.toLowerCase()) ||
-      product["Prod. company"]
-        .toLowerCase()
-        .includes(searchInput.value.toLowerCase()) ||
+      product.MadeIn.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+      product.ProductionCompanyName.toLowerCase().includes(
+        searchInput.value.toLowerCase()
+      ) ||
       product.Rating.toString().includes(searchInput.value)
   );
 }
 
-function getProductsListAfterFilter(productsList) {
-  const currFilter = localStorage.getItem(
-    CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
-  );
-
-  if (currFilter && currFilter !== "filter-all") {
-    return productsList?.filter((product) => {
-      return CONSTANTS.FILTER_ID[product.Status] === currFilter;
-    });
-  } else {
-    return productsList;
-  }
-}
-
-function getCurrProductsAmounts() {
-  const products = getProductsListAfterSearch(
-    getStoreObjById(
-      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-    ).rel_Products
-  );
-
+function getCurrProductsAmounts(readyProductsList) {
   const amountsData = {
-    all: products.length,
+    all: readyProductsList.length,
     ok: 0,
     storage: 0,
     outOfStock: 0,
   };
 
-  products.forEach((product) => {
+  readyProductsList.forEach((product) => {
     switch (product.Status) {
       case "OK":
         amountsData.ok++;
@@ -789,6 +844,18 @@ function getCurrProductsAmounts() {
   });
 
   return amountsData;
+}
+
+function getFilterTypeByFilterId(filterId) {
+  return Object.keys(CONSTANTS.FILTER_ID).find(
+    (filterType) => CONSTANTS.FILTER_ID[filterType] === filterId
+  );
+}
+
+function getOrderTypeByOrderAttribute(orderAttribute) {
+  return Object.keys(CONSTANTS.SORT_ORDER).find(
+    (orderType) => CONSTANTS.SORT_ORDER[orderType] === orderAttribute
+  );
 }
 
 // Functions for working with server
@@ -813,6 +880,73 @@ async function fetchStoresList() {
   } catch (error) {
     console.error(`Error while fetching stores list: ${error.message}`);
     throw new Error(`Error while fetching stores list: ${error.message}`);
+  }
+}
+
+async function fetchStoreById(storeId) {
+  try {
+    return await fetchData(
+      CONSTANTS.SERVER.STORE_BY_ID.replace("{storeId}", storeId)
+    );
+  } catch (error) {
+    console.error(
+      `Error while fetching store with id=${storeId} : ${error.message}`
+    );
+    throw new Error(
+      `Error while fetching store with id=${storeId} : ${error.message}`
+    );
+  }
+}
+
+async function fetchProductsListByStoreId(storeId) {
+  try {
+    let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
+      "{storeId}",
+      storeId
+    );
+    const filterId = localStorage.getItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
+    );
+    const sortKey = localStorage.getItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
+    );
+    const sortOrder = localStorage.getItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
+    );
+    const filters = [];
+
+    if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
+      filters.push(
+        CONSTANTS.SERVER.PRODUCTS_FILTER.replace(
+          "{filterType}",
+          getFilterTypeByFilterId(filterId)
+        )
+      );
+    }
+
+    if (sortKey && sortKey !== "DEFAULT") {
+      filters.push(
+        CONSTANTS.SERVER.PRODUCTS_ORDER.replace("{sortKey}", sortKey).replace(
+          "{sortOrder}",
+          getOrderTypeByOrderAttribute(sortOrder)
+        )
+      );
+    }
+
+    if (filters.length) {
+      neededURL += `?filter={${filters.join(",")}}`;
+    }
+
+    console.log(`neededURL: ${neededURL}`);
+
+    return await fetchData(neededURL);
+  } catch (error) {
+    console.error(
+      `Error while fetching products list of store with id=${storeId} : ${error.message}`
+    );
+    throw new Error(
+      `Error while fetching products list of store with id=${storeId} : ${error.message}`
+    );
   }
 }
 
