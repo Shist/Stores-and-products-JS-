@@ -13,7 +13,7 @@
   <body>
     <div class="global-wrapper">
       <aside class="stores-list-wrapper">
-        <header class="stores-list-header">
+        <header class="stores-list-header" id="stores-list-header">
           <h1 class="stores-list-header__main-headline">Stores list</h1>
           <div class="stores-list-header__search-wrapper">
             <input
@@ -38,7 +38,7 @@
             <button class="small-btn small-btn_pin" title="Pin"></button>
           </div>
         </header>
-        <div class="stores-list-section">
+        <div class="stores-list-section" id="stores-list-section">
           <div
             class="stores-list-section__main-layout"
             id="stores-list-layout"
@@ -66,10 +66,13 @@
         </footer>
       </aside>
       <div class="store-details-wrapper" id="store-details-wrapper">
-        <header class="store-details-header">
+        <header class="store-details-header" id="store-details-header">
           <div class="store-details-header__store-info-wrapper">
             <h2 class="store-details-header__main-headline">Store Details</h2>
-            <div class="store-details-header__description-wrapper">
+            <div
+              class="store-details-header__description-wrapper"
+              id="store-details-description-wrapper"
+            >
               <div class="store-details-header__field-wrapper">
                 <span class="store-details-header__field-label">Email:</span>
                 <span
@@ -181,7 +184,10 @@
           </div>
         </header>
         <main class="store-details-section">
-          <div class="store-details-section__table-wrapper">
+          <div
+            class="store-details-section__table-wrapper"
+            id="products-table-wrapper"
+          >
             <table class="products-table">
               <thead
                 class="products-table__head"

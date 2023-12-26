@@ -9,6 +9,14 @@ const CONSTANTS = {
     PRODUCTS_FILTER: `"where":{"Status":"{filterType}"}`,
     PRODUCTS_ORDER: `"order":"{sortKey} {sortOrder}"`,
   },
+  SPINNERS_ID: {
+    STORES_LIST: "stores-list-spinner",
+    STORE_DETAILS_DESCRIPTION: "store-details-description-spinner",
+    PRODUCTS_AMOUNTS: "products-amounts-spinner",
+    PRODUCTS_LIST: "products-list-spinner",
+  },
+  STORES_LIST_HEADER_ID: "stores-list-header",
+  STORES_LIST_SECTION_ID: "stores-list-section",
   STORES_LAYOUT_ID: "stores-list-layout",
   NO_STORES_LAYOUT_ID: "no-stores-list-layout",
   STORES_LIST_ITEM_CLASS: "stores-list-item",
@@ -16,8 +24,10 @@ const CONSTANTS = {
     LINE: "stores-search-line",
     BTN: "stores-search-btn",
   },
+  STORE_DETAILS_HEADER_ID: "store-details-header",
   STORE_DETAILS_WRAPPER_ID: "store-details-wrapper",
   NO_STORE_DETAILS_WRAPPER_ID: "no-store-details-wrapper",
+  STORE_DETAILS_DESCRIPTION_WRAPPER_ID: "store-details-description-wrapper",
   STORE_LABELS_ID: {
     EMAIL: "store-email",
     EST_DATE: "store-est-date",
@@ -40,8 +50,10 @@ const CONSTANTS = {
     OUT_OF_STOCK: "out-of-stock-prod-amount",
   },
   PRODUCTS_TABLE_ID: {
+    TABLE_WRAPPER: "products-table-wrapper",
     HEAD: "products-table-head",
-    HEAD_TITLES_WRAPPER: "product-table-titles-wrapper",
+    HEAD_NAME: "product-table-name-wrapper",
+    HEAD_TITLES: "product-table-titles-wrapper",
     BODY: "products-table-body",
   },
   PRODUCTS_TABLE_COLUMNS: [
@@ -89,6 +101,10 @@ const CONSTANTS = {
     SORT_STATE: {
       KEBAB: "sort-state",
       CAMEL: "sortState",
+    },
+    SPINNER_INIT_HEIGHT: {
+      KEBAB: "init-height",
+      CAMEL: "initHeight",
     },
   },
 };
@@ -144,9 +160,10 @@ function updateAllStoreDetails() {
 
   updateStoreDetailsVisibility();
 
-  updateStoreContacts();
+  updateStoreDescription();
 
-  // TODO: Make some busy indicator here
+  setProductsAmountSpinner();
+  setProductsListSpinner();
   fetchAllProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
@@ -161,7 +178,8 @@ function updateAllStoreDetails() {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      // TODO: Hide busy indicator
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
@@ -210,8 +228,8 @@ function updateStoreDetailsVisibility() {
   }
 }
 
-function updateStoreContacts() {
-  // TODO: Make some busy indicator here
+function updateStoreDescription() {
+  setStoreDetailsSpinner();
   fetchStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then((store) => {
       if (store) {
@@ -248,7 +266,7 @@ function updateStoreContacts() {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      // TODO: Hide busy indicator
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORE_DETAILS_DESCRIPTION);
     });
 }
 
@@ -319,6 +337,177 @@ function updateProductsTableBody(productsList) {
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
 }
 
+function setStoresListSpinner() {
+  const storesListHeader = document.querySelector(
+    `#${CONSTANTS.STORES_LIST_HEADER_ID}`
+  );
+  const storesListSection = document.querySelector(
+    `#${CONSTANTS.STORES_LIST_SECTION_ID}`
+  );
+
+  storesListSection.insertAdjacentHTML(
+    "afterbegin",
+    getSpinnerStructure(
+      CONSTANTS.SPINNERS_ID.STORES_LIST,
+      "Updating stores list...",
+      storesListSection.offsetWidth,
+      window.innerHeight - storesListHeader.offsetHeight,
+      "white"
+    )
+  );
+}
+
+function setStoreDetailsSpinner() {
+  const storesDetailsDescriptionWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_DESCRIPTION_WRAPPER_ID}`
+  );
+
+  storesDetailsDescriptionWrapper.insertAdjacentHTML(
+    "afterbegin",
+    getSpinnerStructure(
+      CONSTANTS.SPINNERS_ID.STORE_DETAILS_DESCRIPTION,
+      "Updating store description...",
+      storesDetailsDescriptionWrapper.offsetWidth,
+      storesDetailsDescriptionWrapper.offsetHeight,
+      "#eff4f8"
+    )
+  );
+}
+
+function setProductsAmountSpinner() {
+  const filtersWrapper = document.querySelector(
+    `#${CONSTANTS.FILTER_WRAPPER_ID}`
+  );
+  const filtersWrapperComputedStyle = getComputedStyle(filtersWrapper);
+  const targetWidth =
+    filtersWrapper.offsetWidth -
+    parseFloat(filtersWrapperComputedStyle.paddingLeft) -
+    parseFloat(filtersWrapperComputedStyle.paddingRight);
+
+  filtersWrapper.insertAdjacentHTML(
+    "afterbegin",
+    getSpinnerStructure(
+      CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
+      "Updating products amounts...",
+      targetWidth,
+      filtersWrapper.offsetHeight,
+      "#eff4f8"
+    )
+  );
+}
+
+function setProductsListSpinner() {
+  const tableBody = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+  );
+
+  const offsetObj = getTopOffsetForProductListSpinner();
+
+  const targetHeight = window.innerHeight - offsetObj.wholeOffset;
+
+  tableBody.insertAdjacentHTML(
+    "afterbegin",
+    getSpinnerStructure(
+      CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
+      "Updating products list...",
+      tableBody.offsetWidth,
+      targetHeight,
+      "white"
+    )
+  );
+
+  resizeAndMoveProductsListSpinner();
+
+  setProductsListSpinnerResizeListener();
+}
+
+function getTopOffsetForProductListSpinner() {
+  const storeDetailsHeader = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_HEADER_ID}`
+  );
+  const tableWrapperComputedStyle = getComputedStyle(
+    document.querySelector(`#${CONSTANTS.PRODUCTS_TABLE_ID.TABLE_WRAPPER}`)
+  );
+  const tableHeadName = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_NAME}`
+  );
+  const tableHeadTitles = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES}`
+  );
+
+  return {
+    wholeOffset:
+      storeDetailsHeader.offsetHeight +
+      parseFloat(tableWrapperComputedStyle.paddingTop) +
+      tableHeadName.offsetHeight +
+      tableHeadTitles.offsetHeight,
+    tableWrapperPaddingOffset: parseFloat(tableWrapperComputedStyle.paddingTop),
+    tableHeadNameOffset: tableHeadName.offsetHeight,
+  };
+}
+
+function resizeAndMoveProductsListSpinner() {
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
+  const productsListSpinner = document.querySelector(
+    `#${CONSTANTS.SPINNERS_ID.PRODUCTS_LIST}`
+  );
+
+  if (productsListSpinner) {
+    let offsetDiff = storeDetailsWrapper.scrollTop;
+    const spinnerInitHeight =
+      +productsListSpinner.dataset[
+        CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
+      ];
+    const offsetObj = getTopOffsetForProductListSpinner();
+    const maxOffsetDiff =
+      offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
+
+    if (offsetDiff > maxOffsetDiff) {
+      offsetDiff = maxOffsetDiff;
+    }
+    productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
+    productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
+  }
+}
+
+function setProductsListSpinnerResizeListener() {
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
+  console.log("Scroll listener created");
+
+  storeDetailsWrapper.addEventListener(
+    "scroll",
+    resizeAndMoveProductsListSpinner
+  );
+}
+
+function removeProductsListSpinnerResizeListener() {
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
+  console.log("Scroll listener removed");
+
+  storeDetailsWrapper.removeEventListener(
+    "scroll",
+    resizeAndMoveProductsListSpinner
+  );
+}
+
+function removeSpinnerById(spinnerId) {
+  const spinnerToRemove = document.querySelector(`#${spinnerId}`);
+
+  if (spinnerId === CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) {
+    removeProductsListSpinnerResizeListener();
+  }
+
+  if (spinnerToRemove) {
+    spinnerToRemove.remove();
+  }
+}
+
 // Functions for preparing HTML structures for DOM
 // In this function the storesList is already searched (if needed)
 function getStructureForStoresList(storesList) {
@@ -346,7 +535,8 @@ function getStructureForStoresList(storesList) {
 }
 
 function getStructureForTableHead() {
-  return `<tr class="products-table__table-name-row">
+  return `<tr class="products-table__table-name-row"
+          id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_NAME}">
             <th colspan="${
               CONSTANTS.PRODUCTS_TABLE_COLUMNS.length
             }" class="products-table__table-name-headline">
@@ -371,9 +561,8 @@ function getStructureForTableHead() {
               </div>
             </th>
           </tr>
-          <tr
-              class="products-table__product-specifications-row"
-              id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}"
+          <tr class="products-table__product-specifications-row"
+          id="${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES}"
             >${getStructureForTableHeaders()}
           </tr>`;
 }
@@ -525,6 +714,27 @@ function getStructureForRatingStars(productRating) {
   );
 }
 
+function getSpinnerStructure(
+  spinnerId,
+  targetText,
+  targetWidth,
+  targetHeight,
+  targetBgColor
+) {
+  return `<div class="stores-list-section__loading-data-layout" id="${spinnerId}"
+          style="width:${targetWidth}px;height:${targetHeight}px;background-color:${targetBgColor}"
+          data-${CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB}="${targetHeight}">
+            <span class="stores-list-section__loading-data-text"
+              >${targetText}</span
+            >
+            <div class="loading-spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
+          </div>`;
+}
+
 // Functions for setting listeners to UI elements
 function setSearchStoresListeners() {
   const searchInput = document.querySelector(
@@ -541,7 +751,7 @@ function setSearchStoresListeners() {
 }
 
 function onSearchStoresClick(searchInput) {
-  // TODO: Make some busy indicator here
+  setStoresListSpinner();
   fetchStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
@@ -563,7 +773,7 @@ function onSearchStoresClick(searchInput) {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      // TODO: Hide busy indicator
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 }
 
@@ -608,7 +818,7 @@ function onFilterBtnClick(e) {
   ) {
     setCurrFilterBtn(newFilterBtn.id);
 
-    // TODO: Make some busy indicator here
+    setProductsListSpinner();
     fetchSpecificProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
     )
@@ -625,14 +835,14 @@ function onFilterBtnClick(e) {
         // TODO: Show something to user on UI
       })
       .finally(() => {
-        // TODO: Hide busy indicator
+        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
       });
   }
 }
 
 function setSortBtnsListener() {
   const productTableTitlesWrapper = document.querySelector(
-    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES_WRAPPER}`
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES}`
   );
 
   productTableTitlesWrapper.addEventListener("click", onSortBtnClick);
@@ -654,7 +864,7 @@ function onSortBtnClick(e) {
 
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
 
-        // TODO: Make some busy indicator here
+        setProductsListSpinner();
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -671,7 +881,7 @@ function onSortBtnClick(e) {
             // TODO: Show something to user on UI
           })
           .finally(() => {
-            // TODO: Hide busy indicator
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -683,7 +893,7 @@ function onSortBtnClick(e) {
 
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
 
-        // TODO: Make some busy indicator here
+        setProductsListSpinner();
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -700,7 +910,7 @@ function onSortBtnClick(e) {
             // TODO: Show something to user on UI
           })
           .finally(() => {
-            // TODO: Hide busy indicator
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -711,7 +921,7 @@ function onSortBtnClick(e) {
 
         clearSortFiltersFromLocalStorage();
 
-        // TODO: Make some busy indicator here
+        setProductsListSpinner();
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -728,7 +938,7 @@ function onSortBtnClick(e) {
             // TODO: Show something to user on UI
           })
           .finally(() => {
-            // TODO: Hide busy indicator
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -779,13 +989,15 @@ function onSearchProductsClick() {
     }
   });
 
-  // TODO: Make some busy indicator here
+  setProductsAmountSpinner();
+  setProductsListSpinner();
   Promise.all([allProductsPromise, specificProductsPromise])
     .catch((error) => {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      // TODO: Hide busy indicator
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
@@ -979,7 +1191,7 @@ async function fetchSpecificProductsListByStoreId(storeId) {
 document.addEventListener("DOMContentLoaded", () => {
   clearAllOldDataFromLocalStorage();
 
-  // TODO: Make some busy indicator here
+  setStoresListSpinner();
   fetchStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
@@ -990,7 +1202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      // TODO: Hide busy indicator
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 
   setSearchStoresListeners();
