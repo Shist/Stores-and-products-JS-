@@ -6,8 +6,6 @@ const CONSTANTS = {
     STORES: "/Stores",
     STORE_BY_ID: "/Stores/{storeId}",
     PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
-    PRODUCTS_FILTER: `"where":{"Status":"{filterType}"}`,
-    PRODUCTS_ORDER: `"order":"{sortKey} {sortOrder}"`,
   },
   SPINNERS_ID: {
     STORES_LIST: "stores-list-spinner",
@@ -115,7 +113,6 @@ const CONSTANTS = {
 };
 
 // Functions for updating UI
-// In this function the storesList is already searched (if needed)
 function updateStoresList(storesList) {
   const storesListSection = document.querySelector(
     `#${CONSTANTS.STORES_LAYOUT_ID}`
@@ -133,7 +130,6 @@ function updateStoresList(storesList) {
   }
 }
 
-// In this function the storesList is already searched (if needed)
 function updateNoStoresLayout(storesList) {
   const noStoresLayout = document.querySelector(
     `#${CONSTANTS.NO_STORES_LAYOUT_ID}`
@@ -171,14 +167,14 @@ function updateAllStoreDetails() {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
   setProductsListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-  fetchAllProductsListByStoreId(
+  fetchSearchedProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
-    .then((allProductsList) => {
-      if (Array.isArray(allProductsList)) {
-        updateProductsFilters(allProductsList);
+    .then((searchedProductsList) => {
+      if (Array.isArray(searchedProductsList)) {
+        updateProductsFilters(searchedProductsList);
 
-        updateProductsTableBody(allProductsList);
+        updateProductsTableBody(searchedProductsList);
       }
     })
     .catch((error) => {
@@ -313,8 +309,7 @@ function setCurrFilterBtn(filterBtnId) {
     ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
 }
 
-// In this function the productsList is already searched (if needed), but never filtered or sorted
-function updateProductsFilters(productsList) {
+function updateProductsFilters(searchedProductsListWithoutFilter) {
   const prodAmountField = document.querySelector(
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
   );
@@ -328,7 +323,7 @@ function updateProductsFilters(productsList) {
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.OUT_OF_STOCK}`
   );
 
-  const amountsData = getCurrProductsAmounts(productsList);
+  const amountsData = getCurrProductsAmounts(searchedProductsListWithoutFilter);
 
   prodAmountField.textContent = amountsData.all;
   prodOkAmountField.textContent = amountsData.ok;
@@ -336,7 +331,6 @@ function updateProductsFilters(productsList) {
   prodOutOfStockAmountField.textContent = amountsData.outOfStock;
 }
 
-// In this function the productsList is already filtered / sorted / searched (if needed)
 function updateProductsTableBody(productsList) {
   const productsTableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
@@ -358,7 +352,7 @@ function updateProductsTableBody(productsList) {
     );
   }
 
-  removeProductsListSpinnerResizeListener();
+  describeProductsListSpinnerResizeListener();
 
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
 
@@ -528,7 +522,6 @@ function removeSpinnerById(spinnerId) {
 }
 
 // Functions for preparing HTML structures for DOM
-// In this function the storesList is already searched (if needed)
 function getStructureForStoresList(storesList) {
   return storesList.reduce((storesStr, nextStore) => {
     storesStr += `
@@ -616,7 +609,6 @@ function getStructureForTableHeaders() {
   );
 }
 
-// In this function the productsList is already filtered / sorted / searched (if needed)
 function getStructureForTableBody(productsList) {
   let productTableBodyStr = "";
 
@@ -767,30 +759,17 @@ function setSearchStoresListeners() {
     `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
   );
 
-  searchInput.addEventListener("search", () =>
-    onSearchStoresClick(searchInput)
-  );
-  searchBtn.addEventListener("click", () => onSearchStoresClick(searchInput));
+  searchInput.addEventListener("search", onSearchStoresClick);
+  searchBtn.addEventListener("click", onSearchStoresClick);
 }
 
-function onSearchStoresClick(searchInput) {
+function onSearchStoresClick() {
   setStoresListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-  fetchStoresList()
+  fetchSearchedStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
-        const readyStoresList = storesList.filter(
-          (store) =>
-            store.Name.toLowerCase().includes(
-              searchInput.value.toLowerCase()
-            ) ||
-            store.Address.toLowerCase().includes(
-              searchInput.value.toLowerCase()
-            ) ||
-            store.FloorArea.toString().includes(searchInput.value)
-        );
-
-        updateStoresList(readyStoresList);
+        updateStoresList(storesList);
       }
     })
     .catch((error) => {
@@ -844,16 +823,12 @@ function onFilterBtnClick(e) {
 
     setProductsListSpinner();
     plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-    fetchSpecificProductsListByStoreId(
+    fetchFullFilteredProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
     )
-      .then((filteredSortedProductsList) => {
-        if (Array.isArray(filteredSortedProductsList)) {
-          const readyProductsList = getProductsListAfterSearch(
-            filteredSortedProductsList
-          );
-
-          updateProductsTableBody(readyProductsList);
+      .then((fullFilteredProductsList) => {
+        if (Array.isArray(fullFilteredProductsList)) {
+          updateProductsTableBody(fullFilteredProductsList);
         }
       })
       .catch((error) => {
@@ -891,16 +866,12 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchSpecificProductsListByStoreId(
+        fetchFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
-          .then((filteredSortedProductsList) => {
-            if (Array.isArray(filteredSortedProductsList)) {
-              const readyProductsList = getProductsListAfterSearch(
-                filteredSortedProductsList
-              );
-
-              updateProductsTableBody(readyProductsList);
+          .then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              updateProductsTableBody(fullFilteredProductsList);
             }
           })
           .catch((error) => {
@@ -921,16 +892,12 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchSpecificProductsListByStoreId(
+        fetchFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
-          .then((filteredSortedProductsList) => {
-            if (Array.isArray(filteredSortedProductsList)) {
-              const readyProductsList = getProductsListAfterSearch(
-                filteredSortedProductsList
-              );
-
-              updateProductsTableBody(readyProductsList);
+          .then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              updateProductsTableBody(fullFilteredProductsList);
             }
           })
           .catch((error) => {
@@ -950,16 +917,12 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchSpecificProductsListByStoreId(
+        fetchFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
-          .then((filteredSortedProductsList) => {
-            if (Array.isArray(filteredSortedProductsList)) {
-              const readyProductsList = getProductsListAfterSearch(
-                filteredSortedProductsList
-              );
-
-              updateProductsTableBody(readyProductsList);
+          .then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              updateProductsTableBody(fullFilteredProductsList);
             }
           })
           .catch((error) => {
@@ -995,25 +958,19 @@ function setSearchProductsListeners() {
 }
 
 function onSearchProductsClick() {
-  const allProductsPromise = fetchAllProductsListByStoreId(
+  const searchedProductsPromise = fetchSearchedProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  ).then((allProductsList) => {
-    if (Array.isArray(allProductsList)) {
-      const readyProductsList = getProductsListAfterSearch(allProductsList);
-
-      updateProductsFilters(readyProductsList);
+  ).then((searchedProductsList) => {
+    if (Array.isArray(searchedProductsList)) {
+      updateProductsFilters(searchedProductsList);
     }
   });
 
-  const specificProductsPromise = fetchSpecificProductsListByStoreId(
+  const fullFilteredProductsPromise = fetchFullFilteredProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  ).then((filteredSortedProductsList) => {
-    if (Array.isArray(filteredSortedProductsList)) {
-      const readyProductsList = getProductsListAfterSearch(
-        filteredSortedProductsList
-      );
-
-      updateProductsTableBody(readyProductsList);
+  ).then((fullFilteredProductsList) => {
+    if (Array.isArray(fullFilteredProductsList)) {
+      updateProductsTableBody(fullFilteredProductsList);
     }
   });
 
@@ -1021,7 +978,7 @@ function onSearchProductsClick() {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
   setProductsListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-  Promise.all([allProductsPromise, specificProductsPromise])
+  Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
     .catch((error) => {
       // TODO: Show something to user on UI
     })
@@ -1031,7 +988,7 @@ function onSearchProductsClick() {
     });
 }
 
-// This listener is needed to change size and offset for spinner if user scrolls products table
+// This listener is needed to change size and offset for productsList table spinner if user scrolls products table
 function setProductsListSpinnerResizeListener() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
@@ -1043,7 +1000,8 @@ function setProductsListSpinnerResizeListener() {
   );
 }
 
-function removeProductsListSpinnerResizeListener() {
+// We should not forget to describe this listener from wrapper when productsList table spinner is removed
+function describeProductsListSpinnerResizeListener() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
   );
@@ -1085,39 +1043,15 @@ function initLocalStorageData() {
   );
 }
 
-// In this function the productsList is already filtered / sorted (if needed), but not searched yet
-function getProductsListAfterSearch(productsList) {
-  const searchInput = document.querySelector(
-    `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
-  );
-
-  return productsList?.filter(
-    (product) =>
-      product.Name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-      product.id.toString().includes(searchInput.value) ||
-      product.Price.toString().includes(searchInput.value) ||
-      product.Specs.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-      product.SupplierInfo.toLowerCase().includes(
-        searchInput.value.toLowerCase()
-      ) ||
-      product.MadeIn.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-      product.ProductionCompanyName.toLowerCase().includes(
-        searchInput.value.toLowerCase()
-      ) ||
-      product.Rating.toString().includes(searchInput.value)
-  );
-}
-
-// In this function the productsList is already searched (if needed), but never filtered or sorted
-function getCurrProductsAmounts(productsList) {
+function getCurrProductsAmounts(searchedProductsListWithoutFilter) {
   const amountsData = {
-    all: productsList.length,
+    all: searchedProductsListWithoutFilter.length,
     ok: 0,
     storage: 0,
     outOfStock: 0,
   };
 
-  productsList.forEach((product) => {
+  searchedProductsListWithoutFilter.forEach((product) => {
     switch (product.Status) {
       case "OK":
         amountsData.ok++;
@@ -1293,9 +1227,29 @@ async function fetchData(endPoint) {
   }
 }
 
-async function fetchStoresList() {
+async function fetchSearchedStoresList() {
   try {
-    return await fetchData(CONSTANTS.SERVER.STORES);
+    let neededURL = CONSTANTS.SERVER.STORES;
+    const searchFilterValue = document.querySelector(
+      `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
+    ).value;
+    const filterObj = {};
+
+    if (searchFilterValue) {
+      filterObj.where = {
+        or: [
+          { Name: { regexp: `/${searchFilterValue}/i` } },
+          { Address: { regexp: `/${searchFilterValue}/i` } },
+          { FloorArea: searchFilterValue },
+        ],
+      };
+    }
+
+    if (filterObj.where) {
+      neededURL += `?filter=${JSON.stringify(filterObj)}`;
+    }
+
+    return await fetchData(neededURL);
   } catch (error) {
     console.error(`Error while fetching stores list: ${error.message}`);
     throw new Error(`Error while fetching stores list: ${error.message}`);
@@ -1317,11 +1271,38 @@ async function fetchStoreById(storeId) {
   }
 }
 
-async function fetchAllProductsListByStoreId(storeId) {
+async function fetchSearchedProductsListByStoreId(storeId) {
   try {
-    return await fetchData(
-      CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace("{storeId}", storeId)
+    let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
+      "{storeId}",
+      storeId
     );
+    const searchFilterValue = document.querySelector(
+      `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+    ).value;
+    const filterObj = {};
+
+    if (searchFilterValue) {
+      filterObj.where = {
+        or: [
+          { Name: { regexp: `/${searchFilterValue}/i` } },
+          { Price: searchFilterValue },
+          { Specs: { regexp: `/${searchFilterValue}/i` } },
+          { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+          { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+          {
+            ProductionCompanyName: { regexp: `/${searchFilterValue}/i` },
+          },
+          { Rating: searchFilterValue },
+        ],
+      };
+    }
+
+    if (filterObj.where) {
+      neededURL += `?filter=${JSON.stringify(filterObj)}`;
+    }
+
+    return await fetchData(neededURL);
   } catch (error) {
     console.error(
       `Error while fetching all products list with id=${storeId} : ${error.message}`
@@ -1332,7 +1313,7 @@ async function fetchAllProductsListByStoreId(storeId) {
   }
 }
 
-async function fetchSpecificProductsListByStoreId(storeId) {
+async function fetchFullFilteredProductsListByStoreId(storeId) {
   try {
     let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
       "{storeId}",
@@ -1347,28 +1328,60 @@ async function fetchSpecificProductsListByStoreId(storeId) {
     const sortOrder = localStorage.getItem(
       CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
     );
-    const filters = [];
+    const searchFilterValue = document.querySelector(
+      `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+    ).value;
+    const filterObj = {};
 
-    if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
-      filters.push(
-        CONSTANTS.SERVER.PRODUCTS_FILTER.replace(
-          "{filterType}",
-          getFilterTypeByFilterId(filterId)
-        )
-      );
+    if (searchFilterValue) {
+      if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
+        filterObj.where = {
+          and: [
+            { Status: getFilterTypeByFilterId(filterId) },
+            {
+              or: [
+                { Name: { regexp: `/${searchFilterValue}/i` } },
+                { Price: searchFilterValue },
+                { Specs: { regexp: `/${searchFilterValue}/i` } },
+                { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+                { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+                {
+                  ProductionCompanyName: { regexp: `/${searchFilterValue}/i` },
+                },
+                { Rating: searchFilterValue },
+              ],
+            },
+          ],
+        };
+      } else {
+        filterObj.where = {
+          or: [
+            { Name: { regexp: `/${searchFilterValue}/i` } },
+            { Price: searchFilterValue },
+            { Specs: { regexp: `/${searchFilterValue}/i` } },
+            { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+            { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+            {
+              ProductionCompanyName: { regexp: `/${searchFilterValue}/i` },
+            },
+            { Rating: searchFilterValue },
+          ],
+        };
+      }
+    } else {
+      if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
+        filterObj.where = {
+          Status: getFilterTypeByFilterId(filterId),
+        };
+      }
     }
 
     if (sortKey && sortOrder && sortOrder !== CONSTANTS.SORT_ORDER.DEFAULT) {
-      filters.push(
-        CONSTANTS.SERVER.PRODUCTS_ORDER.replace("{sortKey}", sortKey).replace(
-          "{sortOrder}",
-          getOrderTypeByOrderAttribute(sortOrder)
-        )
-      );
+      filterObj.order = `${sortKey} ${getOrderTypeByOrderAttribute(sortOrder)}`;
     }
 
-    if (filters.length) {
-      neededURL += `?filter={${filters.join(",")}}`;
+    if (filterObj.where || filterObj.order) {
+      neededURL += `?filter=${JSON.stringify(filterObj)}`;
     }
 
     return await fetchData(neededURL);
@@ -1387,7 +1400,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setStoresListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-  fetchStoresList()
+  fetchSearchedStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
         updateStoresList(storesList);
