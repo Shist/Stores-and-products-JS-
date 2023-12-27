@@ -964,6 +964,9 @@
 .modal-window__field-input::placeholder {
   font-style: italic;
 }
+.modal-window__field-input_date {
+  height: 35px;
+}
 
 .modal-window__field-input-mark {
   font-size: 16px;

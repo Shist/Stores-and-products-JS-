@@ -59,7 +59,7 @@
           </div>
         </div>
         <footer class="stores-list-footer">
-          <button class="footer-create-btn">
+          <button class="footer-create-btn" id="btn-create-store">
             <span class="footer-create-btn__icon-plus"></span>
             <span class="footer-create-btn__text-create">Create</span>
           </button>
@@ -201,11 +201,11 @@
           </div>
         </main>
         <footer class="store-details-footer">
-          <button class="footer-delete-btn">
+          <button class="footer-delete-btn" id="btn-delete-store">
             <span class="footer-delete-btn__icon-trash"></span>
             <span class="footer-delete-btn__text-delete">Delete</span>
           </button>
-          <button class="footer-create-btn">
+          <button class="footer-create-btn" id="btn-create-product">
             <span class="footer-create-btn__icon-plus"></span>
             <span class="footer-create-btn__text-create">Create</span>
           </button>
@@ -232,7 +232,7 @@
         </div>
       </div>
     </div>
-    <div class="modal-window">
+    <div class="modal-window" id="modal-create-store">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">Create new store</h2>
         <form action="#" class="modal-window__form" name="create-store-form">
@@ -282,7 +282,7 @@
               type="text"
               onfocus="(this.type='date')"
               onblur="(this.type='text')"
-              class="modal-window__field-input"
+              class="modal-window__field-input modal-window__field-input_date"
               placeholder="MMM d, y"
               name="Store established date"
               id="modal-create-store-established-date"
@@ -301,16 +301,22 @@
           </div>
         </form>
         <div class="modal-window__btns-wrapper">
-          <button class="modal-window__btn modal-window__btn_confirm">
+          <button
+            class="modal-window__btn modal-window__btn_confirm"
+            id="btn-create-store-confirm"
+          >
             Create
           </button>
-          <button class="modal-window__btn modal-window__btn_cancel">
+          <button
+            class="modal-window__btn modal-window__btn_cancel"
+            id="btn-create-store-cancel"
+          >
             Cancel
           </button>
         </div>
       </div>
     </div>
-    <div class="modal-window">
+    <div class="modal-window" id="modal-delete-store">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">
           <span class="modal-window__headline-icon"></span>
@@ -322,16 +328,22 @@
           >
         </div>
         <div class="modal-window__btns-wrapper">
-          <button class="modal-window__btn modal-window__btn_confirm">
+          <button
+            class="modal-window__btn modal-window__btn_confirm"
+            id="btn-delete-store-confirm"
+          >
             Ok
           </button>
-          <button class="modal-window__btn modal-window__btn_cancel">
+          <button
+            class="modal-window__btn modal-window__btn_cancel"
+            id="btn-delete-store-cancel"
+          >
             Cancel
           </button>
         </div>
       </div>
     </div>
-    <div class="modal-window">
+    <div class="modal-window" id="modal-create-product">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">Create new product</h2>
         <form action="#" class="modal-window__form" name="create-product-form">
@@ -429,16 +441,22 @@
           </div>
         </form>
         <div class="modal-window__btns-wrapper">
-          <button class="modal-window__btn modal-window__btn_confirm">
+          <button
+            class="modal-window__btn modal-window__btn_confirm"
+            id="btn-create-product-confirm"
+          >
             Create
           </button>
-          <button class="modal-window__btn modal-window__btn_cancel">
+          <button
+            class="modal-window__btn modal-window__btn_cancel"
+            id="btn-create-product-cancel"
+          >
             Cancel
           </button>
         </div>
       </div>
     </div>
-    <div class="modal-window">
+    <div class="modal-window" id="modal-delete-product">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">
           <span class="modal-window__headline-icon"></span>
@@ -450,10 +468,16 @@
           >
         </div>
         <div class="modal-window__btns-wrapper">
-          <button class="modal-window__btn modal-window__btn_confirm">
+          <button
+            class="modal-window__btn modal-window__btn_confirm"
+            id="btn-delete-product-confirm"
+          >
             Ok
           </button>
-          <button class="modal-window__btn modal-window__btn_cancel">
+          <button
+            class="modal-window__btn modal-window__btn_cancel"
+            id="btn-delete-product-cancel"
+          >
             Cancel
           </button>
         </div>

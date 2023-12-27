@@ -22,6 +22,9 @@ const CONSTANTS = {
     LINE: "stores-search-line",
     BTN: "stores-search-btn",
   },
+  BTN_CREATE_STORE_ID: "btn-create-store",
+  BTN_DELETE_STORE_ID: "btn-delete-store",
+  BTN_CRETE_PRODUCT_ID: "btn-create-product",
   STORE_DETAILS_HEADER_ID: "store-details-header",
   STORE_DETAILS_WRAPPER_ID: "store-details-wrapper",
   NO_STORE_DETAILS_WRAPPER_ID: "no-store-details-wrapper",
@@ -68,6 +71,7 @@ const CONSTANTS = {
     BTN: "products-search-btn",
   },
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
+  CROSS_BTN_CLASS: "cross-btn",
   SORT_ORDER: {
     ASC: "asc",
     DESC: "desc",
@@ -75,6 +79,7 @@ const CONSTANTS = {
   },
   LOCAL_STORAGE_ID: {
     CURR_STORE_ID: "currStoreId",
+    CURR_PRODUCT_ID: "currProductId",
     CURR_FILTER_ID: "currFilterId",
     CURR_SORT_KEY: "currSortKey",
     CURR_SORT_ORDER: "currSortOrder",
@@ -105,6 +110,10 @@ const CONSTANTS = {
       KEBAB: "sort-state",
       CAMEL: "sortState",
     },
+    PRODUCT_ID: {
+      KEBAB: "product-id",
+      CAMEL: "productId",
+    },
     SPINNER_INIT_HEIGHT: {
       KEBAB: "init-height",
       CAMEL: "initHeight",
@@ -113,6 +122,28 @@ const CONSTANTS = {
   ERROR_POPUPS_WRAPPER_ID: "error-popup-wrapper",
   ERROR_POPUP_CLASS: "error-popup",
   ERROR_POPUP_TEXT_CLASS: "error-popup__text",
+  MODALS_ID: {
+    CREATE_STORE: {
+      WRAPPER: "modal-create-store",
+      BTN_CONFIRM: "btn-create-store-confirm",
+      BTN_CANCEL: "btn-create-store-cancel",
+    },
+    DELETE_STORE: {
+      WRAPPER: "modal-delete-store",
+      BTN_CONFIRM: "btn-delete-store-confirm",
+      BTN_CANCEL: "btn-delete-store-cancel",
+    },
+    CREATE_PRODUCT: {
+      WRAPPER: "modal-create-product",
+      BTN_CONFIRM: "btn-create-product-confirm",
+      BTN_CANCEL: "btn-create-product-cancel",
+    },
+    DELETE_PRODUCT: {
+      WRAPPER: "modal-delete-product",
+      BTN_CONFIRM: "btn-delete-product-confirm",
+      BTN_CANCEL: "btn-delete-product-cancel",
+    },
+  },
 };
 
 // Functions for updating UI
@@ -676,7 +707,8 @@ function getStructureForTableRow(product) {
           break;
         case "Rating":
           productTableDataStr += getTableStructureForRatingField(
-            product.Rating
+            product.Rating,
+            product.id
           );
           break;
         default:
@@ -716,10 +748,10 @@ function getTableStructureForPriceField(productPrice) {
           </td>`;
 }
 
-function getTableStructureForRatingField(productRating) {
+function getTableStructureForRatingField(productRating, productId) {
   return `<td class="product-table-item__rating">
             <div class="product-table-item__stars-wrapper">
-              ${getStructureForRatingStars(productRating)}
+              ${getStructureForRatingStars(productRating, productId)}
             </div>
           </td>`;
 }
@@ -734,7 +766,7 @@ function getTableStructureForStandardField(productField) {
           </td>`;
 }
 
-function getStructureForRatingStars(productRating) {
+function getStructureForRatingStars(productRating, productId) {
   return (
     Array(5)
       .fill()
@@ -747,7 +779,7 @@ function getStructureForRatingStars(productRating) {
       }, "") +
     `<div class="arrow-cross-wrapper">
         <span class="right-arrow"></span>
-        <span class="cross-btn"></span>
+        <span class="${CONSTANTS.CROSS_BTN_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
     </div>`
   );
 }
@@ -1015,6 +1047,165 @@ function onSearchProductsClick() {
     });
 }
 
+function setFootersBtnsListeners() {
+  const btnCreateStore = document.querySelector(
+    `#${CONSTANTS.BTN_CREATE_STORE_ID}`
+  );
+  const btnDeleteStore = document.querySelector(
+    `#${CONSTANTS.BTN_DELETE_STORE_ID}`
+  );
+  const btnCreateProduct = document.querySelector(
+    `#${CONSTANTS.BTN_CRETE_PRODUCT_ID}`
+  );
+
+  btnCreateStore.addEventListener("click", onCreateStoreClick);
+  btnDeleteStore.addEventListener("click", onDeleteStoreClick);
+  btnCreateProduct.addEventListener("click", onCreateProductClick);
+}
+
+function onCreateStoreClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.WRAPPER}`
+  );
+
+  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function onDeleteStoreClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_STORE.WRAPPER}`
+  );
+
+  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function onCreateProductClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.WRAPPER}`
+  );
+
+  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function setTableBtnsListener() {
+  const tableBody = document.querySelector(
+    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+  );
+
+  tableBody.addEventListener("click", onTableBtnClick);
+}
+
+function onTableBtnClick(e) {
+  if (e.target.classList.contains(CONSTANTS.CROSS_BTN_CLASS)) {
+    const modalWrapper = document.querySelector(
+      `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
+    );
+
+    localStorage.setItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID,
+      e.target.dataset[CONSTANTS.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
+    );
+
+    modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+  }
+}
+
+function setModalsConfirmBtnsListeners() {
+  const btnConfirmCreateStore = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.BTN_CONFIRM}`
+  );
+  const btnConfirmDeleteStore = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_STORE.BTN_CONFIRM}`
+  );
+  const btnConfirmCreateProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.BTN_CONFIRM}`
+  );
+  const btnConfirmDeleteProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CONFIRM}`
+  );
+
+  btnConfirmCreateStore.addEventListener("click", onConfirmCreateStoreClick);
+  btnConfirmDeleteStore.addEventListener("click", onConfirmDeleteStoreClick);
+  btnConfirmCreateProduct.addEventListener(
+    "click",
+    onConfirmCreateProductClick
+  );
+  btnConfirmDeleteProduct.addEventListener(
+    "click",
+    onConfirmDeleteProductClick
+  );
+}
+
+function onConfirmCreateStoreClick() {
+  // TODO
+}
+
+function onConfirmDeleteStoreClick() {
+  // TODO
+}
+
+function onConfirmCreateProductClick() {
+  // TODO
+}
+
+function onConfirmDeleteProductClick() {
+  // TODO
+}
+
+function setModalsCancelBtnsListeners() {
+  const btnCancelCreateStore = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.BTN_CANCEL}`
+  );
+  const btnCancelDeleteStore = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_STORE.BTN_CANCEL}`
+  );
+  const btnCancelCreateProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.BTN_CANCEL}`
+  );
+  const btnCancelDeleteProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CANCEL}`
+  );
+
+  btnCancelCreateStore.addEventListener("click", onCancelCreateStoreClick);
+  btnCancelDeleteStore.addEventListener("click", onCancelDeleteStoreClick);
+  btnCancelCreateProduct.addEventListener("click", onCancelCreateProductClick);
+  btnCancelDeleteProduct.addEventListener("click", onCancelDeleteProductClick);
+}
+
+function onCancelCreateStoreClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.WRAPPER}`
+  );
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function onCancelDeleteStoreClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_STORE.WRAPPER}`
+  );
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function onCancelCreateProductClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.WRAPPER}`
+  );
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function onCancelDeleteProductClick() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
+  );
+
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
 // This listener is needed to change size and offset for productsList table spinner if user scrolls products table
 function setProductsListSpinnerResizeListener() {
   const storeDetailsWrapper = document.querySelector(
@@ -1052,6 +1243,7 @@ function clearSortFiltersFromLocalStorage() {
 
 function initLocalStorageData() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
   clearSortFiltersFromLocalStorage();
   localStorage.setItem(
@@ -1426,12 +1618,28 @@ async function fetchFullFilteredProductsListByStoreId(storeId) {
 document.addEventListener("DOMContentLoaded", () => {
   initLocalStorageData();
 
+  setSearchStoresListeners();
+
   setStoresListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   fetchSearchedStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
         updateStoresList(storesList);
+
+        setStoresCardsClickListener();
+
+        setFiltersBtnsListener();
+
+        renderProductsTableHead();
+
+        setFootersBtnsListeners();
+
+        setTableBtnsListener();
+
+        setModalsConfirmBtnsListeners();
+
+        setModalsCancelBtnsListeners();
       }
     })
     .catch((error) => {
@@ -1440,12 +1648,4 @@ document.addEventListener("DOMContentLoaded", () => {
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
-
-  setSearchStoresListeners();
-
-  setStoresCardsClickListener();
-
-  setFiltersBtnsListener();
-
-  renderProductsTableHead();
 });
