@@ -11,7 +11,7 @@ const CONSTANTS = {
   },
   SPINNERS_ID: {
     STORES_LIST: "stores-list-spinner",
-    STORE_DETAILS_DESCRIPTION: "store-details-description-spinner",
+    STORE_DETAILS: "store-details-spinner",
     PRODUCTS_AMOUNTS: "products-amounts-spinner",
     PRODUCTS_LIST: "products-list-spinner",
   },
@@ -80,6 +80,11 @@ const CONSTANTS = {
     CURR_FILTER_ID: "currFilterId",
     CURR_SORT_KEY: "currSortKey",
     CURR_SORT_ORDER: "currSortOrder",
+    STORES_LIST_SPINNER_FETHES: "storesListSpinnerFetches",
+    DETAILS_SPINNER_FETHES: "detailsSpinnerFetches",
+    FILTERS_SPINNER_FETHES: "filtersSpinnerFetches",
+    PRODUCTS_LIST_SPINNER_FETHES: "productsListSpinnerFetches",
+    NEW_PRODUCTS_LIST_SPINNER_NEEDED: "newProductsListSpinnerNeeded",
   },
   JS_CLASS: {
     HIDDEN_ELEMENT: "js-hidden-element",
@@ -163,7 +168,9 @@ function updateAllStoreDetails() {
   updateStoreDescription();
 
   setProductsAmountSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
   setProductsListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   fetchAllProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
@@ -230,6 +237,7 @@ function updateStoreDetailsVisibility() {
 
 function updateStoreDescription() {
   setStoreDetailsSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
   fetchStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then((store) => {
       if (store) {
@@ -266,7 +274,7 @@ function updateStoreDescription() {
       // TODO: Show something to user on UI
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORE_DETAILS_DESCRIPTION);
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
     });
 }
 
@@ -334,91 +342,128 @@ function updateProductsTableBody(productsList) {
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
+  // Note: if this is the last productsList fetch update, then we say we don't need new spinner
+  if (
+    getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) ===
+    1
+  ) {
+    localStorage.setItem(
+      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
+      "false"
+    );
+  } else {
+    localStorage.setItem(
+      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
+      "true"
+    );
+  }
+
+  removeProductsListSpinnerResizeListener();
+
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
+
+  setProductsListSpinner();
 }
 
+// Functions for setting spinners
 function setStoresListSpinner() {
-  const storesListHeader = document.querySelector(
-    `#${CONSTANTS.STORES_LIST_HEADER_ID}`
-  );
-  const storesListSection = document.querySelector(
-    `#${CONSTANTS.STORES_LIST_SECTION_ID}`
-  );
+  if (!getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST)) {
+    const storesListHeader = document.querySelector(
+      `#${CONSTANTS.STORES_LIST_HEADER_ID}`
+    );
+    const storesListSection = document.querySelector(
+      `#${CONSTANTS.STORES_LIST_SECTION_ID}`
+    );
 
-  storesListSection.insertAdjacentHTML(
-    "afterbegin",
-    getSpinnerStructure(
-      CONSTANTS.SPINNERS_ID.STORES_LIST,
-      "Updating stores list...",
-      storesListSection.offsetWidth,
-      window.innerHeight - storesListHeader.offsetHeight,
-      "white"
-    )
-  );
+    storesListSection.insertAdjacentHTML(
+      "afterbegin",
+      getSpinnerStructure(
+        CONSTANTS.SPINNERS_ID.STORES_LIST,
+        "Updating stores list...",
+        storesListSection.offsetWidth,
+        window.innerHeight - storesListHeader.offsetHeight,
+        "white"
+      )
+    );
+  }
 }
 
 function setStoreDetailsSpinner() {
-  const storesDetailsDescriptionWrapper = document.querySelector(
-    `#${CONSTANTS.STORE_DETAILS_DESCRIPTION_WRAPPER_ID}`
-  );
+  if (
+    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS)
+  ) {
+    const storesDetailsDescriptionWrapper = document.querySelector(
+      `#${CONSTANTS.STORE_DETAILS_DESCRIPTION_WRAPPER_ID}`
+    );
 
-  storesDetailsDescriptionWrapper.insertAdjacentHTML(
-    "afterbegin",
-    getSpinnerStructure(
-      CONSTANTS.SPINNERS_ID.STORE_DETAILS_DESCRIPTION,
-      "Updating store description...",
-      storesDetailsDescriptionWrapper.offsetWidth,
-      storesDetailsDescriptionWrapper.offsetHeight,
-      "#eff4f8"
-    )
-  );
+    storesDetailsDescriptionWrapper.insertAdjacentHTML(
+      "afterbegin",
+      getSpinnerStructure(
+        CONSTANTS.SPINNERS_ID.STORE_DETAILS,
+        "Updating store description...",
+        storesDetailsDescriptionWrapper.offsetWidth,
+        storesDetailsDescriptionWrapper.offsetHeight,
+        "#eff4f8"
+      )
+    );
+  }
 }
 
 function setProductsAmountSpinner() {
-  const filtersWrapper = document.querySelector(
-    `#${CONSTANTS.FILTER_WRAPPER_ID}`
-  );
-  const filtersWrapperComputedStyle = getComputedStyle(filtersWrapper);
-  const targetWidth =
-    filtersWrapper.offsetWidth -
-    parseFloat(filtersWrapperComputedStyle.paddingLeft) -
-    parseFloat(filtersWrapperComputedStyle.paddingRight);
+  if (
+    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS)
+  ) {
+    const filtersWrapper = document.querySelector(
+      `#${CONSTANTS.FILTER_WRAPPER_ID}`
+    );
+    const filtersWrapperComputedStyle = getComputedStyle(filtersWrapper);
+    const targetWidth =
+      filtersWrapper.offsetWidth -
+      parseFloat(filtersWrapperComputedStyle.paddingLeft) -
+      parseFloat(filtersWrapperComputedStyle.paddingRight);
 
-  filtersWrapper.insertAdjacentHTML(
-    "afterbegin",
-    getSpinnerStructure(
-      CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
-      "Updating products amounts...",
-      targetWidth,
-      filtersWrapper.offsetHeight,
-      "#eff4f8"
-    )
-  );
+    filtersWrapper.insertAdjacentHTML(
+      "afterbegin",
+      getSpinnerStructure(
+        CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
+        "Updating products amounts...",
+        targetWidth,
+        filtersWrapper.offsetHeight,
+        "#eff4f8"
+      )
+    );
+  }
 }
 
 function setProductsListSpinner() {
-  const tableBody = document.querySelector(
-    `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
-  );
+  // Note: in some cases we need to set new spinner if the old one was wiped out by .innerHTML()
+  if (
+    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) ||
+    localStorage.getItem(
+      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED
+    ) === "true"
+  ) {
+    const tableBody = document.querySelector(
+      `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+    );
+    const offsetObj = getTopOffsetForProductListSpinner();
+    const targetHeight = window.innerHeight - offsetObj.wholeOffset;
 
-  const offsetObj = getTopOffsetForProductListSpinner();
+    tableBody.insertAdjacentHTML(
+      "afterbegin",
+      getSpinnerStructure(
+        CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
+        "Updating products list...",
+        tableBody.offsetWidth,
+        targetHeight,
+        "white"
+      )
+    );
 
-  const targetHeight = window.innerHeight - offsetObj.wholeOffset;
+    resizeAndMoveProductsListSpinner();
 
-  tableBody.insertAdjacentHTML(
-    "afterbegin",
-    getSpinnerStructure(
-      CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
-      "Updating products list...",
-      tableBody.offsetWidth,
-      targetHeight,
-      "white"
-    )
-  );
-
-  resizeAndMoveProductsListSpinner();
-
-  setProductsListSpinnerResizeListener();
+    setProductsListSpinnerResizeListener();
+  }
 }
 
 function getTopOffsetForProductListSpinner() {
@@ -472,38 +517,12 @@ function resizeAndMoveProductsListSpinner() {
   }
 }
 
-function setProductsListSpinnerResizeListener() {
-  const storeDetailsWrapper = document.querySelector(
-    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
-  );
-  console.log("Scroll listener created");
-
-  storeDetailsWrapper.addEventListener(
-    "scroll",
-    resizeAndMoveProductsListSpinner
-  );
-}
-
-function removeProductsListSpinnerResizeListener() {
-  const storeDetailsWrapper = document.querySelector(
-    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
-  );
-  console.log("Scroll listener removed");
-
-  storeDetailsWrapper.removeEventListener(
-    "scroll",
-    resizeAndMoveProductsListSpinner
-  );
-}
-
 function removeSpinnerById(spinnerId) {
+  minusFetchOperationForSpinner(spinnerId);
+
   const spinnerToRemove = document.querySelector(`#${spinnerId}`);
 
-  if (spinnerId === CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) {
-    removeProductsListSpinnerResizeListener();
-  }
-
-  if (spinnerToRemove) {
+  if (spinnerToRemove && !getFetchOperationsAmountForSpinner(spinnerId)) {
     spinnerToRemove.remove();
   }
 }
@@ -722,8 +741,12 @@ function getSpinnerStructure(
   targetBgColor
 ) {
   return `<div class="stores-list-section__loading-data-layout" id="${spinnerId}"
-          style="width:${targetWidth}px;height:${targetHeight}px;background-color:${targetBgColor}"
-          data-${CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB}="${targetHeight}">
+          style="width:${
+            (targetWidth / document.body.offsetWidth) * 100
+          }%;height:${targetHeight}px;background-color:${targetBgColor}"
+          data-${
+            CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB
+          }="${targetHeight}">
             <span class="stores-list-section__loading-data-text"
               >${targetText}</span
             >
@@ -752,6 +775,7 @@ function setSearchStoresListeners() {
 
 function onSearchStoresClick(searchInput) {
   setStoresListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   fetchStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
@@ -819,6 +843,7 @@ function onFilterBtnClick(e) {
     setCurrFilterBtn(newFilterBtn.id);
 
     setProductsListSpinner();
+    plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     fetchSpecificProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
     )
@@ -865,6 +890,7 @@ function onSortBtnClick(e) {
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
 
         setProductsListSpinner();
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -894,6 +920,7 @@ function onSortBtnClick(e) {
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
 
         setProductsListSpinner();
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -922,6 +949,7 @@ function onSortBtnClick(e) {
         clearSortFiltersFromLocalStorage();
 
         setProductsListSpinner();
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         fetchSpecificProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
@@ -990,7 +1018,9 @@ function onSearchProductsClick() {
   });
 
   setProductsAmountSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
   setProductsListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   Promise.all([allProductsPromise, specificProductsPromise])
     .catch((error) => {
       // TODO: Show something to user on UI
@@ -999,6 +1029,29 @@ function onSearchProductsClick() {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
       removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
+}
+
+// This listener is needed to change size and offset for spinner if user scrolls products table
+function setProductsListSpinnerResizeListener() {
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
+
+  storeDetailsWrapper.addEventListener(
+    "scroll",
+    resizeAndMoveProductsListSpinner
+  );
+}
+
+function removeProductsListSpinnerResizeListener() {
+  const storeDetailsWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+  );
+
+  storeDetailsWrapper.removeEventListener(
+    "scroll",
+    resizeAndMoveProductsListSpinner
+  );
 }
 
 // Other supporting functions
@@ -1012,10 +1065,24 @@ function clearSortFiltersFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
 
-function clearAllOldDataFromLocalStorage() {
+function initLocalStorageData() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
   clearSortFiltersFromLocalStorage();
+  localStorage.setItem(
+    CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
+    "0"
+  );
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES, "0");
+  localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES, "0");
+  localStorage.setItem(
+    CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
+    "0"
+  );
+  localStorage.setItem(
+    CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
+    "true"
+  );
 }
 
 // In this function the productsList is already filtered / sorted (if needed), but not searched yet
@@ -1081,6 +1148,133 @@ function getOrderTypeByOrderAttribute(orderAttribute) {
   return Object.keys(CONSTANTS.SORT_ORDER).find(
     (orderType) => CONSTANTS.SORT_ORDER[orderType] === orderAttribute
   );
+}
+
+function getFetchOperationsAmountForSpinner(spinnerId) {
+  switch (spinnerId) {
+    case CONSTANTS.SPINNERS_ID.STORES_LIST:
+      const storesListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
+      );
+      return storesListFetches;
+    case CONSTANTS.SPINNERS_ID.STORE_DETAILS:
+      const detailsFethes = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
+      );
+      return detailsFethes;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS:
+      const filtersFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
+      );
+      return filtersFetches;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_LIST:
+      const productsListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
+      );
+      return productsListFetches;
+    default:
+      console.warn(
+        `Got unknown type of spinner while getting fetches amount, spinerId: ${spinnerId}`
+      );
+  }
+}
+
+function plusFetchOperationForSpinner(spinnerId) {
+  switch (spinnerId) {
+    case CONSTANTS.SPINNERS_ID.STORES_LIST:
+      let storesListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
+      );
+      storesListFetches++;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
+        storesListFetches
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.STORE_DETAILS:
+      let detailsFethes = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
+      );
+      detailsFethes++;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
+        detailsFethes
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS:
+      let filtersFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
+      );
+      filtersFetches++;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
+        filtersFetches
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_LIST:
+      let productsListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
+      );
+      productsListFetches++;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
+        productsListFetches
+      );
+      break;
+    default:
+      console.warn(
+        `Got unknown type of spinner while plusing fetch operation, spinerId: ${spinnerId}`
+      );
+  }
+}
+
+function minusFetchOperationForSpinner(spinnerId) {
+  switch (spinnerId) {
+    case CONSTANTS.SPINNERS_ID.STORES_LIST:
+      let storesListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
+      );
+      storesListFetches--;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
+        storesListFetches
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.STORE_DETAILS:
+      let detailsFethes = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
+      );
+      detailsFethes--;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
+        detailsFethes
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS:
+      let filtersFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
+      );
+      filtersFetches--;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
+        filtersFetches
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.PRODUCTS_LIST:
+      let productsListFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
+      );
+      productsListFetches--;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
+        productsListFetches
+      );
+      break;
+    default:
+      console.warn(
+        `Got unknown type of spinner while minusing fetch operation, spinerId: ${spinnerId}`
+      );
+  }
 }
 
 // Functions for working with server
@@ -1189,9 +1383,10 @@ async function fetchSpecificProductsListByStoreId(storeId) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  clearAllOldDataFromLocalStorage();
+  initLocalStorageData();
 
   setStoresListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   fetchStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {

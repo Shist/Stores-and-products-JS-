@@ -307,12 +307,6 @@
   grid-template-rows: repeat(3, 1fr);
   grid-template-columns: repeat(2, 1fr);
 }
-@media (max-width: 640px) {
-  .store-details-header__description-wrapper {
-    grid-template-rows: repeat(5, 1fr);
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
 
 .store-details-header__field-wrapper {
   display: flex;
@@ -346,27 +340,10 @@
 .store-details-header__field-data_address {
   max-width: 180px;
 }
-@media (max-width: 640px) {
-  .store-details-header__field-data_email {
-    max-width: 340px;
-  }
-  .store-details-header__field-data_est-date {
-    max-width: 290px;
-  }
-  .store-details-header__field-data_phone {
-    max-width: 300px;
-  }
-  .store-details-header__field-data_floor-area {
-    max-width: 330px;
-  }
-  .store-details-header__field-data_address {
-    max-width: 340px;
-  }
-}
 
 .store-details-header__filters-wrapper {
   position: relative;
-  padding-inline: 30px;
+  padding-inline: 30px 200px;
   display: flex;
   column-gap: 10px;
   border-top: 2px #cfdfec solid;
@@ -578,11 +555,6 @@
   background-color: #f7f7f7;
   border-block: 2px solid #e6e6e6;
   box-shadow: 0px 1px #e6e6e6, 0px -1px #e6e6e6;
-}
-@media (max-width: 640px) {
-  .products-table__product-specifications-row {
-    top: 283px;
-  }
 }
 
 .products-table__product-field {
