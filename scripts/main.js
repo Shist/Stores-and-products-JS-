@@ -3,9 +3,34 @@
 const CONSTANTS = {
   SERVER: {
     API_PREFIX: "http://localhost:3000/api",
-    STORES: "/Stores",
-    STORE_BY_ID: "/Stores/{storeId}",
-    PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
+    KEYS: {
+      STORE: {
+        NAME: "Name",
+        EMAIL: "Email",
+        PHONE: "PhoneNumber",
+        ADDRESS: "Address",
+        ESTABLISHED_DATE: "Established",
+        FLOOR_AREA: "FloorArea",
+      },
+      PRODUCT: {
+        NAME: "Name",
+        PRICE: "Price",
+        SPECS: "Specs",
+        RATING: "Rating",
+        SUPPLIER_INFO: "SupplierInfo",
+        COUNTRY: "MadeIn",
+        PROD_COMPANY: "ProductionCompanyName",
+        STATUS: "Status",
+      },
+    },
+    GET: {
+      STORES: "/Stores",
+      STORE_BY_ID: "/Stores/{storeId}",
+      PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
+    },
+    POST: {
+      STORE: "/Stores",
+    },
   },
   SPINNERS_ID: {
     STORES_LIST: "stores-list-spinner",
@@ -127,6 +152,13 @@ const CONSTANTS = {
       WRAPPER: "modal-create-store",
       BTN_CONFIRM: "btn-create-store-confirm",
       BTN_CANCEL: "btn-create-store-cancel",
+      FORM: "create-store-form",
+      INPUT_NAME: "modal-create-store-name",
+      INPUT_EMAIL: "modal-create-store-email",
+      INPUT_PHONE: "modal-create-store-phone",
+      INPUT_ADDRESS: "modal-create-store-address",
+      INPUT_ESTABLISHED_DATE: "modal-create-store-established-date",
+      INPUT_FLOOR_AREA: "modal-create-store-floor-area",
     },
     DELETE_STORE: {
       WRAPPER: "modal-delete-store",
@@ -137,6 +169,15 @@ const CONSTANTS = {
       WRAPPER: "modal-create-product",
       BTN_CONFIRM: "btn-create-product-confirm",
       BTN_CANCEL: "btn-create-product-cancel",
+      FORM: "create-product-form",
+      INPUT_NAME: "modal-create-product-name",
+      INPUT_PRICE: "modal-create-product-price",
+      INPUT_SPECS: "modal-create-product-specs",
+      INPUT_RATING: "modal-create-product-rating",
+      INPUT_SUPPLIER_INFO: "modal-create-product-supplier-info",
+      INPUT_COUNTRY: "modal-create-product-country",
+      INPUT_PROD_COMPANY: "modal-create-product-prod-company",
+      INPUT_STATUS: "modal-create-product-status",
     },
     DELETE_PRODUCT: {
       WRAPPER: "modal-delete-product",
@@ -199,7 +240,7 @@ function updateAllStoreDetails() {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
   setProductsListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-  fetchSearchedProductsListByStoreId(
+  getSearchedProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
     .then((searchedProductsList) => {
@@ -268,7 +309,7 @@ function updateStoreDetailsVisibility() {
 function updateStoreDescription() {
   setStoreDetailsSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
-  fetchStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
+  getStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then((store) => {
       if (store) {
         const storeEmailField = document.querySelector(
@@ -825,7 +866,7 @@ function setSearchStoresListeners() {
 function onSearchStoresClick() {
   setStoresListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-  fetchSearchedStoresList()
+  getSearchedStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
         updateStoresList(storesList);
@@ -882,7 +923,7 @@ function onFilterBtnClick(e) {
 
     setProductsListSpinner();
     plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-    fetchFullFilteredProductsListByStoreId(
+    getFullFilteredProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
     )
       .then((fullFilteredProductsList) => {
@@ -925,7 +966,7 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchFullFilteredProductsListByStoreId(
+        getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((fullFilteredProductsList) => {
@@ -951,7 +992,7 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchFullFilteredProductsListByStoreId(
+        getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((fullFilteredProductsList) => {
@@ -976,7 +1017,7 @@ function onSortBtnClick(e) {
 
         setProductsListSpinner();
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-        fetchFullFilteredProductsListByStoreId(
+        getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         )
           .then((fullFilteredProductsList) => {
@@ -1017,7 +1058,7 @@ function setSearchProductsListeners() {
 }
 
 function onSearchProductsClick() {
-  const searchedProductsPromise = fetchSearchedProductsListByStoreId(
+  const searchedProductsPromise = getSearchedProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   ).then((searchedProductsList) => {
     if (Array.isArray(searchedProductsList)) {
@@ -1025,7 +1066,7 @@ function onSearchProductsClick() {
     }
   });
 
-  const fullFilteredProductsPromise = fetchFullFilteredProductsListByStoreId(
+  const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   ).then((fullFilteredProductsList) => {
     if (Array.isArray(fullFilteredProductsList)) {
@@ -1137,7 +1178,61 @@ function setModalsConfirmBtnsListeners() {
 }
 
 function onConfirmCreateStoreClick() {
-  // TODO
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
+  );
+  const inputEmail = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
+  );
+  const inputPhone = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
+  );
+  const inputAddress = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ADDRESS}`
+  );
+  const inputEstablishedDate = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ESTABLISHED_DATE}`
+  );
+  const inputFloorArea = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
+  );
+
+  const resultObj = {
+    [CONSTANTS.SERVER.KEYS.STORE.NAME]: inputName.value,
+    [CONSTANTS.SERVER.KEYS.STORE.EMAIL]: inputEmail.value,
+    [CONSTANTS.SERVER.KEYS.STORE.PHONE]: inputPhone.value,
+    [CONSTANTS.SERVER.KEYS.STORE.ADDRESS]: inputAddress.value,
+    [CONSTANTS.SERVER.KEYS.STORE.ESTABLISHED_DATE]: inputEstablishedDate.value,
+    [CONSTANTS.SERVER.KEYS.STORE.FLOOR_AREA]: inputFloorArea.value,
+  };
+
+  closeCreateStoreModal();
+
+  setStoresListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+  postStore(JSON.stringify(resultObj))
+    .then(() => {
+      setStoresListSpinner();
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      getSearchedStoresList()
+        .then((storesList) => {
+          if (Array.isArray(storesList)) {
+            updateStoresList(storesList);
+          }
+        })
+        .catch((error) => {
+          showErrorPopup(error.message);
+        })
+        .finally(() => {
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+        });
+    })
+    .catch((error) => {
+      showErrorPopup(error.message);
+    })
+    .finally(() => {
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+    });
 }
 
 function onConfirmDeleteStoreClick() {
@@ -1166,21 +1261,25 @@ function setModalsCancelBtnsListeners() {
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CANCEL}`
   );
 
-  btnCancelCreateStore.addEventListener("click", onCancelCreateStoreClick);
-  btnCancelDeleteStore.addEventListener("click", onCancelDeleteStoreClick);
-  btnCancelCreateProduct.addEventListener("click", onCancelCreateProductClick);
-  btnCancelDeleteProduct.addEventListener("click", onCancelDeleteProductClick);
+  btnCancelCreateStore.addEventListener("click", closeCreateStoreModal);
+  btnCancelDeleteStore.addEventListener("click", closeDeleteStoreModal);
+  btnCancelCreateProduct.addEventListener("click", closeCreateProductModal);
+  btnCancelDeleteProduct.addEventListener("click", closeDeleteProductModal);
 }
 
-function onCancelCreateStoreClick() {
+function closeCreateStoreModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_STORE.WRAPPER}`
   );
+  const modalForm = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.FORM}`
+  );
+  modalForm.reset();
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function onCancelDeleteStoreClick() {
+function closeDeleteStoreModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_STORE.WRAPPER}`
   );
@@ -1188,15 +1287,19 @@ function onCancelDeleteStoreClick() {
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function onCancelCreateProductClick() {
+function closeCreateProductModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.WRAPPER}`
   );
+  const modalForm = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.FORM}`
+  );
+  modalForm.reset();
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function onCancelDeleteProductClick() {
+function closeDeleteProductModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
   );
@@ -1431,7 +1534,7 @@ function minusFetchOperationForSpinner(spinnerId) {
 }
 
 // Functions for working with server
-async function fetchData(endPoint) {
+async function getData(endPoint) {
   try {
     const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`);
 
@@ -1445,9 +1548,9 @@ async function fetchData(endPoint) {
   }
 }
 
-async function fetchSearchedStoresList() {
+async function getSearchedStoresList() {
   try {
-    let neededURL = CONSTANTS.SERVER.STORES;
+    let neededURL = CONSTANTS.SERVER.GET.STORES;
     const searchFilterValue = document.querySelector(
       `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
     ).value;
@@ -1467,7 +1570,7 @@ async function fetchSearchedStoresList() {
       neededURL += `?filter=${JSON.stringify(filterObj)}`;
     }
 
-    return await fetchData(neededURL);
+    return await getData(neededURL);
   } catch (error) {
     console.error(`Error while fetching stores list. Reason: ${error.message}`);
     throw new Error(
@@ -1476,10 +1579,10 @@ async function fetchSearchedStoresList() {
   }
 }
 
-async function fetchStoreById(storeId) {
+async function getStoreById(storeId) {
   try {
-    return await fetchData(
-      CONSTANTS.SERVER.STORE_BY_ID.replace("{storeId}", storeId)
+    return await getData(
+      CONSTANTS.SERVER.GET.STORE_BY_ID.replace("{storeId}", storeId)
     );
   } catch (error) {
     console.error(
@@ -1491,9 +1594,9 @@ async function fetchStoreById(storeId) {
   }
 }
 
-async function fetchSearchedProductsListByStoreId(storeId) {
+async function getSearchedProductsListByStoreId(storeId) {
   try {
-    let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
+    let neededURL = CONSTANTS.SERVER.GET.PRODUCTS_BY_STORE_ID.replace(
       "{storeId}",
       storeId
     );
@@ -1522,7 +1625,7 @@ async function fetchSearchedProductsListByStoreId(storeId) {
       neededURL += `?filter=${JSON.stringify(filterObj)}`;
     }
 
-    return await fetchData(neededURL);
+    return await getData(neededURL);
   } catch (error) {
     console.error(
       `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
@@ -1533,9 +1636,9 @@ async function fetchSearchedProductsListByStoreId(storeId) {
   }
 }
 
-async function fetchFullFilteredProductsListByStoreId(storeId) {
+async function getFullFilteredProductsListByStoreId(storeId) {
   try {
-    let neededURL = CONSTANTS.SERVER.PRODUCTS_BY_STORE_ID.replace(
+    let neededURL = CONSTANTS.SERVER.GET.PRODUCTS_BY_STORE_ID.replace(
       "{storeId}",
       storeId
     );
@@ -1604,7 +1707,7 @@ async function fetchFullFilteredProductsListByStoreId(storeId) {
       neededURL += `?filter=${JSON.stringify(filterObj)}`;
     }
 
-    return await fetchData(neededURL);
+    return await getData(neededURL);
   } catch (error) {
     console.error(
       `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
@@ -1615,6 +1718,35 @@ async function fetchFullFilteredProductsListByStoreId(storeId) {
   }
 }
 
+async function postData(endPoint, data) {
+  try {
+    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: data,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function postStore(storeObj) {
+  try {
+    return await postData(CONSTANTS.SERVER.POST.STORE, storeObj);
+  } catch (error) {
+    console.error(`Error while posting store. Reason: ${error.message}`);
+    throw new Error(`Error while posting store. Reason: ${error.message}`);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initLocalStorageData();
 
@@ -1622,7 +1754,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setStoresListSpinner();
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-  fetchSearchedStoresList()
+  getSearchedStoresList()
     .then((storesList) => {
       if (Array.isArray(storesList)) {
         updateStoresList(storesList);
