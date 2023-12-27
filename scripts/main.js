@@ -110,6 +110,9 @@ const CONSTANTS = {
       CAMEL: "initHeight",
     },
   },
+  ERROR_POPUPS_WRAPPER_ID: "error-popup-wrapper",
+  ERROR_POPUP_CLASS: "error-popup",
+  ERROR_POPUP_TEXT_CLASS: "error-popup__text",
 };
 
 // Functions for updating UI
@@ -159,8 +162,6 @@ function updateAllStoreDetails() {
 
   highlightActiveStoreCard();
 
-  updateStoreDetailsVisibility();
-
   updateStoreDescription();
 
   setProductsAmountSpinner();
@@ -172,13 +173,15 @@ function updateAllStoreDetails() {
   )
     .then((searchedProductsList) => {
       if (Array.isArray(searchedProductsList)) {
+        updateStoreDetailsVisibility();
+
         updateProductsFilters(searchedProductsList);
 
         updateProductsTableBody(searchedProductsList);
       }
     })
     .catch((error) => {
-      // TODO: Show something to user on UI
+      showErrorPopup(error.message);
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -267,7 +270,7 @@ function updateStoreDescription() {
       }
     })
     .catch((error) => {
-      // TODO: Show something to user on UI
+      showErrorPopup(error.message);
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
@@ -357,6 +360,30 @@ function updateProductsTableBody(productsList) {
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
 
   setProductsListSpinner();
+}
+
+function showErrorPopup(errorMsg) {
+  const errorPopupsWrapper = document.querySelector(
+    `#${CONSTANTS.ERROR_POPUPS_WRAPPER_ID}`
+  );
+
+  const errorText = document.createElement("span");
+  errorText.classList.add(CONSTANTS.ERROR_POPUP_TEXT_CLASS);
+  errorText.textContent = errorMsg;
+
+  const errorPopup = document.createElement("div");
+  errorPopup.classList.add(CONSTANTS.ERROR_POPUP_CLASS);
+  errorPopup.insertAdjacentElement("afterbegin", errorText);
+
+  errorPopupsWrapper.insertAdjacentElement("beforeend", errorPopup);
+
+  setTimeout(() => {
+    errorPopup.style.opacity = "0";
+
+    setTimeout(() => {
+      errorPopup.remove();
+    }, 2000);
+  }, 8000);
 }
 
 // Functions for setting spinners
@@ -773,7 +800,7 @@ function onSearchStoresClick() {
       }
     })
     .catch((error) => {
-      // TODO: Show something to user on UI
+      showErrorPopup(error.message);
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
@@ -832,7 +859,7 @@ function onFilterBtnClick(e) {
         }
       })
       .catch((error) => {
-        // TODO: Show something to user on UI
+        showErrorPopup(error.message);
       })
       .finally(() => {
         removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -875,7 +902,7 @@ function onSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            // TODO: Show something to user on UI
+            showErrorPopup(error.message);
           })
           .finally(() => {
             removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -901,7 +928,7 @@ function onSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            // TODO: Show something to user on UI
+            showErrorPopup(error.message);
           })
           .finally(() => {
             removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -926,7 +953,7 @@ function onSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            // TODO: Show something to user on UI
+            showErrorPopup(error.message);
           })
           .finally(() => {
             removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -980,7 +1007,7 @@ function onSearchProductsClick() {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
     .catch((error) => {
-      // TODO: Show something to user on UI
+      showErrorPopup(error.message);
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -1222,7 +1249,6 @@ async function fetchData(endPoint) {
 
     return await response.json();
   } catch (error) {
-    console.error(`Error while fetching data: ${error.message}`);
     throw new Error(error.message);
   }
 }
@@ -1251,8 +1277,10 @@ async function fetchSearchedStoresList() {
 
     return await fetchData(neededURL);
   } catch (error) {
-    console.error(`Error while fetching stores list: ${error.message}`);
-    throw new Error(`Error while fetching stores list: ${error.message}`);
+    console.error(`Error while fetching stores list. Reason: ${error.message}`);
+    throw new Error(
+      `Error while fetching stores list. Reason: ${error.message}`
+    );
   }
 }
 
@@ -1263,10 +1291,10 @@ async function fetchStoreById(storeId) {
     );
   } catch (error) {
     console.error(
-      `Error while fetching store with id=${storeId} : ${error.message}`
+      `Error while fetching store with id=${storeId}. Reason: ${error.message}`
     );
     throw new Error(
-      `Error while fetching store with id=${storeId} : ${error.message}`
+      `Error while fetching store with id=${storeId}. Reason: ${error.message}`
     );
   }
 }
@@ -1305,10 +1333,10 @@ async function fetchSearchedProductsListByStoreId(storeId) {
     return await fetchData(neededURL);
   } catch (error) {
     console.error(
-      `Error while fetching all products list with id=${storeId} : ${error.message}`
+      `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
     );
     throw new Error(
-      `Error while fetching all products list with id=${storeId} : ${error.message}`
+      `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
     );
   }
 }
@@ -1387,10 +1415,10 @@ async function fetchFullFilteredProductsListByStoreId(storeId) {
     return await fetchData(neededURL);
   } catch (error) {
     console.error(
-      `Error while fetching specific products list of store with id=${storeId} : ${error.message}`
+      `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
     );
     throw new Error(
-      `Error while fetching specific products list of store with id=${storeId} : ${error.message}`
+      `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
     );
   }
 }
@@ -1407,7 +1435,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch((error) => {
-      // TODO: Show something to user on UI
+      showErrorPopup(error.message);
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
