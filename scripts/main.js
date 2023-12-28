@@ -41,6 +41,29 @@ const CONSTANTS = {
     PRODUCTS_AMOUNTS: "products-amounts-spinner",
     PRODUCTS_LIST: "products-list-spinner",
   },
+  SPINNER_TEXT: {
+    STORES_LIST: {
+      LOADING: "Loading stores list...",
+      UPDATING: "Loading updated stores list...",
+      CREATING: "Creating new store...",
+      DELETING: "Deleting store...",
+    },
+    STORE_DETAILS: {
+      LOADING: "Loading store description...",
+    },
+    PRODUCTS_AMOUNTS: {
+      LOADING: "Loading products amounts...",
+      UPDATING: "Loading updated products amounts...",
+      CREATING: "Creating new product...",
+      DELETING: "Deleting product...",
+    },
+    PRODUCTS_LIST: {
+      LOADING: "Loading products list...",
+      UPDATING: "Loading updated products list...",
+      CREATING: "Creating new product...",
+      DELETING: "Deleting product...",
+    },
+  },
   STORES_LIST_HEADER_ID: "stores-list-header",
   STORES_LIST_SECTION_ID: "stores-list-section",
   STORES_LAYOUT_ID: "stores-list-layout",
@@ -237,19 +260,19 @@ function updateAllStoreDetails() {
 
   highlightActiveStoreCard();
 
+  updateStoreDetailsVisibility();
+
   updateStoreDescription();
 
-  setProductsAmountSpinner();
+  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-  setProductsListSpinner();
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   getSearchedProductsListByStoreId(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   )
     .then((searchedProductsList) => {
       if (Array.isArray(searchedProductsList)) {
-        updateStoreDetailsVisibility();
-
         updateProductsFilters(searchedProductsList);
 
         updateProductsTableBody(searchedProductsList);
@@ -310,7 +333,7 @@ function updateStoreDetailsVisibility() {
 }
 
 function updateStoreDescription() {
-  setStoreDetailsSpinner();
+  setStoreDetailsSpinner(CONSTANTS.SPINNER_TEXT.STORE_DETAILS.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
   getStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then((store) => {
@@ -434,7 +457,7 @@ function updateProductsTableBody(productsList) {
 
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
 
-  setProductsListSpinner();
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
 }
 
 function showErrorPopup(errorMsg) {
@@ -462,7 +485,7 @@ function showErrorPopup(errorMsg) {
 }
 
 // Functions for setting spinners
-function setStoresListSpinner() {
+function setStoresListSpinner(spinnerText) {
   if (!getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST)) {
     const storesListHeader = document.querySelector(
       `#${CONSTANTS.STORES_LIST_HEADER_ID}`
@@ -475,16 +498,24 @@ function setStoresListSpinner() {
       "afterbegin",
       getSpinnerStructure(
         CONSTANTS.SPINNERS_ID.STORES_LIST,
-        "Updating stores list...",
+        spinnerText,
         storesListSection.offsetWidth,
         window.innerHeight - storesListHeader.offsetHeight,
         "white"
       )
     );
+  } else {
+    const currSpinner = document.querySelector(
+      `#${CONSTANTS.SPINNERS_ID.STORES_LIST}`
+    );
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
   }
 }
 
-function setStoreDetailsSpinner() {
+function setStoreDetailsSpinner(spinnerText) {
   if (
     !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS)
   ) {
@@ -496,16 +527,24 @@ function setStoreDetailsSpinner() {
       "afterbegin",
       getSpinnerStructure(
         CONSTANTS.SPINNERS_ID.STORE_DETAILS,
-        "Updating store description...",
+        spinnerText,
         storesDetailsDescriptionWrapper.offsetWidth,
         storesDetailsDescriptionWrapper.offsetHeight,
         "#eff4f8"
       )
     );
+  } else {
+    const currSpinner = document.querySelector(
+      `#${CONSTANTS.SPINNERS_ID.STORE_DETAILS}`
+    );
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
   }
 }
 
-function setProductsAmountSpinner() {
+function setProductsAmountSpinner(spinnerText) {
   if (
     !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS)
   ) {
@@ -522,16 +561,24 @@ function setProductsAmountSpinner() {
       "afterbegin",
       getSpinnerStructure(
         CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
-        "Updating products amounts...",
+        spinnerText,
         targetWidth,
         filtersWrapper.offsetHeight,
         "#eff4f8"
       )
     );
+  } else {
+    const currSpinner = document.querySelector(
+      `#${CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS}`
+    );
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
   }
 }
 
-function setProductsListSpinner() {
+function setProductsListSpinner(spinnerText) {
   // Note: in some cases we need to set new spinner if the old one was wiped out by .innerHTML()
   if (
     !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) ||
@@ -549,7 +596,7 @@ function setProductsListSpinner() {
       "afterbegin",
       getSpinnerStructure(
         CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
-        "Updating products list...",
+        spinnerText,
         tableBody.offsetWidth,
         targetHeight,
         "white"
@@ -559,6 +606,14 @@ function setProductsListSpinner() {
     resizeAndMoveProductsListSpinner();
 
     setProductsListSpinnerResizeListener();
+  } else {
+    const currSpinner = document.querySelector(
+      `#${CONSTANTS.SPINNERS_ID.PRODUCTS_LIST}`
+    );
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
   }
 }
 
@@ -867,7 +922,7 @@ function setSearchStoresListeners() {
 }
 
 function onSearchStoresClick() {
-  setStoresListSpinner();
+  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   getSearchedStoresList()
     .then((storesList) => {
@@ -924,7 +979,7 @@ function onFilterBtnClick(e) {
   ) {
     setCurrFilterBtn(newFilterBtn.id);
 
-    setProductsListSpinner();
+    setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
     plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     getFullFilteredProductsListByStoreId(
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
@@ -967,7 +1022,7 @@ function onSortBtnClick(e) {
 
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
 
-        setProductsListSpinner();
+        setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
@@ -993,7 +1048,7 @@ function onSortBtnClick(e) {
 
         setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
 
-        setProductsListSpinner();
+        setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
@@ -1018,7 +1073,7 @@ function onSortBtnClick(e) {
 
         clearSortFiltersFromLocalStorage();
 
-        setProductsListSpinner();
+        setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         getFullFilteredProductsListByStoreId(
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
@@ -1077,9 +1132,9 @@ function onSearchProductsClick() {
     }
   });
 
-  setProductsAmountSpinner();
+  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-  setProductsListSpinner();
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
     .catch((error) => {
@@ -1211,11 +1266,11 @@ function onConfirmCreateStoreClick() {
 
   closeCreateStoreModal();
 
-  setStoresListSpinner();
+  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.CREATING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   postStore(JSON.stringify(resultObj))
     .then(() => {
-      setStoresListSpinner();
+      setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
       plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
       getSearchedStoresList()
         .then((storesList) => {
@@ -1241,14 +1296,14 @@ function onConfirmCreateStoreClick() {
 function onConfirmDeleteStoreClick() {
   closeDeleteStoreModal();
 
-  setStoresListSpinner();
+  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.DELETING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   deleteStore(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then(() => {
       localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
       updateStoreDetailsVisibility();
 
-      setStoresListSpinner();
+      setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
       plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
       getSearchedStoresList()
         .then((storesList) => {
@@ -1811,7 +1866,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setSearchStoresListeners();
 
-  setStoresListSpinner();
+  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
   getSearchedStoresList()
     .then((storesList) => {
