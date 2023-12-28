@@ -31,6 +31,9 @@ const CONSTANTS = {
     POST: {
       STORE: "/Stores",
     },
+    DELETE: {
+      STORE_BY_ID: "/Stores/{storeId}",
+    },
   },
   SPINNERS_ID: {
     STORES_LIST: "stores-list-spinner",
@@ -302,7 +305,7 @@ function updateStoreDetailsVisibility() {
     noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   } else {
     storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
-    noStoreDetailsWrapper.classList.remoev(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
+    noStoreDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
   }
 }
 
@@ -1236,7 +1239,36 @@ function onConfirmCreateStoreClick() {
 }
 
 function onConfirmDeleteStoreClick() {
-  // TODO
+  closeDeleteStoreModal();
+
+  setStoresListSpinner();
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+  deleteStore(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
+    .then(() => {
+      localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+      updateStoreDetailsVisibility();
+
+      setStoresListSpinner();
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      getSearchedStoresList()
+        .then((storesList) => {
+          if (Array.isArray(storesList)) {
+            updateStoresList(storesList);
+          }
+        })
+        .catch((error) => {
+          showErrorPopup(error.message);
+        })
+        .finally(() => {
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+        });
+    })
+    .catch((error) => {
+      showErrorPopup(error.message);
+    })
+    .finally(() => {
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+    });
 }
 
 function onConfirmCreateProductClick() {
@@ -1744,6 +1776,33 @@ async function postStore(storeObj) {
   } catch (error) {
     console.error(`Error while posting store. Reason: ${error.message}`);
     throw new Error(`Error while posting store. Reason: ${error.message}`);
+  }
+}
+
+async function deleteData(endPoint) {
+  try {
+    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function deleteStore(storeId) {
+  try {
+    return await deleteData(
+      CONSTANTS.SERVER.DELETE.STORE_BY_ID.replace("{storeId}", storeId)
+    );
+  } catch (error) {
+    console.error(`Error while deleting store. Reason: ${error.message}`);
+    throw new Error(`Error while deleting store. Reason: ${error.message}`);
   }
 }
 
