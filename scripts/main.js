@@ -1365,7 +1365,7 @@ function onConfirmCreateStoreClick() {
     postStore(JSON.stringify(resultObj))
       .then(() => {
         showPopupWithMsg(
-          "New store was successfully created!",
+          "New store has been successfully created!",
           CONSTANTS.POPUP_SUCCESS_COLOR
         );
 
@@ -1405,7 +1405,7 @@ function onConfirmDeleteStoreClick() {
   deleteStore(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then(() => {
       showPopupWithMsg(
-        "The store was successfully deleted.",
+        "The store has been successfully deleted.",
         CONSTANTS.POPUP_ATTENTION_COLOR
       );
 
@@ -1457,7 +1457,7 @@ function onConfirmCreateProductClick() {
     )
       .then(() => {
         showPopupWithMsg(
-          "New product was successfully created!",
+          "New product has been successfully created!",
           CONSTANTS.POPUP_SUCCESS_COLOR
         );
 
@@ -1517,7 +1517,7 @@ function onConfirmDeleteProductClick() {
   )
     .then(() => {
       showPopupWithMsg(
-        "The product was successfully deleted.",
+        "The product has been successfully deleted.",
         CONSTANTS.POPUP_ATTENTION_COLOR
       );
 
