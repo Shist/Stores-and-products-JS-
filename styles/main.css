@@ -951,6 +951,7 @@
 }
 
 .modal-window__field-input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   column-gap: 8px;
@@ -960,6 +961,7 @@
   flex-grow: 1;
   padding: 4px;
   font-size: 16px;
+  border: 1px solid black;
 }
 .modal-window__field-input::placeholder {
   font-style: italic;
@@ -1093,7 +1095,7 @@
   border-bottom-right-radius: 5px;
 }
 
-.error-modal-window__close-btn {
+.error-modal-window__ok-btn {
   padding: 5px;
   font-size: 16px;
   max-width: 100px;
@@ -1105,11 +1107,11 @@
   border-radius: 5px;
   transition: 0.3s;
 }
-.error-modal-window__close-btn:hover {
+.error-modal-window__ok-btn:hover {
   background-color: #3c6d9c;
   border: 3px #3c6d9c solid;
 }
-.error-modal-window__close-btn:active {
+.error-modal-window__ok-btn:active {
   transition: none;
   color: #3c6d9c;
   background-color: #8fbfeb;

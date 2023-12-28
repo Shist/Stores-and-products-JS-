@@ -39,3 +39,27 @@
 .js-desc-sort-btn:active {
   background-image: url("../icons/sort-desc-active.svg");
 }
+
+.js-error-field-wrapper:focus-within::after {
+  opacity: 1;
+}
+.js-error-field-wrapper::after {
+  padding: 2px;
+  position: absolute;
+  max-width: 100%;
+  top: 100%;
+  left: 0;
+  content: attr(data-error-msg);
+  color: black;
+  background-color: #ffdfe3;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.js-error-field {
+  border: 3px solid red;
+  padding: 2px;
+}

@@ -149,6 +149,8 @@ const CONSTANTS = {
     ASC_SORT_BTN: "js-asc-sort-btn",
     DESC_SORT_BTN: "js-desc-sort-btn",
     FILTER_OFF: "js-filter-off",
+    ERROR_FIELD_WRAPPER: "js-error-field-wrapper",
+    ERROR_FIELD: "js-error-field",
   },
   DATA_ATTRIBUTE: {
     STORE_ID: {
@@ -171,6 +173,10 @@ const CONSTANTS = {
       KEBAB: "init-height",
       CAMEL: "initHeight",
     },
+    ERROR_MSG: {
+      KEBAB: "error-msg",
+      CAMEL: "errorMsg",
+    },
   },
   ERROR_POPUPS_WRAPPER_ID: "error-popup-wrapper",
   ERROR_POPUP_CLASS: "error-popup",
@@ -181,11 +187,18 @@ const CONSTANTS = {
       BTN_CONFIRM: "btn-create-store-confirm",
       BTN_CANCEL: "btn-create-store-cancel",
       FORM: "create-store-form",
+      INPUT_NAME_WRAPPER: "modal-create-store-name-wrapper",
       INPUT_NAME: "modal-create-store-name",
+      INPUT_EMAIL_WRAPPER: "modal-create-store-email-wrapper",
       INPUT_EMAIL: "modal-create-store-email",
+      INPUT_PHONE_WRAPPER: "modal-create-store-phone-wrapper",
       INPUT_PHONE: "modal-create-store-phone",
+      INPUT_ADDRESS_WRAPPER: "modal-create-store-address-wrapper",
       INPUT_ADDRESS: "modal-create-store-address",
+      INPUT_ESTABLISHED_DATE_WRAPPER:
+        "modal-create-store-established-date-wrapper",
       INPUT_ESTABLISHED_DATE: "modal-create-store-established-date",
+      INPUT_FLOOR_AREA_WRAPPER: "modal-create-store-floor-area-wrapper",
       INPUT_FLOOR_AREA: "modal-create-store-floor-area",
     },
     DELETE_STORE: {
@@ -198,13 +211,21 @@ const CONSTANTS = {
       BTN_CONFIRM: "btn-create-product-confirm",
       BTN_CANCEL: "btn-create-product-cancel",
       FORM: "create-product-form",
+      INPUT_NAME_WRAPPER: "modal-create-product-name-wrapper",
       INPUT_NAME: "modal-create-product-name",
+      INPUT_PRICE_WRAPPER: "modal-create-product-price-wrapper",
       INPUT_PRICE: "modal-create-product-price",
+      INPUT_SPECS_WRAPPER: "modal-create-product-specs-wrapper",
       INPUT_SPECS: "modal-create-product-specs",
+      INPUT_RATING_WRAPPER: "modal-create-product-rating-wrapper",
       INPUT_RATING: "modal-create-product-rating",
+      INPUT_SUPPLIER_INFO_WRAPPER: "modal-create-product-supplier-info-wrapper",
       INPUT_SUPPLIER_INFO: "modal-create-product-supplier-info",
+      INPUT_COUNTRY_WRAPPER: "modal-create-product-country-wrapper",
       INPUT_COUNTRY: "modal-create-product-country",
+      INPUT_PROD_COMPANY_WRAPPER: "modal-create-product-prod-company-wrapper",
       INPUT_PROD_COMPANY: "modal-create-product-prod-company",
+      INPUT_STATUS_WRAPPER: "modal-create-product-status-wrapper",
       INPUT_STATUS: "modal-create-product-status",
     },
     DELETE_PRODUCT: {
@@ -212,7 +233,15 @@ const CONSTANTS = {
       BTN_CONFIRM: "btn-delete-product-confirm",
       BTN_CANCEL: "btn-delete-product-cancel",
     },
+    ERROR: {
+      WRAPPER: "modal-validation-error",
+      BTN_OK: "modal-validation-error-ok-btn",
+    },
   },
+  MODAL_FIELD_INPUT_WRAPPER_CLASS: "modal-window__field-input-wrapper",
+  MODAL_FIELD_INPUT_CLASS: "modal-window__field-input",
+  DEFAULT_ERROR_MSG: "No errors yet...",
+  DEFAULT_NOT_SPECIFIED_MSG: "(not specified)",
 };
 
 // Functions for updating UI
@@ -356,17 +385,37 @@ function updateStoreDescription() {
           `#${CONSTANTS.STORE_LABELS_ID.ADDRESS}`
         );
 
-        storeEmailField.textContent = store.Email;
-        storeEstDateField.textContent = new Date(
-          store.Established
-        ).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-        storeAddressField.textContent = store.Address;
-        storePhoneField.textContent = store.PhoneNumber;
-        storeFloorAreaField.textContent = store.FloorArea;
+        if (store.Email) {
+          storeEmailField.textContent = store.Email;
+        } else {
+          storeEmailField.textContent = CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+        }
+        if (store.Established) {
+          storeEstDateField.textContent = new Date(
+            store.Established
+          ).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        } else {
+          storeEstDateField.textContent = CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+        }
+        if (store.Address) {
+          storeAddressField.textContent = store.Address;
+        } else {
+          storeAddressField.textContent = CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+        }
+        if (store.PhoneNumber) {
+          storePhoneField.textContent = store.PhoneNumber;
+        } else {
+          storePhoneField.textContent = CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+        }
+        if (store.FloorArea) {
+          storeFloorAreaField.textContent = store.FloorArea;
+        } else {
+          storeFloorAreaField.textContent = CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+        }
       }
     })
     .catch((error) => {
@@ -683,19 +732,26 @@ function removeSpinnerById(spinnerId) {
 // Functions for preparing HTML structures for DOM
 function getStructureForStoresList(storesList) {
   return storesList.reduce((storesStr, nextStore) => {
+    const storeName = nextStore.Name
+      ? nextStore.Name
+      : CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+    const storeAddress = nextStore.Address
+      ? nextStore.Address
+      : CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+    const storeFLoorArea = nextStore.FloorArea ? nextStore.FloorArea : "-";
     storesStr += `
               <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-address-wrapper">
                       <h3 class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__name-headline">
-                          ${nextStore.Name}
+                          ${storeName}
                       </h3>
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__address-text">
-                          ${nextStore.Address}
+                          ${storeAddress}
                       </span>
                   </div>
                   <div class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-data-wrapper">
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-number">
-                          ${nextStore.FloorArea}
+                          ${storeFLoorArea}
                       </span>
                       <span class="${CONSTANTS.STORES_LIST_ITEM_CLASS}__area-unit">sq.m</span>
                   </div>
@@ -1238,61 +1294,39 @@ function setModalsConfirmBtnsListeners() {
 }
 
 function onConfirmCreateStoreClick() {
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
-  );
-  const inputEmail = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
-  );
-  const inputPhone = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
-  );
-  const inputAddress = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ADDRESS}`
-  );
-  const inputEstablishedDate = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ESTABLISHED_DATE}`
-  );
-  const inputFloorArea = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
-  );
+  if (validateCreateStoreForm()) {
+    const resultObj = getStoreObjFromFormInputs();
 
-  const resultObj = {
-    [CONSTANTS.SERVER.KEYS.STORE.NAME]: inputName.value,
-    [CONSTANTS.SERVER.KEYS.STORE.EMAIL]: inputEmail.value,
-    [CONSTANTS.SERVER.KEYS.STORE.PHONE]: inputPhone.value,
-    [CONSTANTS.SERVER.KEYS.STORE.ADDRESS]: inputAddress.value,
-    [CONSTANTS.SERVER.KEYS.STORE.ESTABLISHED_DATE]: inputEstablishedDate.value,
-    [CONSTANTS.SERVER.KEYS.STORE.FLOOR_AREA]: inputFloorArea.value,
-  };
+    closeCreateStoreModal();
 
-  closeCreateStoreModal();
-
-  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.CREATING);
-  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-  postStore(JSON.stringify(resultObj))
-    .then(() => {
-      setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
-      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
-      getSearchedStoresList()
-        .then((storesList) => {
-          if (Array.isArray(storesList)) {
-            updateStoresList(storesList);
-          }
-        })
-        .catch((error) => {
-          showErrorPopup(error.message);
-        })
-        .finally(() => {
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
-        });
-    })
-    .catch((error) => {
-      showErrorPopup(error.message);
-    })
-    .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
-    });
+    setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.CREATING);
+    plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+    postStore(JSON.stringify(resultObj))
+      .then(() => {
+        setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+        getSearchedStoresList()
+          .then((storesList) => {
+            if (Array.isArray(storesList)) {
+              updateStoresList(storesList);
+            }
+          })
+          .catch((error) => {
+            showErrorPopup(error.message);
+          })
+          .finally(() => {
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+          });
+      })
+      .catch((error) => {
+        showErrorPopup(error.message);
+      })
+      .finally(() => {
+        removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      });
+  } else {
+    showErrorModal();
+  }
 }
 
 function onConfirmDeleteStoreClick() {
@@ -1329,41 +1363,7 @@ function onConfirmDeleteStoreClick() {
 }
 
 function onConfirmCreateProductClick() {
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
-  );
-  const inputPrice = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
-  );
-  const inputSpecs = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
-  );
-  const inputRating = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
-  );
-  const inputSupplierInfo = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SUPPLIER_INFO}`
-  );
-  const inputCountry = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_COUNTRY}`
-  );
-  const inputProdCompany = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PROD_COMPANY}`
-  );
-  const inputStatus = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_STATUS}`
-  );
-
-  const resultObj = {
-    [CONSTANTS.SERVER.KEYS.PRODUCT.NAME]: inputName.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.PRICE]: inputPrice.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.SPECS]: inputSpecs.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.RATING]: inputRating.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.SUPPLIER_INFO]: inputSupplierInfo.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.COUNTRY]: inputCountry.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.PROD_COMPANY]: inputProdCompany.value,
-    [CONSTANTS.SERVER.KEYS.PRODUCT.STATUS]: inputStatus.value,
-  };
+  const resultObj = getProductObjFromFormInputs();
 
   closeCreateProductModal();
 
@@ -1482,11 +1482,15 @@ function setModalsCancelBtnsListeners() {
   const btnCancelDeleteProduct = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CANCEL}`
   );
+  const btnOkModalError = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.ERROR.BTN_OK}`
+  );
 
   btnCancelCreateStore.addEventListener("click", closeCreateStoreModal);
   btnCancelDeleteStore.addEventListener("click", closeDeleteStoreModal);
   btnCancelCreateProduct.addEventListener("click", closeCreateProductModal);
   btnCancelDeleteProduct.addEventListener("click", closeDeleteProductModal);
+  btnOkModalError.addEventListener("click", closeErrorModal);
 }
 
 function closeCreateStoreModal() {
@@ -1496,6 +1500,17 @@ function closeCreateStoreModal() {
   const modalForm = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_STORE.FORM}`
   );
+  const formInputWrappers = modalForm.querySelectorAll(
+    `.${CONSTANTS.MODAL_FIELD_INPUT_WRAPPER_CLASS}`
+  );
+
+  formInputWrappers.forEach((inputWrapper) => {
+    const input = inputWrapper.querySelector(
+      `.${CONSTANTS.MODAL_FIELD_INPUT_CLASS}`
+    );
+    removeErrorFromInput(input, inputWrapper);
+  });
+
   modalForm.reset();
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
@@ -1516,6 +1531,17 @@ function closeCreateProductModal() {
   const modalForm = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.FORM}`
   );
+  const formInputWrappers = modalForm.querySelectorAll(
+    `.${CONSTANTS.MODAL_FIELD_INPUT_WRAPPER_CLASS}`
+  );
+
+  formInputWrappers.forEach((inputWrapper) => {
+    const input = inputWrapper.querySelector(
+      `.${CONSTANTS.MODAL_FIELD_INPUT_CLASS}`
+    );
+    removeErrorFromInput(input, inputWrapper);
+  });
+
   modalForm.reset();
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
@@ -1524,6 +1550,22 @@ function closeCreateProductModal() {
 function closeDeleteProductModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
+  );
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function showErrorModal() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
+  );
+
+  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function closeErrorModal() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
   );
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
@@ -1626,6 +1668,206 @@ function getOrderTypeByOrderAttribute(orderAttribute) {
   return Object.keys(CONSTANTS.SORT_ORDER).find(
     (orderType) => CONSTANTS.SORT_ORDER[orderType] === orderAttribute
   );
+}
+
+function getStoreObjFromFormInputs() {
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
+  );
+  const inputEmail = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
+  );
+  const inputPhone = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
+  );
+  const inputAddress = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ADDRESS}`
+  );
+  const inputEstablishedDate = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_ESTABLISHED_DATE}`
+  );
+  const inputFloorArea = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
+  );
+  const resultObj = {};
+
+  if (inputName.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.NAME] = inputName.value;
+  }
+  if (inputEmail.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.EMAIL] = inputEmail.value;
+  }
+  if (inputPhone.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.PHONE] = inputPhone.value;
+  }
+  if (inputAddress.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.ADDRESS] = inputAddress.value;
+  }
+  if (inputEstablishedDate.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.ESTABLISHED_DATE] =
+      inputEstablishedDate.value;
+  }
+  if (inputFloorArea.value) {
+    resultObj[CONSTANTS.SERVER.KEYS.STORE.FLOOR_AREA] = inputFloorArea.value;
+  }
+
+  return resultObj;
+}
+
+function getProductObjFromFormInputs() {
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
+  );
+  const inputPrice = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
+  );
+  const inputSpecs = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
+  );
+  const inputRating = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
+  );
+  const inputSupplierInfo = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SUPPLIER_INFO}`
+  );
+  const inputCountry = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_COUNTRY}`
+  );
+  const inputProdCompany = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PROD_COMPANY}`
+  );
+  const inputStatus = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_STATUS}`
+  );
+
+  return {
+    [CONSTANTS.SERVER.KEYS.PRODUCT.NAME]: inputName.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.PRICE]: inputPrice.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.SPECS]: inputSpecs.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.RATING]: inputRating.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.SUPPLIER_INFO]: inputSupplierInfo.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.COUNTRY]: inputCountry.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.PROD_COMPANY]: inputProdCompany.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.STATUS]: inputStatus.value,
+  };
+}
+
+function addErrorToInput(input, inputWrapper, errorMsg) {
+  input.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD);
+  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
+  inputWrapper.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
+}
+
+function removeErrorFromInput(input, inputWrapper) {
+  input.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD);
+  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
+    CONSTANTS.DEFAULT_ERROR_MSG;
+  inputWrapper.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
+}
+
+function validateCreateStoreForm() {
+  const nameIsOk = validateCreateStoreName();
+  const emailIsOk = validateCreateStoreEmail();
+  const phoneIsOk = validateCreateStorePhone();
+  const floorAreaIsOk = validateCreateStoreFloorArea();
+
+  return nameIsOk && emailIsOk && phoneIsOk && floorAreaIsOk;
+}
+
+function validateCreateStoreName() {
+  const inputNameWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME_WRAPPER}`
+  );
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
+  );
+
+  if (!inputName.value) {
+    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    return false;
+  } else if (
+    inputName.value
+      .split(" ")
+      .map((word) => word.length)
+      .find((wordLength) => wordLength > 15)
+  ) {
+    addErrorToInput(
+      inputName,
+      inputNameWrapper,
+      "Name can not contain words with >15 symbols!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputName, inputNameWrapper);
+    return true;
+  }
+}
+
+function validateCreateStoreEmail() {
+  const inputEmailWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL_WRAPPER}`
+  );
+  const inputEmail = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
+  );
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  if (!inputEmail.value) {
+    addErrorToInput(inputEmail, inputEmailWrapper, "Email can not be empty!");
+    return false;
+  } else if (!emailRegex.test(inputEmail.value)) {
+    addErrorToInput(
+      inputEmail,
+      inputEmailWrapper,
+      "Email you have entered is invalid!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputEmail, inputEmailWrapper);
+    return true;
+  }
+}
+
+function validateCreateStorePhone() {
+  const inputPhoneWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE_WRAPPER}`
+  );
+  const inputPhone = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
+  );
+
+  if (!inputPhone.value) {
+    addErrorToInput(inputPhone, inputPhoneWrapper, "Phone can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputPhone, inputPhoneWrapper);
+    return true;
+  }
+}
+
+function validateCreateStoreFloorArea() {
+  const inputFloorAreaWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA_WRAPPER}`
+  );
+  const inputFloorArea = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
+  );
+
+  if (inputFloorArea.value && +inputFloorArea.value <= 0) {
+    addErrorToInput(
+      inputFloorArea,
+      inputFloorAreaWrapper,
+      "Floor area must be positive!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputFloorArea, inputFloorAreaWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductForm() {
+  // TODO
 }
 
 function getFetchOperationsAmountForSpinner(spinnerId) {
