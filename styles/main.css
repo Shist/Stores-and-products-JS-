@@ -476,10 +476,6 @@
   width: 100%;
 }
 
-.products-table__body {
-  position: relative;
-}
-
 .products-table__head {
   background-color: #f7f7f7;
 }
@@ -798,6 +794,10 @@
 }
 .footer-delete-btn:hover {
   transform: scale(1.05);
+}
+.footer-delete-btn:disabled {
+  transform: none;
+  filter: grayscale(0.5);
 }
 
 .footer-delete-btn__icon-trash {

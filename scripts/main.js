@@ -1365,6 +1365,8 @@ function onConfirmCreateStoreClick() {
 }
 
 function onConfirmDeleteStoreClick() {
+  document.querySelector(`#${CONSTANTS.BTN_DELETE_STORE_ID}`).disabled = true;
+
   closeDeleteStoreModal();
 
   setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.DELETING);
@@ -1393,6 +1395,9 @@ function onConfirmDeleteStoreClick() {
       showErrorPopup(error.message);
     })
     .finally(() => {
+      document.querySelector(
+        `#${CONSTANTS.BTN_DELETE_STORE_ID}`
+      ).disabled = false;
       removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 }
