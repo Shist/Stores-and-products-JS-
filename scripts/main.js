@@ -105,6 +105,7 @@ const CONSTANTS = {
   },
   PRODUCTS_TABLE_ID: {
     TABLE_WRAPPER: "products-table-wrapper",
+    TABLE: "products-table",
     HEAD: "products-table-head",
     HEAD_NAME: "product-table-name-wrapper",
     HEAD_TITLES: "product-table-titles-wrapper",
@@ -140,7 +141,6 @@ const CONSTANTS = {
     DETAILS_SPINNER_FETHES: "detailsSpinnerFetches",
     FILTERS_SPINNER_FETHES: "filtersSpinnerFetches",
     PRODUCTS_LIST_SPINNER_FETHES: "productsListSpinnerFetches",
-    NEW_PRODUCTS_LIST_SPINNER_NEEDED: "newProductsListSpinnerNeeded",
   },
   JS_CLASS: {
     HIDDEN_ELEMENT: "js-hidden-element",
@@ -172,6 +172,14 @@ const CONSTANTS = {
     SPINNER_INIT_HEIGHT: {
       KEBAB: "init-height",
       CAMEL: "initHeight",
+    },
+    SPINNER_INIT_WIDTH: {
+      KEBAB: "init-width",
+      CAMEL: "initWidth",
+    },
+    WINDOW_INIT_WIDTH: {
+      KEBAB: "window-init-width",
+      CAMEL: "windowInitWidth",
     },
     ERROR_MSG: {
       KEBAB: "error-msg",
@@ -488,27 +496,7 @@ function updateProductsTableBody(productsList) {
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
-  // Note: if this is the last productsList fetch update, then we say we don't need new spinner
-  if (
-    getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) ===
-    1
-  ) {
-    localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
-      "false"
-    );
-  } else {
-    localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
-      "true"
-    );
-  }
-
-  describeProductsListSpinnerResizeListener();
-
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
-
-  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
 }
 
 function showErrorPopup(errorMsg) {
@@ -545,15 +533,18 @@ function setStoresListSpinner(spinnerText) {
       `#${CONSTANTS.STORES_LIST_SECTION_ID}`
     );
 
+    const spinnerOptions = {
+      spinnerId: CONSTANTS.SPINNERS_ID.STORES_LIST,
+      targetText: spinnerText,
+      targetWidth: `${storesListSection.offsetWidth}px`,
+      targetMinWidth: 0,
+      targetHeight: `${window.innerHeight - storesListHeader.offsetHeight}px`,
+      targetBgColor: "white",
+    };
+
     storesListSection.insertAdjacentHTML(
       "afterbegin",
-      getSpinnerStructure(
-        CONSTANTS.SPINNERS_ID.STORES_LIST,
-        spinnerText,
-        storesListSection.offsetWidth,
-        window.innerHeight - storesListHeader.offsetHeight,
-        "white"
-      )
+      getSpinnerStructure(spinnerOptions)
     );
   } else {
     const currSpinner = document.querySelector(
@@ -573,16 +564,23 @@ function setStoreDetailsSpinner(spinnerText) {
     const storesDetailsDescriptionWrapper = document.querySelector(
       `#${CONSTANTS.STORE_DETAILS_DESCRIPTION_WRAPPER_ID}`
     );
+    const targetWidthPercent =
+      (storesDetailsDescriptionWrapper.offsetWidth /
+        document.body.offsetWidth) *
+      100;
+
+    const spinnerOptions = {
+      spinnerId: CONSTANTS.SPINNERS_ID.STORE_DETAILS,
+      targetText: spinnerText,
+      targetWidth: `${targetWidthPercent}%`,
+      targetMinWidth: "450px",
+      targetHeight: `${storesDetailsDescriptionWrapper.offsetHeight}px`,
+      targetBgColor: "#eff4f8",
+    };
 
     storesDetailsDescriptionWrapper.insertAdjacentHTML(
       "afterbegin",
-      getSpinnerStructure(
-        CONSTANTS.SPINNERS_ID.STORE_DETAILS,
-        spinnerText,
-        storesDetailsDescriptionWrapper.offsetWidth,
-        storesDetailsDescriptionWrapper.offsetHeight,
-        "#eff4f8"
-      )
+      getSpinnerStructure(spinnerOptions)
     );
   } else {
     const currSpinner = document.querySelector(
@@ -607,16 +605,20 @@ function setProductsAmountSpinner(spinnerText) {
       filtersWrapper.offsetWidth -
       parseFloat(filtersWrapperComputedStyle.paddingLeft) -
       parseFloat(filtersWrapperComputedStyle.paddingRight);
+    const targetWidthPercent = (targetWidth / document.body.offsetWidth) * 100;
+
+    const spinnerOptions = {
+      spinnerId: CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
+      targetText: spinnerText,
+      targetWidth: `${targetWidthPercent}%`,
+      targetMinWidth: "400px",
+      targetHeight: `${filtersWrapper.offsetHeight}px`,
+      targetBgColor: "#eff4f8",
+    };
 
     filtersWrapper.insertAdjacentHTML(
       "afterbegin",
-      getSpinnerStructure(
-        CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS,
-        spinnerText,
-        targetWidth,
-        filtersWrapper.offsetHeight,
-        "#eff4f8"
-      )
+      getSpinnerStructure(spinnerOptions)
     );
   } else {
     const currSpinner = document.querySelector(
@@ -630,33 +632,30 @@ function setProductsAmountSpinner(spinnerText) {
 }
 
 function setProductsListSpinner(spinnerText) {
-  // Note: in some cases we need to set new spinner if the old one was wiped out by .innerHTML()
   if (
-    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) ||
-    localStorage.getItem(
-      CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED
-    ) === "true"
+    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST)
   ) {
-    const tableBody = document.querySelector(
-      `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
+    const table = document.querySelector(
+      `#${CONSTANTS.PRODUCTS_TABLE_ID.TABLE}`
     );
-    const offsetObj = getTopOffsetForProductListSpinner();
-    const targetHeight = window.innerHeight - offsetObj.wholeOffset;
+    const topOffsetObj = getTopOffsetForProductListSpinner();
+    const targetHeight = window.innerHeight - topOffsetObj.wholeOffset;
 
-    tableBody.insertAdjacentHTML(
-      "afterbegin",
-      getSpinnerStructure(
-        CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
-        spinnerText,
-        tableBody.offsetWidth,
-        targetHeight,
-        "white"
-      )
-    );
+    const spinnerOptions = {
+      spinnerId: CONSTANTS.SPINNERS_ID.PRODUCTS_LIST,
+      targetText: spinnerText,
+      targetWidth: `${table.offsetWidth}px`,
+      targetMinWidth: 0,
+      targetHeight: `${targetHeight}px`,
+      targetBgColor: "white",
+    };
 
-    resizeAndMoveProductsListSpinner();
+    table.insertAdjacentHTML("afterbegin", getSpinnerStructure(spinnerOptions));
 
-    setProductsListSpinnerResizeListener();
+    resizeWidthProductsListSpinner();
+    resizeHeightAndMoveProductsListSpinner();
+
+    setProductsListSpinnerResizeListeners();
   } else {
     const currSpinner = document.querySelector(
       `#${CONSTANTS.SPINNERS_ID.PRODUCTS_LIST}`
@@ -693,7 +692,7 @@ function getTopOffsetForProductListSpinner() {
   };
 }
 
-function resizeAndMoveProductsListSpinner() {
+function resizeHeightAndMoveProductsListSpinner() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
   );
@@ -703,10 +702,9 @@ function resizeAndMoveProductsListSpinner() {
 
   if (productsListSpinner) {
     let offsetDiff = storeDetailsWrapper.scrollTop;
-    const spinnerInitHeight =
-      +productsListSpinner.dataset[
-        CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
-      ];
+    const spinnerInitHeight = +productsListSpinner.dataset[
+      CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
+    ].replace(/\D/g, "");
     const offsetObj = getTopOffsetForProductListSpinner();
     const maxOffsetDiff =
       offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
@@ -714,8 +712,31 @@ function resizeAndMoveProductsListSpinner() {
     if (offsetDiff > maxOffsetDiff) {
       offsetDiff = maxOffsetDiff;
     }
+
     productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
     productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
+  }
+}
+
+function resizeWidthProductsListSpinner() {
+  const productsListSpinner = document.querySelector(
+    `#${CONSTANTS.SPINNERS_ID.PRODUCTS_LIST}`
+  );
+
+  if (productsListSpinner) {
+    const windowInitWidth = +productsListSpinner.dataset[
+      CONSTANTS.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    const spinnerInitWidth = +productsListSpinner.dataset[
+      CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    let offsetDiff = window.innerWidth - windowInitWidth;
+
+    if (window.innerWidth <= 960) {
+      offsetDiff += 320;
+    }
+
+    productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
   }
 }
 
@@ -725,6 +746,10 @@ function removeSpinnerById(spinnerId) {
   const spinnerToRemove = document.querySelector(`#${spinnerId}`);
 
   if (spinnerToRemove && !getFetchOperationsAmountForSpinner(spinnerId)) {
+    if (spinnerId === CONSTANTS.SPINNERS_ID.PRODUCTS_LIST) {
+      describeProductsListSpinnerResizeListeners();
+    }
+
     spinnerToRemove.remove();
   }
 }
@@ -951,20 +976,20 @@ function getStructureForRatingStars(productRating, productId) {
   );
 }
 
-function getSpinnerStructure(
+function getSpinnerStructure({
   spinnerId,
   targetText,
   targetWidth,
+  targetMinWidth,
   targetHeight,
-  targetBgColor
-) {
+  targetBgColor,
+}) {
+  const windowWidth = window.innerWidth;
   return `<div class="stores-list-section__loading-data-layout" id="${spinnerId}"
-          style="width:${
-            (targetWidth / document.body.offsetWidth) * 100
-          }%;height:${targetHeight}px;background-color:${targetBgColor}"
-          data-${
-            CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB
-          }="${targetHeight}">
+          style="width:${targetWidth};min-width:${targetMinWidth};height:${targetHeight};background-color:${targetBgColor}"
+          data-${CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB}="${targetHeight}"
+          data-${CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.KEBAB}="${targetWidth}"
+          data-${CONSTANTS.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.KEBAB}="${windowWidth}">
             <span class="stores-list-section__loading-data-text"
               >${targetText}</span
             >
@@ -976,7 +1001,7 @@ function getSpinnerStructure(
           </div>`;
 }
 
-// Functions for setting listeners to UI elements
+// Functions for setting listeners to UI elements and their onClick functions
 function setSearchStoresListeners() {
   const searchInput = document.querySelector(
     `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
@@ -1586,28 +1611,31 @@ function closeErrorModal() {
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-// This listener is needed to change size and offset for productsList table spinner if user scrolls products table
-function setProductsListSpinnerResizeListener() {
+// These listeners are needed to change size and offset for productsList table spinner
+// if user scrolls table or resizes window
+function setProductsListSpinnerResizeListeners() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
   );
 
   storeDetailsWrapper.addEventListener(
     "scroll",
-    resizeAndMoveProductsListSpinner
+    resizeHeightAndMoveProductsListSpinner
   );
+  window.addEventListener("resize", resizeWidthProductsListSpinner);
 }
 
-// We should not forget to describe this listener from wrapper when productsList table spinner is removed
-function describeProductsListSpinnerResizeListener() {
+// We should not forget to describe these listeners when productsList table spinner is removed
+function describeProductsListSpinnerResizeListeners() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
   );
 
   storeDetailsWrapper.removeEventListener(
     "scroll",
-    resizeAndMoveProductsListSpinner
+    resizeHeightAndMoveProductsListSpinner
   );
+  window.removeEventListener("resize", resizeWidthProductsListSpinner);
 }
 
 // Other supporting functions
@@ -1635,10 +1663,6 @@ function initLocalStorageData() {
   localStorage.setItem(
     CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
     "0"
-  );
-  localStorage.setItem(
-    CONSTANTS.LOCAL_STORAGE_ID.NEW_PRODUCTS_LIST_SPINNER_NEEDED,
-    "true"
   );
 }
 
