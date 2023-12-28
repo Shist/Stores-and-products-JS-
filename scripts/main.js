@@ -134,6 +134,7 @@ const CONSTANTS = {
   },
   LOCAL_STORAGE_ID: {
     CURR_STORE_ID: "currStoreId",
+    BOOKMARK_DETECTED: "bookmarkIsDetected",
     CURR_PRODUCT_ID: "currProductId",
     CURR_FILTER_ID: "currFilterId",
     CURR_SORT_KEY: "currSortKey",
@@ -251,6 +252,7 @@ const CONSTANTS = {
   MODAL_FIELD_INPUT_CLASS: "modal-window__field-input",
   DEFAULT_ERROR_MSG: "No errors yet...",
   DEFAULT_NOT_SPECIFIED_MSG: "(not specified)",
+  BOOKMARK_QUERY_STORE_ID: "store-id",
 };
 
 // Functions for updating UI
@@ -320,6 +322,16 @@ function updateAllStoreDetails() {
     })
     .catch((error) => {
       showErrorPopup(error.message);
+      if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
+        const storeDetailsWrapper = document.querySelector(
+          `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
+        );
+        const storeNotFoundWrapper = document.querySelector(
+          `#${CONSTANTS.STORE_NOT_FOUND_WRAPPER_ID}`
+        );
+        storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+        storeNotFoundWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+      }
     })
     .finally(() => {
       removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -362,10 +374,14 @@ function updateStoreDetailsVisibility() {
   const noStoreDetailsWrapper = document.querySelector(
     `#${CONSTANTS.NO_STORE_DETAILS_WRAPPER_ID}`
   );
+  const storeNotFoundWrapper = document.querySelector(
+    `#${CONSTANTS.STORE_NOT_FOUND_WRAPPER_ID}`
+  );
 
   if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)) {
     storeDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
     noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
+    storeNotFoundWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
   } else {
     storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
     noStoreDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
@@ -1051,6 +1067,11 @@ function onStoreCardClick(e) {
       CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID,
       currItemCard.dataset[CONSTANTS.DATA_ATTRIBUTE.STORE_ID.CAMEL]
     );
+
+    if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
+      updateBookmarkInsideURL();
+    }
+
     updateAllStoreDetails();
   }
 }
@@ -1375,6 +1396,9 @@ function onConfirmDeleteStoreClick() {
   deleteStore(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then(() => {
       localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+      if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
+        updateBookmarkInsideURL();
+      }
       updateStoreDetailsVisibility();
 
       setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
@@ -1657,6 +1681,7 @@ function clearSortFiltersFromLocalStorage() {
 
 function initLocalStorageData() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
   clearSortFiltersFromLocalStorage();
@@ -2133,6 +2158,31 @@ function minusFetchOperationForSpinner(spinnerId) {
   }
 }
 
+function loadStoreIdFromBookmark() {
+  const queryParams = new URLSearchParams(window.location.search);
+
+  const storeId = queryParams.get(CONSTANTS.BOOKMARK_QUERY_STORE_ID);
+
+  if (storeId) {
+    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED, "true");
+    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID, storeId);
+    updateAllStoreDetails();
+  }
+}
+
+function updateBookmarkInsideURL() {
+  const currURL = window.location.href;
+  const currStoreId = localStorage.getItem(
+    CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
+  );
+  const bookmarkKey = CONSTANTS.BOOKMARK_QUERY_STORE_ID;
+  const regexPattern = new RegExp(bookmarkKey + "=[^&]+");
+
+  const newUrl = currURL.replace(regexPattern, `${bookmarkKey}=${currStoreId}`);
+
+  history.pushState(null, null, newUrl);
+}
+
 // Functions for working with server
 async function getData(endPoint) {
   try {
@@ -2401,6 +2451,17 @@ document.addEventListener("DOMContentLoaded", () => {
   initLocalStorageData();
 
   setSearchStoresListeners();
+  setStoresCardsClickListener();
+
+  setFiltersBtnsListener();
+  renderProductsTableHead();
+  setTableBtnsListener();
+
+  setFootersBtnsListeners();
+  setModalsConfirmBtnsListeners();
+  setModalsCancelBtnsListeners();
+
+  loadStoreIdFromBookmark();
 
   setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
@@ -2408,20 +2469,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((storesList) => {
       if (Array.isArray(storesList)) {
         updateStoresList(storesList);
-
-        setStoresCardsClickListener();
-
-        setFiltersBtnsListener();
-
-        renderProductsTableHead();
-
-        setFootersBtnsListeners();
-
-        setTableBtnsListener();
-
-        setModalsConfirmBtnsListeners();
-
-        setModalsCancelBtnsListeners();
       }
     })
     .catch((error) => {
