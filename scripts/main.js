@@ -267,7 +267,7 @@ function updateStoresList(storesList) {
     CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
   );
 
-  updateNoStoresLayout(storesList);
+  updateStoresListLayout(storesList);
 
   storesListSection.innerHTML = getStructureForStoresList(storesList);
 
@@ -276,7 +276,7 @@ function updateStoresList(storesList) {
   }
 }
 
-function updateNoStoresLayout(storesList) {
+function updateStoresListLayout(storesList) {
   const noStoresLayout = document.querySelector(
     `#${CONSTANTS.NO_STORES_LAYOUT_ID}`
   );
@@ -295,7 +295,7 @@ function renderProductsTableHead() {
 
   productsTableHead.innerHTML = getStructureForTableHead();
 
-  setSortBtnsListener();
+  setTableSortBtnsListener();
 
   setSearchProductsListeners();
 }
@@ -305,7 +305,7 @@ function updateAllStoreDetails() {
 
   highlightActiveStoreCard();
 
-  updateStoreDetailsVisibility();
+  updateStoreDetailsLayout();
 
   updateStoreDescription();
 
@@ -318,7 +318,7 @@ function updateAllStoreDetails() {
   )
     .then((searchedProductsList) => {
       if (Array.isArray(searchedProductsList)) {
-        updateProductsFilters(searchedProductsList);
+        updateProductsAmounts(searchedProductsList);
 
         updateProductsTableBody(searchedProductsList);
       }
@@ -337,15 +337,15 @@ function updateAllStoreDetails() {
       }
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
 function setProductsTableHeadToDefault() {
-  setCurrFilterBtn(CONSTANTS.FILTER_ID.ALL);
+  setCurrProductsFilterBtn(CONSTANTS.FILTER_ID.ALL);
 
-  clearSortFiltersFromLocalStorage();
+  clearTableSortFiltersFromLocalStorage();
 
   setAllSortBtnsToDefault();
 
@@ -370,7 +370,7 @@ function highlightActiveStoreCard() {
     ?.classList.add(CONSTANTS.JS_CLASS.SELECTED_ITEM);
 }
 
-function updateStoreDetailsVisibility() {
+function updateStoreDetailsLayout() {
   const storeDetailsWrapper = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
   );
@@ -392,7 +392,7 @@ function updateStoreDetailsVisibility() {
 }
 
 function updateStoreDescription() {
-  setStoreDetailsSpinner(CONSTANTS.SPINNER_TEXT.STORE_DETAILS.LOADING);
+  setStoreDescriptionSpinner(CONSTANTS.SPINNER_TEXT.STORE_DETAILS.LOADING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
   getStoreById(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then((store) => {
@@ -450,7 +450,7 @@ function updateStoreDescription() {
       showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
     });
 }
 
@@ -471,7 +471,7 @@ function setProductSearchLineToDefault() {
   document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`).value = "";
 }
 
-function setCurrFilterBtn(filterBtnId) {
+function setCurrProductsFilterBtn(filterBtnId) {
   const filterToOff = localStorage.getItem(
     CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
   );
@@ -489,7 +489,7 @@ function setCurrFilterBtn(filterBtnId) {
     ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
 }
 
-function updateProductsFilters(searchedProductsListWithoutFilter) {
+function updateProductsAmounts(searchedProductsListWithoutFilter) {
   const prodAmountField = document.querySelector(
     `#${CONSTANTS.PRODUCTS_AMOUNTS_ID.ALL}`
   );
@@ -519,6 +519,22 @@ function updateProductsTableBody(productsList) {
   productsTableBody.innerHTML = getStructureForTableBody(productsList);
 }
 
+function showErrorModal() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
+  );
+
+  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function closeErrorModal() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
+  );
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
 function showPopupWithMsg(msg, color) {
   const popupsWrapper = document.querySelector(
     `#${CONSTANTS.POPUPS_WRAPPER_ID}`
@@ -542,6 +558,216 @@ function showPopupWithMsg(msg, color) {
       popup.remove();
     }, 2000);
   }, 5000);
+}
+
+// Functions for form validations
+function addErrorToInput(input, inputWrapper, errorMsg) {
+  input.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD);
+  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
+  inputWrapper.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
+}
+
+function removeErrorFromInput(input, inputWrapper) {
+  input.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD);
+  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
+    CONSTANTS.DEFAULT_ERROR_MSG;
+  inputWrapper.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
+}
+
+function validateCreateStoreForm() {
+  const nameIsOk = validateCreateStoreName();
+  const emailIsOk = validateCreateStoreEmail();
+  const phoneIsOk = validateCreateStorePhone();
+  const floorAreaIsOk = validateCreateStoreFloorArea();
+
+  return nameIsOk && emailIsOk && phoneIsOk && floorAreaIsOk;
+}
+
+function validateCreateStoreName() {
+  const inputNameWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME_WRAPPER}`
+  );
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
+  );
+
+  if (!inputName.value) {
+    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    return false;
+  } else if (
+    inputName.value
+      .split(" ")
+      .map((word) => word.length)
+      .find((wordLength) => wordLength > 15)
+  ) {
+    addErrorToInput(
+      inputName,
+      inputNameWrapper,
+      "Name can not contain words with >15 symbols!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputName, inputNameWrapper);
+    return true;
+  }
+}
+
+function validateCreateStoreEmail() {
+  const inputEmailWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL_WRAPPER}`
+  );
+  const inputEmail = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
+  );
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  if (!inputEmail.value) {
+    addErrorToInput(inputEmail, inputEmailWrapper, "Email can not be empty!");
+    return false;
+  } else if (!emailRegex.test(inputEmail.value)) {
+    addErrorToInput(
+      inputEmail,
+      inputEmailWrapper,
+      "Email you have entered is invalid!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputEmail, inputEmailWrapper);
+    return true;
+  }
+}
+
+function validateCreateStorePhone() {
+  const inputPhoneWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE_WRAPPER}`
+  );
+  const inputPhone = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
+  );
+
+  if (!inputPhone.value) {
+    addErrorToInput(inputPhone, inputPhoneWrapper, "Phone can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputPhone, inputPhoneWrapper);
+    return true;
+  }
+}
+
+function validateCreateStoreFloorArea() {
+  const inputFloorAreaWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA_WRAPPER}`
+  );
+  const inputFloorArea = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
+  );
+
+  if (inputFloorArea.value && +inputFloorArea.value <= 0) {
+    addErrorToInput(
+      inputFloorArea,
+      inputFloorAreaWrapper,
+      "Floor area must be positive!"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputFloorArea, inputFloorAreaWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductForm() {
+  const nameIsOk = validateCreateProductName();
+  const priceIsOk = validateCreateProductPrice();
+  const specsIsOk = validateCreateProductSpecs();
+  const ratingIsOk = validateCreateProductRating();
+
+  return nameIsOk && priceIsOk && specsIsOk && ratingIsOk;
+}
+
+function validateCreateProductName() {
+  const inputNameWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME_WRAPPER}`
+  );
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
+  );
+
+  if (!inputName.value) {
+    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputName, inputNameWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductPrice() {
+  const inputPriceWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE_WRAPPER}`
+  );
+  const inputPrice = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
+  );
+
+  if (inputPrice.value && +inputPrice.value <= 0) {
+    addErrorToInput(inputPrice, inputPriceWrapper, "Price must be positive!");
+    return false;
+  } else {
+    removeErrorFromInput(inputPrice, inputPriceWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductSpecs() {
+  const inputSpecsWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS_WRAPPER}`
+  );
+  const inputSpecs = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
+  );
+
+  if (!inputSpecs.value) {
+    addErrorToInput(inputSpecs, inputSpecsWrapper, "Specs can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputSpecs, inputSpecsWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductRating() {
+  const inputRatingWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING_WRAPPER}`
+  );
+  const inputRating = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
+  );
+
+  if (inputRating.value && +inputRating.value < 1) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must be at least 1!"
+    );
+    return false;
+  } else if (inputRating.value && +inputRating.value > 5) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must be no more than 5!"
+    );
+    return false;
+  } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must have an integer value"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputRating, inputRatingWrapper);
+    return true;
+  }
 }
 
 // Functions for setting spinners
@@ -578,7 +804,7 @@ function setStoresListSpinner(spinnerText) {
   }
 }
 
-function setStoreDetailsSpinner(spinnerText) {
+function setStoreDescriptionSpinner(spinnerText) {
   if (
     !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.STORE_DETAILS)
   ) {
@@ -659,7 +885,7 @@ function setProductsListSpinner(spinnerText) {
     const table = document.querySelector(
       `#${CONSTANTS.PRODUCTS_TABLE_ID.TABLE}`
     );
-    const topOffsetObj = getTopOffsetForProductListSpinner();
+    const topOffsetObj = getTopOffsetForProductsListSpinner();
     const targetHeight = window.innerHeight - topOffsetObj.wholeOffset;
 
     const spinnerOptions = {
@@ -673,7 +899,7 @@ function setProductsListSpinner(spinnerText) {
 
     table.insertAdjacentHTML("afterbegin", getSpinnerStructure(spinnerOptions));
 
-    resizeWidthProductsListSpinner();
+    resizeWidthForProductsListSpinner();
     resizeHeightAndMoveProductsListSpinner();
 
     setProductsListSpinnerResizeListeners();
@@ -688,7 +914,7 @@ function setProductsListSpinner(spinnerText) {
   }
 }
 
-function getTopOffsetForProductListSpinner() {
+function getTopOffsetForProductsListSpinner() {
   const storeDetailsHeader = document.querySelector(
     `#${CONSTANTS.STORE_DETAILS_HEADER_ID}`
   );
@@ -726,7 +952,7 @@ function resizeHeightAndMoveProductsListSpinner() {
     const spinnerInitHeight = +productsListSpinner.dataset[
       CONSTANTS.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
     ].replace(/\D/g, "");
-    const offsetObj = getTopOffsetForProductListSpinner();
+    const offsetObj = getTopOffsetForProductsListSpinner();
     const maxOffsetDiff =
       offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
 
@@ -739,7 +965,7 @@ function resizeHeightAndMoveProductsListSpinner() {
   }
 }
 
-function resizeWidthProductsListSpinner() {
+function resizeWidthForProductsListSpinner() {
   const productsListSpinner = document.querySelector(
     `#${CONSTANTS.SPINNERS_ID.PRODUCTS_LIST}`
   );
@@ -761,7 +987,7 @@ function resizeWidthProductsListSpinner() {
   }
 }
 
-function removeSpinnerById(spinnerId) {
+function requestSpinnerRemovingById(spinnerId) {
   minusFetchOperationForSpinner(spinnerId);
 
   const spinnerToRemove = document.querySelector(`#${spinnerId}`);
@@ -1048,7 +1274,7 @@ function onSearchStoresClick() {
       showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 }
 
@@ -1080,15 +1306,15 @@ function onStoreCardClick(e) {
   }
 }
 
-function setFiltersBtnsListener() {
+function setProductsFiltersBtnsListener() {
   const filtersWrapper = document.querySelector(
     `#${CONSTANTS.FILTER_WRAPPER_ID}`
   );
 
-  filtersWrapper.addEventListener("click", onFilterBtnClick);
+  filtersWrapper.addEventListener("click", onProductsFilterBtnClick);
 }
 
-function onFilterBtnClick(e) {
+function onProductsFilterBtnClick(e) {
   const newFilterBtn = e.target.closest(`.${CONSTANTS.FILTER_BTN_CLASS}`);
 
   if (
@@ -1096,7 +1322,7 @@ function onFilterBtnClick(e) {
     newFilterBtn.id !==
       localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID)
   ) {
-    setCurrFilterBtn(newFilterBtn.id);
+    setCurrProductsFilterBtn(newFilterBtn.id);
 
     setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
     plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1112,20 +1338,20 @@ function onFilterBtnClick(e) {
         showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
       })
       .finally(() => {
-        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
       });
   }
 }
 
-function setSortBtnsListener() {
+function setTableSortBtnsListener() {
   const productTableTitlesWrapper = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.HEAD_TITLES}`
   );
 
-  productTableTitlesWrapper.addEventListener("click", onSortBtnClick);
+  productTableTitlesWrapper.addEventListener("click", onTableSortBtnClick);
 }
 
-function onSortBtnClick(e) {
+function onTableSortBtnClick(e) {
   if (e.target.classList.contains(CONSTANTS.SORT_BTN_CLASS)) {
     const currSortBtn = e.target;
     const sortKey =
@@ -1139,7 +1365,7 @@ function onSortBtnClick(e) {
           CONSTANTS.SORT_ORDER.ASC;
         currSortBtn.classList.add(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
 
-        setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
+        setTableSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.ASC);
 
         setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1155,7 +1381,7 @@ function onSortBtnClick(e) {
             showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
           })
           .finally(() => {
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -1165,7 +1391,7 @@ function onSortBtnClick(e) {
         currSortBtn.classList.remove(CONSTANTS.JS_CLASS.ASC_SORT_BTN);
         currSortBtn.classList.add(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
-        setSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
+        setTableSortFiltersToLocalStorage(sortKey, CONSTANTS.SORT_ORDER.DESC);
 
         setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1181,7 +1407,7 @@ function onSortBtnClick(e) {
             showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
           })
           .finally(() => {
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -1190,7 +1416,7 @@ function onSortBtnClick(e) {
           CONSTANTS.SORT_ORDER.DEFAULT;
         currSortBtn.classList.remove(CONSTANTS.JS_CLASS.DESC_SORT_BTN);
 
-        clearSortFiltersFromLocalStorage();
+        clearTableSortFiltersFromLocalStorage();
 
         setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1206,7 +1432,7 @@ function onSortBtnClick(e) {
             showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
           })
           .finally(() => {
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
 
         break;
@@ -1239,7 +1465,7 @@ function onSearchProductsClick() {
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
   ).then((searchedProductsList) => {
     if (Array.isArray(searchedProductsList)) {
-      updateProductsFilters(searchedProductsList);
+      updateProductsAmounts(searchedProductsList);
     }
   });
 
@@ -1260,8 +1486,8 @@ function onSearchProductsClick() {
       showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
@@ -1305,15 +1531,15 @@ function onCreateProductClick() {
   modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function setTableBtnsListener() {
+function setTableRowsBtnsListener() {
   const tableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
 
-  tableBody.addEventListener("click", onTableBtnClick);
+  tableBody.addEventListener("click", onTableRowsBtnClick);
 }
 
-function onTableBtnClick(e) {
+function onTableRowsBtnClick(e) {
   if (e.target.classList.contains(CONSTANTS.CROSS_BTN_CLASS)) {
     const modalWrapper = document.querySelector(
       `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
@@ -1381,14 +1607,14 @@ function onConfirmCreateStoreClick() {
             showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
           })
           .finally(() => {
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
           });
       })
       .catch((error) => {
         showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
       })
       .finally(() => {
-        removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
       });
   } else {
     showErrorModal();
@@ -1413,7 +1639,7 @@ function onConfirmDeleteStoreClick() {
       if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
         updateBookmarkInsideURL();
       }
-      updateStoreDetailsVisibility();
+      updateStoreDetailsLayout();
 
       setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
       plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
@@ -1427,7 +1653,7 @@ function onConfirmDeleteStoreClick() {
           showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
         })
         .finally(() => {
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+          requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
         });
     })
     .catch((error) => {
@@ -1437,7 +1663,7 @@ function onConfirmDeleteStoreClick() {
       document.querySelector(
         `#${CONSTANTS.BTN_DELETE_STORE_ID}`
       ).disabled = false;
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 }
 
@@ -1465,7 +1691,7 @@ function onConfirmCreateProductClick() {
           localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
         ).then((searchedProductsList) => {
           if (Array.isArray(searchedProductsList)) {
-            updateProductsFilters(searchedProductsList);
+            updateProductsAmounts(searchedProductsList);
           }
         });
 
@@ -1489,16 +1715,16 @@ function onConfirmCreateProductClick() {
             showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
           })
           .finally(() => {
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
           });
       })
       .catch((error) => {
         showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
       })
       .finally(() => {
-        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
       });
   } else {
     showErrorModal();
@@ -1527,7 +1753,7 @@ function onConfirmDeleteProductClick() {
         localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
       ).then((searchedProductsList) => {
         if (Array.isArray(searchedProductsList)) {
-          updateProductsFilters(searchedProductsList);
+          updateProductsAmounts(searchedProductsList);
         }
       });
 
@@ -1550,16 +1776,16 @@ function onConfirmDeleteProductClick() {
           showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
         })
         .finally(() => {
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+          requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+          requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         });
     })
     .catch((error) => {
       showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
@@ -1649,22 +1875,6 @@ function closeDeleteProductModal() {
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function showErrorModal() {
-  const modalWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
-  );
-
-  modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
-}
-
-function closeErrorModal() {
-  const modalWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.ERROR.WRAPPER}`
-  );
-
-  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
-}
-
 // These listeners are needed to change size and offset for productsList table spinner
 // if user scrolls table or resizes window
 function setProductsListSpinnerResizeListeners() {
@@ -1676,7 +1886,7 @@ function setProductsListSpinnerResizeListeners() {
     "scroll",
     resizeHeightAndMoveProductsListSpinner
   );
-  window.addEventListener("resize", resizeWidthProductsListSpinner);
+  window.addEventListener("resize", resizeWidthForProductsListSpinner);
 }
 
 // We should not forget to describe these listeners when productsList table spinner is removed
@@ -1689,16 +1899,16 @@ function describeProductsListSpinnerResizeListeners() {
     "scroll",
     resizeHeightAndMoveProductsListSpinner
   );
-  window.removeEventListener("resize", resizeWidthProductsListSpinner);
+  window.removeEventListener("resize", resizeWidthForProductsListSpinner);
 }
 
 // Other supporting functions
-function setSortFiltersToLocalStorage(sortKey, sortOrder) {
+function setTableSortFiltersToLocalStorage(sortKey, sortOrder) {
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY, sortKey);
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER, sortOrder);
 }
 
-function clearSortFiltersFromLocalStorage() {
+function clearTableSortFiltersFromLocalStorage() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
 }
@@ -1708,7 +1918,7 @@ function initLocalStorageData() {
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
   localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
-  clearSortFiltersFromLocalStorage();
+  clearTableSortFiltersFromLocalStorage();
   localStorage.setItem(
     CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
     "0"
@@ -1752,13 +1962,13 @@ function getCurrProductsAmounts(searchedProductsListWithoutFilter) {
   return amountsData;
 }
 
-function getFilterTypeByFilterId(filterId) {
+function getProductsFilterTypeById(filterId) {
   return Object.keys(CONSTANTS.FILTER_ID).find(
     (filterType) => CONSTANTS.FILTER_ID[filterType] === filterId
   );
 }
 
-function getOrderTypeByOrderAttribute(orderAttribute) {
+function getProductsSortOrderTypeByAttribute(orderAttribute) {
   return Object.keys(CONSTANTS.SORT_ORDER).find(
     (orderType) => CONSTANTS.SORT_ORDER[orderType] === orderAttribute
   );
@@ -1844,215 +2054,6 @@ function getProductObjFromFormInputs() {
     [CONSTANTS.SERVER.KEYS.PRODUCT.PROD_COMPANY]: inputProdCompany.value,
     [CONSTANTS.SERVER.KEYS.PRODUCT.STATUS]: inputStatus.value,
   };
-}
-
-function addErrorToInput(input, inputWrapper, errorMsg) {
-  input.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD);
-  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
-  inputWrapper.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
-}
-
-function removeErrorFromInput(input, inputWrapper) {
-  input.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD);
-  inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
-    CONSTANTS.DEFAULT_ERROR_MSG;
-  inputWrapper.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
-}
-
-function validateCreateStoreForm() {
-  const nameIsOk = validateCreateStoreName();
-  const emailIsOk = validateCreateStoreEmail();
-  const phoneIsOk = validateCreateStorePhone();
-  const floorAreaIsOk = validateCreateStoreFloorArea();
-
-  return nameIsOk && emailIsOk && phoneIsOk && floorAreaIsOk;
-}
-
-function validateCreateStoreName() {
-  const inputNameWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME_WRAPPER}`
-  );
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_NAME}`
-  );
-
-  if (!inputName.value) {
-    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
-    return false;
-  } else if (
-    inputName.value
-      .split(" ")
-      .map((word) => word.length)
-      .find((wordLength) => wordLength > 15)
-  ) {
-    addErrorToInput(
-      inputName,
-      inputNameWrapper,
-      "Name can not contain words with >15 symbols!"
-    );
-    return false;
-  } else {
-    removeErrorFromInput(inputName, inputNameWrapper);
-    return true;
-  }
-}
-
-function validateCreateStoreEmail() {
-  const inputEmailWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL_WRAPPER}`
-  );
-  const inputEmail = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_EMAIL}`
-  );
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  if (!inputEmail.value) {
-    addErrorToInput(inputEmail, inputEmailWrapper, "Email can not be empty!");
-    return false;
-  } else if (!emailRegex.test(inputEmail.value)) {
-    addErrorToInput(
-      inputEmail,
-      inputEmailWrapper,
-      "Email you have entered is invalid!"
-    );
-    return false;
-  } else {
-    removeErrorFromInput(inputEmail, inputEmailWrapper);
-    return true;
-  }
-}
-
-function validateCreateStorePhone() {
-  const inputPhoneWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE_WRAPPER}`
-  );
-  const inputPhone = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_PHONE}`
-  );
-
-  if (!inputPhone.value) {
-    addErrorToInput(inputPhone, inputPhoneWrapper, "Phone can not be empty!");
-    return false;
-  } else {
-    removeErrorFromInput(inputPhone, inputPhoneWrapper);
-    return true;
-  }
-}
-
-function validateCreateStoreFloorArea() {
-  const inputFloorAreaWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA_WRAPPER}`
-  );
-  const inputFloorArea = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_STORE.INPUT_FLOOR_AREA}`
-  );
-
-  if (inputFloorArea.value && +inputFloorArea.value <= 0) {
-    addErrorToInput(
-      inputFloorArea,
-      inputFloorAreaWrapper,
-      "Floor area must be positive!"
-    );
-    return false;
-  } else {
-    removeErrorFromInput(inputFloorArea, inputFloorAreaWrapper);
-    return true;
-  }
-}
-
-function validateCreateProductForm() {
-  const nameIsOk = validateCreateProductName();
-  const priceIsOk = validateCreateProductPrice();
-  const specsIsOk = validateCreateProductSpecs();
-  const ratingIsOk = validateCreateProductRating();
-
-  return nameIsOk && priceIsOk && specsIsOk && ratingIsOk;
-}
-
-function validateCreateProductName() {
-  const inputNameWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME_WRAPPER}`
-  );
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
-  );
-
-  if (!inputName.value) {
-    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
-    return false;
-  } else {
-    removeErrorFromInput(inputName, inputNameWrapper);
-    return true;
-  }
-}
-
-function validateCreateProductPrice() {
-  const inputPriceWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE_WRAPPER}`
-  );
-  const inputPrice = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
-  );
-
-  if (inputPrice.value && +inputPrice.value <= 0) {
-    addErrorToInput(inputPrice, inputPriceWrapper, "Price must be positive!");
-    return false;
-  } else {
-    removeErrorFromInput(inputPrice, inputPriceWrapper);
-    return true;
-  }
-}
-
-function validateCreateProductSpecs() {
-  const inputSpecsWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS_WRAPPER}`
-  );
-  const inputSpecs = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
-  );
-
-  if (!inputSpecs.value) {
-    addErrorToInput(inputSpecs, inputSpecsWrapper, "Specs can not be empty!");
-    return false;
-  } else {
-    removeErrorFromInput(inputSpecs, inputSpecsWrapper);
-    return true;
-  }
-}
-
-function validateCreateProductRating() {
-  const inputRatingWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING_WRAPPER}`
-  );
-  const inputRating = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
-  );
-
-  if (inputRating.value && +inputRating.value < 1) {
-    addErrorToInput(
-      inputRating,
-      inputRatingWrapper,
-      "Rating must be at least 1!"
-    );
-    return false;
-  } else if (inputRating.value && +inputRating.value > 5) {
-    addErrorToInput(
-      inputRating,
-      inputRatingWrapper,
-      "Rating must be no more than 5!"
-    );
-    return false;
-  } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
-    addErrorToInput(
-      inputRating,
-      inputRatingWrapper,
-      "Rating must have an integer value"
-    );
-    return false;
-  } else {
-    removeErrorFromInput(inputRating, inputRatingWrapper);
-    return true;
-  }
 }
 
 function getFetchOperationsAmountForSpinner(spinnerId) {
@@ -2334,7 +2335,7 @@ async function getFullFilteredProductsListByStoreId(storeId) {
       if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
         filterObj.where = {
           and: [
-            { Status: getFilterTypeByFilterId(filterId) },
+            { Status: getProductsFilterTypeById(filterId) },
             {
               or: [
                 { Name: { regexp: `/${searchFilterValue}/i` } },
@@ -2368,13 +2369,15 @@ async function getFullFilteredProductsListByStoreId(storeId) {
     } else {
       if (filterId && filterId !== CONSTANTS.FILTER_ID.ALL) {
         filterObj.where = {
-          Status: getFilterTypeByFilterId(filterId),
+          Status: getProductsFilterTypeById(filterId),
         };
       }
     }
 
     if (sortKey && sortOrder && sortOrder !== CONSTANTS.SORT_ORDER.DEFAULT) {
-      filterObj.order = `${sortKey} ${getOrderTypeByOrderAttribute(sortOrder)}`;
+      filterObj.order = `${sortKey} ${getProductsSortOrderTypeByAttribute(
+        sortOrder
+      )}`;
     }
 
     if (filterObj.where || filterObj.order) {
@@ -2477,9 +2480,9 @@ document.addEventListener("DOMContentLoaded", () => {
   setSearchStoresListeners();
   setStoresCardsClickListener();
 
-  setFiltersBtnsListener();
+  setProductsFiltersBtnsListener();
   renderProductsTableHead();
-  setTableBtnsListener();
+  setTableRowsBtnsListener();
 
   setFootersBtnsListeners();
   setModalsConfirmBtnsListeners();
@@ -2499,6 +2502,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
     })
     .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     });
 });
