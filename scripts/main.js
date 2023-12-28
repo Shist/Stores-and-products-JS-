@@ -1417,7 +1417,56 @@ function onConfirmCreateProductClick() {
 }
 
 function onConfirmDeleteProductClick() {
-  // TODO
+  closeDeleteProductModal();
+
+  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING);
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.DELETING);
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+  deleteProduct(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID)
+  )
+    .then(() => {
+      localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
+
+      const searchedProductsPromise = getSearchedProductsListByStoreId(
+        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+      ).then((searchedProductsList) => {
+        if (Array.isArray(searchedProductsList)) {
+          updateProductsFilters(searchedProductsList);
+        }
+      });
+
+      const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
+        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+      ).then((fullFilteredProductsList) => {
+        if (Array.isArray(fullFilteredProductsList)) {
+          updateProductsTableBody(fullFilteredProductsList);
+        }
+      });
+
+      setProductsAmountSpinner(
+        CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+      );
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+        .catch((error) => {
+          showErrorPopup(error.message);
+        })
+        .finally(() => {
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+        });
+    })
+    .catch((error) => {
+      showErrorPopup(error.message);
+    })
+    .finally(() => {
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+    });
 }
 
 function setModalsCancelBtnsListeners() {
@@ -1476,8 +1525,6 @@ function closeDeleteProductModal() {
   const modalWrapper = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
   );
-
-  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
@@ -1958,6 +2005,17 @@ async function deleteStore(storeId) {
   } catch (error) {
     console.error(`Error while deleting store. Reason: ${error.message}`);
     throw new Error(`Error while deleting store. Reason: ${error.message}`);
+  }
+}
+
+async function deleteProduct(productId) {
+  try {
+    return await deleteData(
+      CONSTANTS.SERVER.DELETE.PRODUCT_BY_ID.replace("{productId}", productId)
+    );
+  } catch (error) {
+    console.error(`Error while deleting product. Reason: ${error.message}`);
+    throw new Error(`Error while deleting product. Reason: ${error.message}`);
   }
 }
 
