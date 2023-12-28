@@ -2223,7 +2223,12 @@ function updateBookmarkInsideURL() {
 // Functions for working with server
 async function getData(endPoint) {
   try {
-    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`);
+    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Response status - ${response.statusText}`);
@@ -2413,6 +2418,7 @@ async function postData(endPoint, data) {
       method: "POST",
       headers: {
         "Content-type": "application/json",
+        Accept: "application/json",
       },
       body: data,
     });
@@ -2452,6 +2458,9 @@ async function deleteData(endPoint) {
   try {
     const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`, {
       method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      },
     });
 
     if (!response.ok) {
