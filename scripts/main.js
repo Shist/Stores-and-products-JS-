@@ -541,7 +541,7 @@ function showPopupWithMsg(msg, color) {
     setTimeout(() => {
       popup.remove();
     }, 2000);
-  }, 8000);
+  }, 5000);
 }
 
 // Functions for setting spinners
