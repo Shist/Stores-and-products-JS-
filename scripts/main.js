@@ -325,7 +325,7 @@ function updateAllStoreDetails() {
       }
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
       if (localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
         const storeDetailsWrapper = document.querySelector(
           `#${CONSTANTS.STORE_DETAILS_WRAPPER_ID}`
@@ -448,7 +448,7 @@ function updateStoreDescription() {
       }
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORE_DETAILS);
@@ -536,7 +536,7 @@ function closeErrorModal() {
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function showPopupWithMsg(msg, color) {
+function showPopupWithMsg(msg, color, timeMillisecs) {
   const popupsWrapper = document.querySelector(
     `#${CONSTANTS.POPUPS_WRAPPER_ID}`
   );
@@ -558,7 +558,7 @@ function showPopupWithMsg(msg, color) {
     setTimeout(() => {
       popup.remove();
     }, 2000);
-  }, 5000);
+  }, timeMillisecs);
 }
 
 // Functions for form validations
@@ -1272,7 +1272,7 @@ function onSearchStoresClick() {
       }
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
@@ -1336,7 +1336,7 @@ function onProductsFilterBtnClick(e) {
         }
       })
       .catch((error) => {
-        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
       })
       .finally(() => {
         requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1379,7 +1379,7 @@ function onTableSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
           })
           .finally(() => {
             requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1405,7 +1405,7 @@ function onTableSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
           })
           .finally(() => {
             requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1430,7 +1430,7 @@ function onTableSortBtnClick(e) {
             }
           })
           .catch((error) => {
-            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
           })
           .finally(() => {
             requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
@@ -1484,7 +1484,7 @@ function onSearchProductsClick() {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -1593,7 +1593,8 @@ function onConfirmCreateStoreClick() {
       .then(() => {
         showPopupWithMsg(
           "New store has been successfully created!",
-          CONSTANTS.POPUP_SUCCESS_COLOR
+          CONSTANTS.POPUP_SUCCESS_COLOR,
+          5000
         );
 
         setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.UPDATING);
@@ -1605,14 +1606,14 @@ function onConfirmCreateStoreClick() {
             }
           })
           .catch((error) => {
-            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
           })
           .finally(() => {
             requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
           });
       })
       .catch((error) => {
-        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
       })
       .finally(() => {
         requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
@@ -1636,7 +1637,8 @@ function onConfirmDeleteStoreClick() {
     .then(() => {
       showPopupWithMsg(
         "The store has been successfully deleted.",
-        CONSTANTS.POPUP_ATTENTION_COLOR
+        CONSTANTS.POPUP_ATTENTION_COLOR,
+        5000
       );
 
       localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
@@ -1654,14 +1656,14 @@ function onConfirmDeleteStoreClick() {
           }
         })
         .catch((error) => {
-          showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+          showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
         })
         .finally(() => {
           requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
         });
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       document.querySelector(
@@ -1692,7 +1694,8 @@ function onConfirmCreateProductClick() {
       .then(() => {
         showPopupWithMsg(
           "New product has been successfully created!",
-          CONSTANTS.POPUP_SUCCESS_COLOR
+          CONSTANTS.POPUP_SUCCESS_COLOR,
+          5000
         );
 
         const searchedProductsPromise = getSearchedProductsListByStoreId(
@@ -1720,7 +1723,7 @@ function onConfirmCreateProductClick() {
         plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
         Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
           .catch((error) => {
-            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
           })
           .finally(() => {
             requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -1728,7 +1731,7 @@ function onConfirmCreateProductClick() {
           });
       })
       .catch((error) => {
-        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
       })
       .finally(() => {
         requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -1752,7 +1755,8 @@ function onConfirmDeleteProductClick() {
     .then(() => {
       showPopupWithMsg(
         "The product has been successfully deleted.",
-        CONSTANTS.POPUP_ATTENTION_COLOR
+        CONSTANTS.POPUP_ATTENTION_COLOR,
+        5000
       );
 
       localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
@@ -1781,7 +1785,7 @@ function onConfirmDeleteProductClick() {
       plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
       Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
         .catch((error) => {
-          showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+          showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
         })
         .finally(() => {
           requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -1789,7 +1793,7 @@ function onConfirmDeleteProductClick() {
         });
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
@@ -2507,7 +2511,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
     .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR);
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
     })
     .finally(() => {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
