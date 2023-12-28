@@ -81,6 +81,7 @@ const CONSTANTS = {
   STORE_DETAILS_HEADER_ID: "store-details-header",
   STORE_DETAILS_WRAPPER_ID: "store-details-wrapper",
   NO_STORE_DETAILS_WRAPPER_ID: "no-store-details-wrapper",
+  STORE_NOT_FOUND_WRAPPER_ID: "store-not-found-wrapper",
   STORE_DETAILS_DESCRIPTION_WRAPPER_ID: "store-details-description-wrapper",
   STORE_LABELS_ID: {
     EMAIL: "store-email",

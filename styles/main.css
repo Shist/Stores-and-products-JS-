@@ -876,6 +876,49 @@
   color: gray;
 }
 
+.store-not-found-wrapper {
+  max-width: 1600px;
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  background-color: #fbfbfa;
+}
+
+.store-not-found-header {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  background-color: #eff4f8;
+}
+
+.store-not-found-header__main-headline {
+  font-size: 16px;
+  color: gray;
+}
+
+.store-not-found-main-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 20px;
+  flex-grow: 1;
+}
+
+.no-store-details-main-section__img {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.store-not-found-main-section__headline {
+  font-size: 20px;
+}
+
+.store-not-found-main-section__message {
+  font-size: 16px;
+  color: gray;
+}
+
 .modal-window {
   position: fixed;
   z-index: 4;
