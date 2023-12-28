@@ -854,24 +854,34 @@ function getStructureForTableRow(product) {
     (productTableDataStr, [productKey, ,]) => {
       switch (productKey) {
         case "Name":
+          const productName = product.Name
+            ? product.Name
+            : CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+          const productId = product.id
+            ? product.id
+            : CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
           productTableDataStr += getTableStructureForNameField(
-            product.Name,
-            product.id
+            productName,
+            productId
           );
           break;
         case "Price":
-          productTableDataStr += getTableStructureForPriceField(product.Price);
+          const productPrice = product.Price ? product.Price : "-";
+          productTableDataStr += getTableStructureForPriceField(productPrice);
           break;
         case "Rating":
+          const productRating = product.Rating ? product.Rating : 0;
           productTableDataStr += getTableStructureForRatingField(
-            product.Rating,
+            productRating,
             product.id
           );
           break;
         default:
-          productTableDataStr += getTableStructureForStandardField(
-            product[productKey]
-          );
+          const productStandardField = product[productKey]
+            ? product[productKey]
+            : CONSTANTS.DEFAULT_NOT_SPECIFIED_MSG;
+          productTableDataStr +=
+            getTableStructureForStandardField(productStandardField);
       }
       return productTableDataStr;
     },
@@ -1363,57 +1373,62 @@ function onConfirmDeleteStoreClick() {
 }
 
 function onConfirmCreateProductClick() {
-  const resultObj = getProductObjFromFormInputs();
+  if (validateCreateProductForm()) {
+    const resultObj = getProductObjFromFormInputs();
 
-  closeCreateProductModal();
+    closeCreateProductModal();
 
-  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING);
-  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.CREATING);
-  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-  postProduct(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
-    JSON.stringify(resultObj)
-  )
-    .then(() => {
-      const searchedProductsPromise = getSearchedProductsListByStoreId(
-        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-      ).then((searchedProductsList) => {
-        if (Array.isArray(searchedProductsList)) {
-          updateProductsFilters(searchedProductsList);
-        }
-      });
-
-      const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
-        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-      ).then((fullFilteredProductsList) => {
-        if (Array.isArray(fullFilteredProductsList)) {
-          updateProductsTableBody(fullFilteredProductsList);
-        }
-      });
-
-      setProductsAmountSpinner(
-        CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
-      );
-      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
-      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-      Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-        .catch((error) => {
-          showErrorPopup(error.message);
-        })
-        .finally(() => {
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+    setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING);
+    plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+    setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.CREATING);
+    plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+    postProduct(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+      JSON.stringify(resultObj)
+    )
+      .then(() => {
+        const searchedProductsPromise = getSearchedProductsListByStoreId(
+          localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+        ).then((searchedProductsList) => {
+          if (Array.isArray(searchedProductsList)) {
+            updateProductsFilters(searchedProductsList);
+          }
         });
-    })
-    .catch((error) => {
-      showErrorPopup(error.message);
-    })
-    .finally(() => {
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
-    });
+
+        const fullFilteredProductsPromise =
+          getFullFilteredProductsListByStoreId(
+            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+          ).then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              updateProductsTableBody(fullFilteredProductsList);
+            }
+          });
+
+        setProductsAmountSpinner(
+          CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+        );
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+        setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
+        plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+        Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+          .catch((error) => {
+            showErrorPopup(error.message);
+          })
+          .finally(() => {
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+            removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+          });
+      })
+      .catch((error) => {
+        showErrorPopup(error.message);
+      })
+      .finally(() => {
+        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+        removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      });
+  } else {
+    showErrorModal();
+  }
 }
 
 function onConfirmDeleteProductClick() {
@@ -1867,7 +1882,98 @@ function validateCreateStoreFloorArea() {
 }
 
 function validateCreateProductForm() {
-  // TODO
+  const nameIsOk = validateCreateProductName();
+  const priceIsOk = validateCreateProductPrice();
+  const specsIsOk = validateCreateProductSpecs();
+  const ratingIsOk = validateCreateProductRating();
+
+  return nameIsOk && priceIsOk && specsIsOk && ratingIsOk;
+}
+
+function validateCreateProductName() {
+  const inputNameWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME_WRAPPER}`
+  );
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
+  );
+
+  if (!inputName.value) {
+    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputName, inputNameWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductPrice() {
+  const inputPriceWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE_WRAPPER}`
+  );
+  const inputPrice = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
+  );
+
+  if (inputPrice.value && +inputPrice.value <= 0) {
+    addErrorToInput(inputPrice, inputPriceWrapper, "Price must be positive!");
+    return false;
+  } else {
+    removeErrorFromInput(inputPrice, inputPriceWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductSpecs() {
+  const inputSpecsWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS_WRAPPER}`
+  );
+  const inputSpecs = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
+  );
+
+  if (!inputSpecs.value) {
+    addErrorToInput(inputSpecs, inputSpecsWrapper, "Specs can not be empty!");
+    return false;
+  } else {
+    removeErrorFromInput(inputSpecs, inputSpecsWrapper);
+    return true;
+  }
+}
+
+function validateCreateProductRating() {
+  const inputRatingWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING_WRAPPER}`
+  );
+  const inputRating = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
+  );
+
+  if (inputRating.value && +inputRating.value < 1) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must be at least 1!"
+    );
+    return false;
+  } else if (inputRating.value && +inputRating.value > 5) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must be no more than 5!"
+    );
+    return false;
+  } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
+    addErrorToInput(
+      inputRating,
+      inputRatingWrapper,
+      "Rating must have an integer value"
+    );
+    return false;
+  } else {
+    removeErrorFromInput(inputRating, inputRatingWrapper);
+    return true;
+  }
 }
 
 function getFetchOperationsAmountForSpinner(spinnerId) {
