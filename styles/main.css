@@ -988,7 +988,7 @@
   font-size: 16px;
   color: gray;
 }
-.modal-window__field-label::before {
+.modal-window__field-label_mandatory::before {
   content: "*";
   color: red;
 }
