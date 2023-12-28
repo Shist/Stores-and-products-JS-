@@ -1220,7 +1220,7 @@
   }
 }
 
-.error-popop-wrapper {
+.popop-wrapper {
   position: fixed;
   bottom: 4%;
   z-index: 5;
@@ -1232,7 +1232,7 @@
   max-width: 500px;
   width: 100%;
 }
-.error-popup {
+.popup {
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -1243,8 +1243,7 @@
   opacity: 0.9;
   font-family: "Roboto";
 }
-.error-popup__text {
+.popup__text {
   font-size: 18px;
   text-align: center;
-  color: red;
 }
