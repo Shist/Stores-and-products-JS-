@@ -63,7 +63,8 @@ const CONSTANTS = {
       LOADING: "Loading products list...",
       UPDATING: "Loading updated products list...",
       CREATING: "Creating new product...",
-      DELETING: "Deleting product...",
+      DELETING_STORE: "Deleting store...",
+      DELETING_PRODUCT: "Deleting product...",
     },
   },
   STORES_LIST_HEADER_ID: "stores-list-header",
@@ -77,7 +78,7 @@ const CONSTANTS = {
   },
   BTN_CREATE_STORE_ID: "btn-create-store",
   BTN_DELETE_STORE_ID: "btn-delete-store",
-  BTN_CRETE_PRODUCT_ID: "btn-create-product",
+  BTN_CREATE_PRODUCT_ID: "btn-create-product",
   STORE_DETAILS_HEADER_ID: "store-details-header",
   STORE_DETAILS_WRAPPER_ID: "store-details-wrapper",
   NO_STORE_DETAILS_WRAPPER_ID: "no-store-details-wrapper",
@@ -1499,7 +1500,7 @@ function setFootersBtnsListeners() {
     `#${CONSTANTS.BTN_DELETE_STORE_ID}`
   );
   const btnCreateProduct = document.querySelector(
-    `#${CONSTANTS.BTN_CRETE_PRODUCT_ID}`
+    `#${CONSTANTS.BTN_CREATE_PRODUCT_ID}`
   );
 
   btnCreateStore.addEventListener("click", onCreateStoreClick);
@@ -1622,12 +1623,15 @@ function onConfirmCreateStoreClick() {
 }
 
 function onConfirmDeleteStoreClick() {
+  document.querySelector(`#${CONSTANTS.BTN_CREATE_PRODUCT_ID}`).disabled = true;
   document.querySelector(`#${CONSTANTS.BTN_DELETE_STORE_ID}`).disabled = true;
 
   closeDeleteStoreModal();
 
   setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.DELETING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.STORES_LIST);
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE);
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   deleteStore(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID))
     .then(() => {
       showPopupWithMsg(
@@ -1661,9 +1665,13 @@ function onConfirmDeleteStoreClick() {
     })
     .finally(() => {
       document.querySelector(
+        `#${CONSTANTS.BTN_CREATE_PRODUCT_ID}`
+      ).disabled = false;
+      document.querySelector(
         `#${CONSTANTS.BTN_DELETE_STORE_ID}`
       ).disabled = false;
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
 }
 
@@ -1736,7 +1744,7 @@ function onConfirmDeleteProductClick() {
 
   setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.DELETING);
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.DELETING_PRODUCT);
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
   deleteProduct(
     localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID)

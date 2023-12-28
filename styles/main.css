@@ -250,6 +250,10 @@
 .footer-create-btn:hover {
   transform: scale(1.05);
 }
+.footer-create-btn:disabled {
+  transform: none;
+  filter: grayscale(0.5);
+}
 
 .footer-create-btn__icon-plus {
   width: 16px;
