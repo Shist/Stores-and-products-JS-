@@ -30,9 +30,11 @@ const CONSTANTS = {
     },
     POST: {
       STORE: "/Stores",
+      PRODUCT_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
     },
     DELETE: {
       STORE_BY_ID: "/Stores/{storeId}",
+      PRODUCT_BY_ID: "/Products/{productId}",
     },
   },
   SPINNERS_ID: {
@@ -1327,7 +1329,91 @@ function onConfirmDeleteStoreClick() {
 }
 
 function onConfirmCreateProductClick() {
-  // TODO
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
+  );
+  const inputPrice = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
+  );
+  const inputSpecs = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
+  );
+  const inputRating = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
+  );
+  const inputSupplierInfo = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SUPPLIER_INFO}`
+  );
+  const inputCountry = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_COUNTRY}`
+  );
+  const inputProdCompany = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PROD_COMPANY}`
+  );
+  const inputStatus = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_STATUS}`
+  );
+
+  const resultObj = {
+    [CONSTANTS.SERVER.KEYS.PRODUCT.NAME]: inputName.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.PRICE]: inputPrice.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.SPECS]: inputSpecs.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.RATING]: inputRating.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.SUPPLIER_INFO]: inputSupplierInfo.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.COUNTRY]: inputCountry.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.PROD_COMPANY]: inputProdCompany.value,
+    [CONSTANTS.SERVER.KEYS.PRODUCT.STATUS]: inputStatus.value,
+  };
+
+  closeCreateProductModal();
+
+  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING);
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.CREATING);
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+  postProduct(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+    JSON.stringify(resultObj)
+  )
+    .then(() => {
+      const searchedProductsPromise = getSearchedProductsListByStoreId(
+        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+      ).then((searchedProductsList) => {
+        if (Array.isArray(searchedProductsList)) {
+          updateProductsFilters(searchedProductsList);
+        }
+      });
+
+      const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
+        localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+      ).then((fullFilteredProductsList) => {
+        if (Array.isArray(fullFilteredProductsList)) {
+          updateProductsTableBody(fullFilteredProductsList);
+        }
+      });
+
+      setProductsAmountSpinner(
+        CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+      );
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
+      plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+        .catch((error) => {
+          showErrorPopup(error.message);
+        })
+        .finally(() => {
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+          removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+        });
+    })
+    .catch((error) => {
+      showErrorPopup(error.message);
+    })
+    .finally(() => {
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+      removeSpinnerById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+    });
 }
 
 function onConfirmDeleteProductClick() {
@@ -1473,7 +1559,9 @@ function getCurrProductsAmounts(searchedProductsListWithoutFilter) {
         break;
       default:
         console.warn(
-          `Store with id=${store.id} had product with unknown status type: ${product.Status}`
+          `Store with id=${localStorage.getItem(
+            CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
+          )} had product with unknown status type: ${product.Status}`
         );
     }
   });
@@ -1831,6 +1919,18 @@ async function postStore(storeObj) {
   } catch (error) {
     console.error(`Error while posting store. Reason: ${error.message}`);
     throw new Error(`Error while posting store. Reason: ${error.message}`);
+  }
+}
+
+async function postProduct(storeId, productObj) {
+  try {
+    return await postData(
+      CONSTANTS.SERVER.POST.PRODUCT_BY_STORE_ID.replace("{storeId}", storeId),
+      productObj
+    );
+  } catch (error) {
+    console.error(`Error while posting product. Reason: ${error.message}`);
+    throw new Error(`Error while posting product. Reason: ${error.message}`);
   }
 }
 
