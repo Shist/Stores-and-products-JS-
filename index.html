@@ -141,13 +141,13 @@
             <div class="vertical-gray-separator"></div>
             <button
               class="products-filter-btn products-spec-filter-btn products-spec-filter-btn_ok js-filter-off"
-              title="Ok products"
+              title="OK products"
               id="filter-ok"
             >
               <span
                 class="products-filter-btn__icon products-filter-btn__icon_ok"
               ></span>
-              <span class="products-filter-btn__description">Ok</span>
+              <span class="products-filter-btn__description">OK</span>
               <span
                 class="products-filter-btn__amount"
                 id="ok-prod-amount"
@@ -337,7 +337,7 @@
             class="modal-window__btn modal-window__btn_confirm"
             id="btn-delete-store-confirm"
           >
-            Ok
+            OK
           </button>
           <button
             class="modal-window__btn modal-window__btn_cancel"
@@ -444,7 +444,7 @@
               name="Product status"
               id="modal-create-product-status"
             >
-              <option value="OK" selected="selected">Ok</option>
+              <option value="OK" selected="selected">OK</option>
               <option value="STORAGE">Storage</option>
               <option value="OUT_OF_STOCK">Out of stock</option>
             </select>
@@ -482,13 +482,34 @@
             class="modal-window__btn modal-window__btn_confirm"
             id="btn-delete-product-confirm"
           >
-            Ok
+            OK
           </button>
           <button
             class="modal-window__btn modal-window__btn_cancel"
             id="btn-delete-product-cancel"
           >
             Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="error-modal-window" id="modal-validation-error">
+      <div class="error-modal-window__wrapper">
+        <h2 class="error-modal-window__headline">
+          <span class="error-modal-window__headline-icon"></span>
+          <span class="error-modal-window__headline-text">Error</span>
+        </h2>
+        <div class="error-modal-window__text-wrapper">
+          <span class="error-modal-window__question-message"
+            >Please fix validation errors first!</span
+          >
+        </div>
+        <div class="error-modal-window__btns-wrapper">
+          <button
+            class="error-modal-window__close-btn"
+            id="modal-validation-error-close-btn"
+          >
+            OK
           </button>
         </div>
       </div>
