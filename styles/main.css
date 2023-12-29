@@ -1177,6 +1177,7 @@
   opacity: 0.9;
 }
 .stores-list-section__loading-data-text {
+  text-align: center;
   font-size: 20px;
 }
 .loading-spinner {
