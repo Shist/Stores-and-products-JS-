@@ -567,7 +567,7 @@ function showPopupWithMsg(msg, color, timeMillisecs) {
 }
 
 function validateSearch(searchWrapper, searchInput) {
-  const searchRegex = /^[^#%&*()\[\]{}]*$/;
+  const searchRegex = /^[^#%&*()\[\]{}\\]*$/;
 
   if (!searchRegex.test(searchInput.value)) {
     addErrorToInput(
