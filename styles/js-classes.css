@@ -46,6 +46,7 @@
 .js-error-field-wrapper::after {
   padding: 2px;
   position: absolute;
+  z-index: 6;
   max-width: 100%;
   top: 100%;
   left: 0;
@@ -62,4 +63,8 @@
 .js-error-field {
   border: 3px solid red;
   padding: 2px;
+}
+
+.js-error-search-field {
+  background-color: #fff8f9;
 }

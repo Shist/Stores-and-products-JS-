@@ -76,7 +76,8 @@ const CONSTANTS = {
   NO_STORES_LAYOUT_ID: "no-stores-list-layout",
   STORES_LIST_ITEM_CLASS: "stores-list-item",
   STORES_SEARCH_ID: {
-    LINE: "stores-search-line",
+    WRAPPER: "store-search-wrapper",
+    INPUT: "stores-search-line",
     BTN: "stores-search-btn",
   },
   BTN_CREATE_STORE_ID: "btn-create-store",
@@ -126,7 +127,8 @@ const CONSTANTS = {
     ["Rating", "Rating", "align-start"],
   ],
   PRODUCTS_SEARCH_ID: {
-    LINE: "products-search-line",
+    WRAPPER: "products-search-wrapper",
+    INPUT: "products-search-line",
     BTN: "products-search-btn",
   },
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
@@ -157,6 +159,7 @@ const CONSTANTS = {
     FILTER_OFF: "js-filter-off",
     ERROR_FIELD_WRAPPER: "js-error-field-wrapper",
     ERROR_FIELD: "js-error-field",
+    ERROR_SEARCH_FIELD: "js-error-search-field",
   },
   DATA_ATTRIBUTE: {
     STORE_ID: {
@@ -471,7 +474,7 @@ function setAllSortBtnsToDefault() {
 }
 
 function setProductSearchLineToDefault() {
-  document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`).value = "";
+  document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`).value = "";
 }
 
 function setCurrProductsFilterBtn(filterBtnId) {
@@ -563,15 +566,36 @@ function showPopupWithMsg(msg, color, timeMillisecs) {
   }, timeMillisecs);
 }
 
+function validateSearch(searchWrapper, searchInput) {
+  const searchRegex = /^[^#%&*()\[\]{}]*$/;
+
+  if (!searchRegex.test(searchInput.value)) {
+    addErrorToInput(
+      searchInput,
+      CONSTANTS.JS_CLASS.ERROR_SEARCH_FIELD,
+      searchWrapper,
+      `Prohibited symbols entered!`
+    );
+    return false;
+  } else {
+    removeErrorFromInput(
+      searchInput,
+      CONSTANTS.JS_CLASS.ERROR_SEARCH_FIELD,
+      searchWrapper
+    );
+    return true;
+  }
+}
+
 // Functions for form validations
-function addErrorToInput(input, inputWrapper, errorMsg) {
-  input.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD);
+function addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {
+  input.classList.add(inputErrClass);
   inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
   inputWrapper.classList.add(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
 }
 
-function removeErrorFromInput(input, inputWrapper) {
-  input.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD);
+function removeErrorFromInput(input, inputErrClass, inputWrapper) {
+  input.classList.remove(inputErrClass);
   inputWrapper.dataset[CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
     CONSTANTS.DEFAULT_ERROR_MSG;
   inputWrapper.classList.remove(CONSTANTS.JS_CLASS.ERROR_FIELD_WRAPPER);
@@ -595,7 +619,12 @@ function validateCreateStoreName() {
   );
 
   if (!inputName.value) {
-    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    addErrorToInput(
+      inputName,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputNameWrapper,
+      "Name can not be empty!"
+    );
     return false;
   } else if (
     inputName.value
@@ -605,12 +634,17 @@ function validateCreateStoreName() {
   ) {
     addErrorToInput(
       inputName,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputNameWrapper,
       "Name can not contain words with >15 symbols!"
     );
     return false;
   } else {
-    removeErrorFromInput(inputName, inputNameWrapper);
+    removeErrorFromInput(
+      inputName,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputNameWrapper
+    );
     return true;
   }
 }
@@ -625,17 +659,27 @@ function validateCreateStoreEmail() {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   if (!inputEmail.value) {
-    addErrorToInput(inputEmail, inputEmailWrapper, "Email can not be empty!");
+    addErrorToInput(
+      inputEmail,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputEmailWrapper,
+      "Email can not be empty!"
+    );
     return false;
   } else if (!emailRegex.test(inputEmail.value)) {
     addErrorToInput(
       inputEmail,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputEmailWrapper,
       "Email you have entered is invalid!"
     );
     return false;
   } else {
-    removeErrorFromInput(inputEmail, inputEmailWrapper);
+    removeErrorFromInput(
+      inputEmail,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputEmailWrapper
+    );
     return true;
   }
 }
@@ -649,10 +693,19 @@ function validateCreateStorePhone() {
   );
 
   if (!inputPhone.value) {
-    addErrorToInput(inputPhone, inputPhoneWrapper, "Phone can not be empty!");
+    addErrorToInput(
+      inputPhone,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputPhoneWrapper,
+      "Phone can not be empty!"
+    );
     return false;
   } else {
-    removeErrorFromInput(inputPhone, inputPhoneWrapper);
+    removeErrorFromInput(
+      inputPhone,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputPhoneWrapper
+    );
     return true;
   }
 }
@@ -668,12 +721,17 @@ function validateCreateStoreFloorArea() {
   if (inputFloorArea.value && +inputFloorArea.value <= 0) {
     addErrorToInput(
       inputFloorArea,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputFloorAreaWrapper,
       "Floor area must be positive!"
     );
     return false;
   } else {
-    removeErrorFromInput(inputFloorArea, inputFloorAreaWrapper);
+    removeErrorFromInput(
+      inputFloorArea,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputFloorAreaWrapper
+    );
     return true;
   }
 }
@@ -696,10 +754,19 @@ function validateCreateProductName() {
   );
 
   if (!inputName.value) {
-    addErrorToInput(inputName, inputNameWrapper, "Name can not be empty!");
+    addErrorToInput(
+      inputName,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputNameWrapper,
+      "Name can not be empty!"
+    );
     return false;
   } else {
-    removeErrorFromInput(inputName, inputNameWrapper);
+    removeErrorFromInput(
+      inputName,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputNameWrapper
+    );
     return true;
   }
 }
@@ -713,10 +780,19 @@ function validateCreateProductPrice() {
   );
 
   if (inputPrice.value && +inputPrice.value <= 0) {
-    addErrorToInput(inputPrice, inputPriceWrapper, "Price must be positive!");
+    addErrorToInput(
+      inputPrice,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputPriceWrapper,
+      "Price must be positive!"
+    );
     return false;
   } else {
-    removeErrorFromInput(inputPrice, inputPriceWrapper);
+    removeErrorFromInput(
+      inputPrice,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputPriceWrapper
+    );
     return true;
   }
 }
@@ -730,10 +806,19 @@ function validateCreateProductSpecs() {
   );
 
   if (!inputSpecs.value) {
-    addErrorToInput(inputSpecs, inputSpecsWrapper, "Specs can not be empty!");
+    addErrorToInput(
+      inputSpecs,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputSpecsWrapper,
+      "Specs can not be empty!"
+    );
     return false;
   } else {
-    removeErrorFromInput(inputSpecs, inputSpecsWrapper);
+    removeErrorFromInput(
+      inputSpecs,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputSpecsWrapper
+    );
     return true;
   }
 }
@@ -749,6 +834,7 @@ function validateCreateProductRating() {
   if (inputRating.value && +inputRating.value < 1) {
     addErrorToInput(
       inputRating,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputRatingWrapper,
       "Rating must be at least 1!"
     );
@@ -756,6 +842,7 @@ function validateCreateProductRating() {
   } else if (inputRating.value && +inputRating.value > 5) {
     addErrorToInput(
       inputRating,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputRatingWrapper,
       "Rating must be no more than 5!"
     );
@@ -763,12 +850,17 @@ function validateCreateProductRating() {
   } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
     addErrorToInput(
       inputRating,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
       inputRatingWrapper,
       "Rating must have an integer value"
     );
     return false;
   } else {
-    removeErrorFromInput(inputRating, inputRatingWrapper);
+    removeErrorFromInput(
+      inputRating,
+      CONSTANTS.JS_CLASS.ERROR_FIELD,
+      inputRatingWrapper
+    );
     return true;
   }
 }
@@ -1054,13 +1146,16 @@ function getStructureForTableHead() {
                 <span class="products-table__table-name-text">
                   Products
                 </span>
-                <div class="products-table__search-wrapper">
+                <div class="products-table__search-wrapper" 
+                id="${CONSTANTS.PRODUCTS_SEARCH_ID.WRAPPER}"
+                data-${CONSTANTS.DATA_ATTRIBUTE.ERROR_MSG.KEBAB}=
+                "${CONSTANTS.DEFAULT_ERROR_MSG}">
                   <input
                     type="search"
                     class="products-table__search-line"
-                    name="${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}"
+                    name="${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}"
                     placeholder="Enter value to search"
-                    id="${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}"
+                    id="${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}"
                   />
                   <button
                     class="products-table__search-btn"
@@ -1262,7 +1357,7 @@ function getSpinnerStructure({
 // Functions for setting listeners to UI elements and their onClick functions
 function setSearchStoresListeners() {
   const searchInput = document.querySelector(
-    `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
+    `#${CONSTANTS.STORES_SEARCH_ID.INPUT}`
   );
   const searchBtn = document.querySelector(
     `#${CONSTANTS.STORES_SEARCH_ID.BTN}`
@@ -1273,20 +1368,27 @@ function setSearchStoresListeners() {
 }
 
 function onSearchStoresClick() {
-  setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
+  if (
+    validateSearch(
+      document.querySelector(`#${CONSTANTS.STORES_SEARCH_ID.WRAPPER}`),
+      document.querySelector(`#${CONSTANTS.STORES_SEARCH_ID.INPUT}`)
+    )
+  ) {
+    setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
 
-  getSearchedStoresList()
-    .then((storesList) => {
-      if (Array.isArray(storesList)) {
-        updateStoresList(storesList);
-      }
-    })
-    .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
-    })
-    .finally(() => {
-      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
-    });
+    getSearchedStoresList()
+      .then((storesList) => {
+        if (Array.isArray(storesList)) {
+          updateStoresList(storesList);
+        }
+      })
+      .catch((error) => {
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
+      })
+      .finally(() => {
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
+      });
+  }
 }
 
 function setStoresCardsClickListener() {
@@ -1461,7 +1563,7 @@ function onTableSortBtnClick(e) {
 
 function setSearchProductsListeners() {
   const searchInput = document.querySelector(
-    `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+    `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
   );
   const searchBtn = document.querySelector(
     `#${CONSTANTS.PRODUCTS_SEARCH_ID.BTN}`
@@ -1472,33 +1574,40 @@ function setSearchProductsListeners() {
 }
 
 function onSearchProductsClick() {
-  const searchedProductsPromise = getSearchedProductsListByStoreId(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  ).then((searchedProductsList) => {
-    if (Array.isArray(searchedProductsList)) {
-      updateProductsAmounts(searchedProductsList);
-    }
-  });
-
-  const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
-    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
-  ).then((fullFilteredProductsList) => {
-    if (Array.isArray(fullFilteredProductsList)) {
-      updateProductsTableBody(fullFilteredProductsList);
-    }
-  });
-
-  setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
-  setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-  Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-    .catch((error) => {
-      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
-    })
-    .finally(() => {
-      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
-      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+  if (
+    validateSearch(
+      document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.WRAPPER}`),
+      document.querySelector(`#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`)
+    )
+  ) {
+    const searchedProductsPromise = getSearchedProductsListByStoreId(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+    ).then((searchedProductsList) => {
+      if (Array.isArray(searchedProductsList)) {
+        updateProductsAmounts(searchedProductsList);
+      }
     });
+
+    const fullFilteredProductsPromise = getFullFilteredProductsListByStoreId(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+    ).then((fullFilteredProductsList) => {
+      if (Array.isArray(fullFilteredProductsList)) {
+        updateProductsTableBody(fullFilteredProductsList);
+      }
+    });
+
+    setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
+    setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+    Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+      .catch((error) => {
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
+      })
+      .finally(() => {
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      });
+  }
 }
 
 function setFootersBtnsListeners() {
@@ -1876,7 +1985,7 @@ function closeCreateStoreModal() {
     const input = inputWrapper.querySelector(
       `.${CONSTANTS.MODAL_FIELD_INPUT_CLASS}`
     );
-    removeErrorFromInput(input, inputWrapper);
+    removeErrorFromInput(input, CONSTANTS.JS_CLASS.ERROR_FIELD, inputWrapper);
   });
 
   modalForm.reset();
@@ -1907,7 +2016,7 @@ function closeCreateProductModal() {
     const input = inputWrapper.querySelector(
       `.${CONSTANTS.MODAL_FIELD_INPUT_CLASS}`
     );
-    removeErrorFromInput(input, inputWrapper);
+    removeErrorFromInput(input, CONSTANTS.JS_CLASS.ERROR_FIELD, inputWrapper);
   });
 
   modalForm.reset();
@@ -2292,7 +2401,7 @@ async function getSearchedStoresList() {
   try {
     let neededURL = CONSTANTS.SERVER.GET.STORES;
     const searchFilterValue = document.querySelector(
-      `#${CONSTANTS.STORES_SEARCH_ID.LINE}`
+      `#${CONSTANTS.STORES_SEARCH_ID.INPUT}`
     ).value;
     const filterObj = {};
 
@@ -2341,7 +2450,7 @@ async function getSearchedProductsListByStoreId(storeId) {
       storeId
     );
     const searchFilterValue = document.querySelector(
-      `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+      `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
     ).value;
     const filterObj = {};
 
@@ -2392,7 +2501,7 @@ async function getFullFilteredProductsListByStoreId(storeId) {
       CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
     );
     const searchFilterValue = document.querySelector(
-      `#${CONSTANTS.PRODUCTS_SEARCH_ID.LINE}`
+      `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
     ).value;
     const filterObj = {};
 
