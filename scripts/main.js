@@ -1673,7 +1673,7 @@ function onCreateProductClick() {
   modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
 }
 
-function setTableRowsBtnsListener() {
+function setTableRowsBtnsListeners() {
   const tableBody = document.querySelector(
     `#${CONSTANTS.PRODUCTS_TABLE_ID.BODY}`
   );
@@ -1682,7 +1682,18 @@ function setTableRowsBtnsListener() {
 }
 
 function onTableRowsBtnClick(e) {
-  if (e.target.classList.contains(CONSTANTS.CROSS_BTN_CLASS)) {
+  if (e.target.classList.contains(CONSTANTS.EDIT_BTN_CLASS)) {
+    const modalWrapper = document.querySelector(
+      `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.WRAPPER}`
+    );
+
+    localStorage.setItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID,
+      e.target.dataset[CONSTANTS.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
+    );
+
+    modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+  } else if (e.target.classList.contains(CONSTANTS.CROSS_BTN_CLASS)) {
     const modalWrapper = document.querySelector(
       `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
     );
@@ -1696,6 +1707,35 @@ function onTableRowsBtnClick(e) {
   }
 }
 
+function loadProductDataToEditForm() {
+  const inputName = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_NAME}`
+  );
+  const inputPrice = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PRICE}`
+  );
+  const inputSpecs = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SPECS}`
+  );
+  const inputRating = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_RATING}`
+  );
+  const inputSupplierInfo = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SUPPLIER_INFO}`
+  );
+  const inputCountry = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_COUNTRY}`
+  );
+  const inputProdCompany = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PROD_COMPANY}`
+  );
+  const inputStatus = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_STATUS}`
+  );
+
+  // TODO get actual data about product from server
+}
+
 function setModalsConfirmBtnsListeners() {
   const btnConfirmCreateStore = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_STORE.BTN_CONFIRM}`
@@ -1705,6 +1745,9 @@ function setModalsConfirmBtnsListeners() {
   );
   const btnConfirmCreateProduct = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.BTN_CONFIRM}`
+  );
+  const btnConfirmEditProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.BTN_CONFIRM}`
   );
   const btnConfirmDeleteProduct = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CONFIRM}`
@@ -1716,6 +1759,7 @@ function setModalsConfirmBtnsListeners() {
     "click",
     onConfirmCreateProductClick
   );
+  btnConfirmEditProduct.addEventListener("click", onConfirmEditProductClick);
   btnConfirmDeleteProduct.addEventListener(
     "click",
     onConfirmDeleteProductClick
@@ -1912,6 +1956,10 @@ function onConfirmCreateProductClick() {
   }
 }
 
+function onConfirmEditProductClick() {
+  // TODO
+}
+
 function onConfirmDeleteProductClick() {
   closeDeleteProductModal();
 
@@ -1979,6 +2027,9 @@ function setModalsCancelBtnsListeners() {
   const btnCancelCreateProduct = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.BTN_CANCEL}`
   );
+  const btnCancelEditProduct = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.BTN_CANCEL}`
+  );
   const btnCancelDeleteProduct = document.querySelector(
     `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.BTN_CANCEL}`
   );
@@ -1989,6 +2040,7 @@ function setModalsCancelBtnsListeners() {
   btnCancelCreateStore.addEventListener("click", closeCreateStoreModal);
   btnCancelDeleteStore.addEventListener("click", closeDeleteStoreModal);
   btnCancelCreateProduct.addEventListener("click", closeCreateProductModal);
+  btnCancelEditProduct.addEventListener("click", closeEditProductModal);
   btnCancelDeleteProduct.addEventListener("click", closeDeleteProductModal);
   btnOkModalError.addEventListener("click", closeErrorModal);
 }
@@ -2030,6 +2082,29 @@ function closeCreateProductModal() {
   );
   const modalForm = document.querySelector(
     `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.FORM}`
+  );
+  const formInputWrappers = modalForm.querySelectorAll(
+    `.${CONSTANTS.MODAL_FIELD_INPUT_WRAPPER_CLASS}`
+  );
+
+  formInputWrappers.forEach((inputWrapper) => {
+    const input = inputWrapper.querySelector(
+      `.${CONSTANTS.MODAL_FIELD_INPUT_CLASS}`
+    );
+    removeErrorFromInput(input, CONSTANTS.JS_CLASS.ERROR_FIELD, inputWrapper);
+  });
+
+  modalForm.reset();
+
+  modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+}
+
+function closeEditProductModal() {
+  const modalWrapper = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.WRAPPER}`
+  );
+  const modalForm = document.querySelector(
+    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.FORM}`
   );
   const formInputWrappers = modalForm.querySelectorAll(
     `.${CONSTANTS.MODAL_FIELD_INPUT_WRAPPER_CLASS}`
@@ -2703,7 +2778,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setProductsFiltersBtnsListener();
   renderProductsTableHead();
-  setTableRowsBtnsListener();
+  setTableRowsBtnsListeners();
 
   setFootersBtnsListeners();
   setModalsConfirmBtnsListeners();
