@@ -132,6 +132,7 @@ const CONSTANTS = {
     BTN: "products-search-btn",
   },
   SORT_BTN_CLASS: "products-table__product-field-sort-btn",
+  EDIT_BTN_CLASS: "edit-btn",
   CROSS_BTN_CLASS: "cross-btn",
   SORT_ORDER: {
     ASC: "asc",
@@ -1323,7 +1324,7 @@ function getStructureForRatingStars(productRating, productId) {
         }
       }, "") +
     `<div class="arrow-cross-wrapper">
-        <span class="right-arrow"></span>
+        <span class="${CONSTANTS.EDIT_BTN_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
         <span class="${CONSTANTS.CROSS_BTN_CLASS}" data-${CONSTANTS.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
     </div>`
   );

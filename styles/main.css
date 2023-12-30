@@ -744,14 +744,32 @@
   column-gap: 2px;
 }
 
-.right-arrow {
-  width: 10px;
-  height: 10px;
-  background: url("../icons/icon-arrow-right.svg") no-repeat center/contain;
+.edit-btn {
+  width: 25px;
+  height: 25px;
+  background: url("../icons/icon-edit.svg") no-repeat center/contain;
+}
+.edit-btn:hover {
+  background-color: #d9d9d9;
+}
+.edit-btn:active {
+  transition: none;
+  background: url("../icons/icon-edit-active.svg") no-repeat center/contain;
+}
+@media (max-width: 1280px) {
+  .edit-btn {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (max-width: 1024px) {
+  .edit-btn {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .cross-btn {
-  margin-left: auto;
   width: 25px;
   height: 25px;
   background: url("../icons/icon-cross.svg") no-repeat center/contain;
@@ -762,6 +780,18 @@
 .cross-btn:active {
   transition: none;
   background: url("../icons/icon-cross-active.svg") no-repeat center/contain;
+}
+@media (max-width: 1280px) {
+  .cross-btn {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (max-width: 1024px) {
+  .cross-btn {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .product-table-item__standard-field-text {
