@@ -21,6 +21,7 @@ const CONSTANTS = {
         COUNTRY: "MadeIn",
         PROD_COMPANY: "ProductionCompanyName",
         STATUS: "Status",
+        STORE_ID: "StoreId",
       },
     },
     GET: {
@@ -32,6 +33,9 @@ const CONSTANTS = {
     POST: {
       STORE: "/Stores",
       PRODUCT_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
+    },
+    PUT: {
+      PRODUCT_BY_ID: "/Products/{productId}",
     },
     DELETE: {
       STORE_BY_ID: "/Stores/{storeId}",
@@ -62,6 +66,7 @@ const CONSTANTS = {
       UPDATING: "Loading updated products amounts...",
       CREATING: "Creating new product...",
       DELETING: "Deleting product...",
+      EDITING: "Editing product...",
     },
     PRODUCTS_LIST: {
       LOADING: "Loading products list...",
@@ -70,6 +75,7 @@ const CONSTANTS = {
       DELETING_STORE: "Deleting store...",
       DELETING_STORE_PRODUCTS: "Deleting all products of store...",
       DELETING_PRODUCT: "Deleting product...",
+      EDITING: "Editing product...",
     },
     EDIT_PRODUCT_FORM: {
       LOADING: "Loading product data...",
@@ -765,22 +771,20 @@ function validateCreateStoreFloorArea() {
   }
 }
 
-function validateCreateProductForm() {
-  const nameIsOk = validateCreateProductName();
-  const priceIsOk = validateCreateProductPrice();
-  const specsIsOk = validateCreateProductSpecs();
-  const ratingIsOk = validateCreateProductRating();
+function validateProductForm(modalIdsObj) {
+  const nameIsOk = validateProductName(modalIdsObj);
+  const priceIsOk = validateProductPrice(modalIdsObj);
+  const specsIsOk = validateProductSpecs(modalIdsObj);
+  const ratingIsOk = validateProductRating(modalIdsObj);
 
   return nameIsOk && priceIsOk && specsIsOk && ratingIsOk;
 }
 
-function validateCreateProductName() {
+function validateProductName(modalIdsObj) {
   const inputNameWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME_WRAPPER}`
+    `#${modalIdsObj.INPUT_NAME_WRAPPER}`
   );
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
-  );
+  const inputName = document.querySelector(`#${modalIdsObj.INPUT_NAME}`);
 
   if (!inputName.value) {
     addErrorToInput(
@@ -800,13 +804,11 @@ function validateCreateProductName() {
   }
 }
 
-function validateCreateProductPrice() {
+function validateProductPrice(modalIdsObj) {
   const inputPriceWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE_WRAPPER}`
+    `#${modalIdsObj.INPUT_PRICE_WRAPPER}`
   );
-  const inputPrice = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
-  );
+  const inputPrice = document.querySelector(`#${modalIdsObj.INPUT_PRICE}`);
 
   if (inputPrice.value && +inputPrice.value <= 0) {
     addErrorToInput(
@@ -826,13 +828,11 @@ function validateCreateProductPrice() {
   }
 }
 
-function validateCreateProductSpecs() {
+function validateProductSpecs(modalIdsObj) {
   const inputSpecsWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS_WRAPPER}`
+    `#${modalIdsObj.INPUT_SPECS_WRAPPER}`
   );
-  const inputSpecs = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
-  );
+  const inputSpecs = document.querySelector(`#${modalIdsObj.INPUT_SPECS}`);
 
   if (!inputSpecs.value) {
     addErrorToInput(
@@ -852,13 +852,11 @@ function validateCreateProductSpecs() {
   }
 }
 
-function validateCreateProductRating() {
+function validateProductRating(modalIdsObj) {
   const inputRatingWrapper = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING_WRAPPER}`
+    `#${modalIdsObj.INPUT_RATING_WRAPPER}`
   );
-  const inputRating = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
-  );
+  const inputRating = document.querySelector(`#${modalIdsObj.INPUT_RATING}`);
 
   if (inputRating.value && +inputRating.value < 1) {
     addErrorToInput(
@@ -1974,8 +1972,10 @@ function onConfirmDeleteStoreClick() {
 }
 
 function onConfirmCreateProductClick() {
-  if (validateCreateProductForm()) {
-    const resultObj = getProductObjFromFormInputs();
+  if (validateProductForm(CONSTANTS.MODALS_ID.CREATE_PRODUCT)) {
+    const resultObj = getProductObjFromFormInputs(
+      CONSTANTS.MODALS_ID.CREATE_PRODUCT
+    );
 
     closeCreateProductModal();
 
@@ -2037,7 +2037,72 @@ function onConfirmCreateProductClick() {
 }
 
 function onConfirmEditProductClick() {
-  // TODO
+  if (validateProductForm(CONSTANTS.MODALS_ID.EDIT_PRODUCT)) {
+    const resultObj = getProductObjFromFormInputs(
+      CONSTANTS.MODALS_ID.EDIT_PRODUCT
+    );
+
+    resultObj[CONSTANTS.SERVER.KEYS.PRODUCT.STORE_ID] = localStorage.getItem(
+      CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID
+    );
+
+    setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.EDITING);
+    setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.EDITING);
+
+    editProduct(
+      localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID),
+      JSON.stringify(resultObj)
+    )
+      .then(() => {
+        showPopupWithMsg(
+          "The product has been successfully edited!",
+          CONSTANTS.POPUP_SUCCESS_COLOR,
+          5000
+        );
+
+        const searchedProductsPromise = getSearchedProductsListByStoreId(
+          localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+        ).then((searchedProductsList) => {
+          if (Array.isArray(searchedProductsList)) {
+            updateProductsAmounts(searchedProductsList);
+          }
+        });
+
+        const fullFilteredProductsPromise =
+          getFullFilteredProductsListByStoreId(
+            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+          ).then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              updateProductsTableBody(fullFilteredProductsList);
+            }
+          });
+
+        setProductsAmountSpinner(
+          CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+        );
+        setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
+
+        Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+          .catch((error) => {
+            showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
+          })
+          .finally(() => {
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+            requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+          });
+      })
+      .catch((error) => {
+        showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
+      })
+      .finally(() => {
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
+        requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
+      });
+
+    closeEditProductModal();
+  } else {
+    showErrorModal();
+  }
 }
 
 function onConfirmDeleteProductClick() {
@@ -2359,31 +2424,19 @@ function getStoreObjFromFormInputs() {
   return resultObj;
 }
 
-function getProductObjFromFormInputs() {
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_NAME}`
-  );
-  const inputPrice = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PRICE}`
-  );
-  const inputSpecs = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SPECS}`
-  );
-  const inputRating = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_RATING}`
-  );
+function getProductObjFromFormInputs(modalIdsObj) {
+  const inputName = document.querySelector(`#${modalIdsObj.INPUT_NAME}`);
+  const inputPrice = document.querySelector(`#${modalIdsObj.INPUT_PRICE}`);
+  const inputSpecs = document.querySelector(`#${modalIdsObj.INPUT_SPECS}`);
+  const inputRating = document.querySelector(`#${modalIdsObj.INPUT_RATING}`);
   const inputSupplierInfo = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_SUPPLIER_INFO}`
+    `#${modalIdsObj.INPUT_SUPPLIER_INFO}`
   );
-  const inputCountry = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_COUNTRY}`
-  );
+  const inputCountry = document.querySelector(`#${modalIdsObj.INPUT_COUNTRY}`);
   const inputProdCompany = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_PROD_COMPANY}`
+    `#${modalIdsObj.INPUT_PROD_COMPANY}`
   );
-  const inputStatus = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.CREATE_PRODUCT.INPUT_STATUS}`
-  );
+  const inputStatus = document.querySelector(`#${modalIdsObj.INPUT_STATUS}`);
 
   return {
     [CONSTANTS.SERVER.KEYS.PRODUCT.NAME]: inputName.value,
@@ -2832,6 +2885,39 @@ async function postProduct(storeId, productObj) {
   } catch (error) {
     console.error(`Error while posting product. Reason: ${error.message}`);
     throw new Error(`Error while posting product. Reason: ${error.message}`);
+  }
+}
+
+async function putData(endPoint, data) {
+  try {
+    const response = await fetch(`${CONSTANTS.SERVER.API_PREFIX}${endPoint}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+        Accept: "application/json",
+      },
+      body: data,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status - ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function editProduct(productId, productObj) {
+  try {
+    return await putData(
+      CONSTANTS.SERVER.PUT.PRODUCT_BY_ID.replace("{productId}", productId),
+      productObj
+    );
+  } catch (error) {
+    console.error(`Error while editing product. Reason: ${error.message}`);
+    throw new Error(`Error while editing product. Reason: ${error.message}`);
   }
 }
 
