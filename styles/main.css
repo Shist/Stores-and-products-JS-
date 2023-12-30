@@ -1005,8 +1005,11 @@
   font-size: 18px;
 }
 
-.modal-window__form {
+.modal-window__form-wrapper {
   padding: 15px;
+}
+
+.modal-window__form {
   display: flex;
   flex-direction: column;
   row-gap: 12px;

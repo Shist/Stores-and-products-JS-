@@ -27,6 +27,7 @@ const CONSTANTS = {
       STORES: "/Stores",
       STORE_BY_ID: "/Stores/{storeId}",
       PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
+      PRODUCT_BY_ID: "/Products/{productId}",
     },
     POST: {
       STORE: "/Stores",
@@ -43,6 +44,7 @@ const CONSTANTS = {
     STORE_DETAILS: "store-details-spinner",
     PRODUCTS_AMOUNTS: "products-amounts-spinner",
     PRODUCTS_LIST: "products-list-spinner",
+    EDIT_PRODUCT_FORM: "edit-product-form-spinner",
   },
   SPINNER_TEXT: {
     STORES_LIST: {
@@ -68,6 +70,9 @@ const CONSTANTS = {
       DELETING_STORE: "Deleting store...",
       DELETING_STORE_PRODUCTS: "Deleting all products of store...",
       DELETING_PRODUCT: "Deleting product...",
+    },
+    EDIT_PRODUCT_FORM: {
+      LOADING: "Loading product data...",
     },
   },
   STORES_LIST_HEADER_ID: "stores-list-header",
@@ -150,6 +155,7 @@ const CONSTANTS = {
     DETAILS_SPINNER_FETHES: "detailsSpinnerFetches",
     FILTERS_SPINNER_FETHES: "filtersSpinnerFetches",
     PRODUCTS_LIST_SPINNER_FETHES: "productsListSpinnerFetches",
+    EDIT_PRODUCT_FORM_SPINNER_FETHES: "editProductFormSpinnerFetches",
   },
   JS_CLASS: {
     HIDDEN_ELEMENT: "js-hidden-element",
@@ -1002,6 +1008,40 @@ function setProductsAmountSpinner(spinnerText) {
   plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
 }
 
+function setEditProductFormSpinner(spinnerText) {
+  if (
+    !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM)
+  ) {
+    const editProductForm = document.querySelector(
+      `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.FORM}`
+    );
+
+    const spinnerOptions = {
+      spinnerId: CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM,
+      targetText: spinnerText,
+      targetWidth: `${editProductForm.offsetWidth}px`,
+      targetMinWidth: 0,
+      targetHeight: `${editProductForm.offsetHeight}px`,
+      targetBgColor: "white",
+    };
+
+    editProductForm.insertAdjacentHTML(
+      "afterbegin",
+      getSpinnerStructure(spinnerOptions)
+    );
+  } else {
+    const currSpinner = document.querySelector(
+      `#${CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM}`
+    );
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
+  }
+
+  plusFetchOperationForSpinner(CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM);
+}
+
 function setProductsListSpinner(spinnerText) {
   if (
     !getFetchOperationsAmountForSpinner(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST)
@@ -1693,6 +1733,8 @@ function onTableRowsBtnClick(e) {
     );
 
     modalWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+
+    loadProductDataToEditForm();
   } else if (e.target.classList.contains(CONSTANTS.CROSS_BTN_CLASS)) {
     const modalWrapper = document.querySelector(
       `#${CONSTANTS.MODALS_ID.DELETE_PRODUCT.WRAPPER}`
@@ -1708,32 +1750,70 @@ function onTableRowsBtnClick(e) {
 }
 
 function loadProductDataToEditForm() {
-  const inputName = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_NAME}`
-  );
-  const inputPrice = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PRICE}`
-  );
-  const inputSpecs = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SPECS}`
-  );
-  const inputRating = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_RATING}`
-  );
-  const inputSupplierInfo = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SUPPLIER_INFO}`
-  );
-  const inputCountry = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_COUNTRY}`
-  );
-  const inputProdCompany = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PROD_COMPANY}`
-  );
-  const inputStatus = document.querySelector(
-    `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_STATUS}`
-  );
+  setEditProductFormSpinner(CONSTANTS.SPINNER_TEXT.EDIT_PRODUCT_FORM.LOADING);
 
-  // TODO get actual data about product from server
+  getProductById(
+    localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID)
+  )
+    .then((product) => {
+      if (product) {
+        const inputName = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_NAME}`
+        );
+        const inputPrice = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PRICE}`
+        );
+        const inputSpecs = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SPECS}`
+        );
+        const inputRating = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_RATING}`
+        );
+        const inputSupplierInfo = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_SUPPLIER_INFO}`
+        );
+        const inputCountry = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_COUNTRY}`
+        );
+        const inputProdCompany = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_PROD_COMPANY}`
+        );
+        const inputStatus = document.querySelector(
+          `#${CONSTANTS.MODALS_ID.EDIT_PRODUCT.INPUT_STATUS}`
+        );
+
+        if (product.Name) {
+          inputName.value = product.Name;
+        }
+        if (product.Price) {
+          inputPrice.value = product.Price;
+        }
+        if (product.Specs) {
+          inputSpecs.value = product.Specs;
+        }
+        if (product.Rating) {
+          inputRating.value = product.Rating;
+        }
+        if (product.SupplierInfo) {
+          inputSupplierInfo.value = product.SupplierInfo;
+        }
+        if (product.MadeIn) {
+          inputCountry.value = product.MadeIn;
+        }
+        if (product.ProductionCompanyName) {
+          inputProdCompany.value = product.ProductionCompanyName;
+        }
+        if (product.Status) {
+          inputStatus.value = product.Status;
+        }
+      }
+    })
+    .catch((error) => {
+      showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
+    })
+    .finally(() => {
+      requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM);
+    });
 }
 
 function setModalsConfirmBtnsListeners() {
@@ -1961,8 +2041,6 @@ function onConfirmEditProductClick() {
 }
 
 function onConfirmDeleteProductClick() {
-  closeDeleteProductModal();
-
   setProductsAmountSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING);
   setProductsListSpinner(CONSTANTS.SPINNER_TEXT.PRODUCTS_LIST.DELETING_PRODUCT);
 
@@ -1975,8 +2053,6 @@ function onConfirmDeleteProductClick() {
         CONSTANTS.POPUP_ATTENTION_COLOR,
         5000
       );
-
-      localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
 
       const searchedProductsPromise = getSearchedProductsListByStoreId(
         localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
@@ -2015,6 +2091,8 @@ function onConfirmDeleteProductClick() {
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_AMOUNTS);
       requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.PRODUCTS_LIST);
     });
+
+  closeDeleteProductModal();
 }
 
 function setModalsCancelBtnsListeners() {
@@ -2120,6 +2198,8 @@ function closeEditProductModal() {
   modalForm.reset();
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
 }
 
 function closeDeleteProductModal() {
@@ -2128,6 +2208,8 @@ function closeDeleteProductModal() {
   );
 
   modalWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+
+  localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
 }
 
 // These listeners are needed to change size and offset for productsList table spinner
@@ -2182,6 +2264,10 @@ function initLocalStorageData() {
   localStorage.setItem(CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES, "0");
   localStorage.setItem(
     CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
+    "0"
+  );
+  localStorage.setItem(
+    CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
     "0"
   );
 }
@@ -2333,6 +2419,11 @@ function getFetchOperationsAmountForSpinner(spinnerId) {
         CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
       );
       return productsListFetches;
+    case CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM:
+      const editProductFormFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
+      );
+      return editProductFormFetches;
     default:
       console.warn(
         `Got unknown type of spinner while getting fetches amount, spinerId: ${spinnerId}`
@@ -2382,6 +2473,16 @@ function plusFetchOperationForSpinner(spinnerId) {
         productsListFetches
       );
       break;
+    case CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM:
+      let editProductFormFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
+      );
+      editProductFormFetches++;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
+        editProductFormFetches
+      );
+      break;
     default:
       console.warn(
         `Got unknown type of spinner while plusing fetch operation, spinerId: ${spinnerId}`
@@ -2429,6 +2530,16 @@ function minusFetchOperationForSpinner(spinnerId) {
       localStorage.setItem(
         CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
         productsListFetches
+      );
+      break;
+    case CONSTANTS.SPINNERS_ID.EDIT_PRODUCT_FORM:
+      let editProductFormFetches = +localStorage.getItem(
+        CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
+      );
+      editProductFormFetches--;
+      localStorage.setItem(
+        CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
+        editProductFormFetches
       );
       break;
     default:
@@ -2663,6 +2774,21 @@ async function getFullFilteredProductsListByStoreId(storeId) {
     );
     throw new Error(
       `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
+    );
+  }
+}
+
+async function getProductById(productId) {
+  try {
+    return await getData(
+      CONSTANTS.SERVER.GET.PRODUCT_BY_ID.replace("{productId}", productId)
+    );
+  } catch (error) {
+    console.error(
+      `Error while fetching product with id=${productId}. Reason: ${error.message}`
+    );
+    throw new Error(
+      `Error while fetching product with id=${productId}. Reason: ${error.message}`
     );
   }
 }

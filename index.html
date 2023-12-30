@@ -259,121 +259,123 @@
     <div class="modal-window" id="modal-create-store">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">Create new store</h2>
-        <form
-          action="#"
-          class="modal-window__form"
-          name="create-store-form"
-          id="create-store-form"
-        >
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Name:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-name-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Enter name"
-                name="Store name"
-                id="modal-create-store-name"
-              />
+        <div class="modal-window__form-wrapper">
+          <form
+            action="#"
+            class="modal-window__form"
+            name="create-store-form"
+            id="create-store-form"
+          >
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Name:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-name-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Enter name"
+                  name="Store name"
+                  id="modal-create-store-name"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Email:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-email-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="email"
-                class="modal-window__field-input"
-                placeholder="Enter email"
-                name="Store email"
-                id="modal-create-store-email"
-              />
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Email:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-email-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="email"
+                  class="modal-window__field-input"
+                  placeholder="Enter email"
+                  name="Store email"
+                  id="modal-create-store-email"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Phone Number:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-phone-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="tel"
-                class="modal-window__field-input"
-                placeholder="Enter phone number"
-                name="Store phone"
-                id="modal-create-store-phone"
-              />
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Phone Number:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-phone-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="tel"
+                  class="modal-window__field-input"
+                  placeholder="Enter phone number"
+                  name="Store phone"
+                  id="modal-create-store-phone"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Address:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-address-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Enter address"
-                name="Store address"
-                id="modal-create-store-address"
-              />
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Address:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-address-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Enter address"
+                  name="Store address"
+                  id="modal-create-store-address"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Established:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-established-date-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                onfocus="(this.type='date')"
-                onblur="(this.type='text')"
-                class="modal-window__field-input modal-window__field-input_date"
-                placeholder="MMM d, y"
-                name="Store established date"
-                id="modal-create-store-established-date"
-              />
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Established:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-established-date-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  class="modal-window__field-input modal-window__field-input_date"
+                  placeholder="MMM d, y"
+                  name="Store established date"
+                  id="modal-create-store-established-date"
+                />
+              </div>
             </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Floor Area:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-store-floor-area-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="number"
-                min="0"
-                class="modal-window__field-input"
-                placeholder="Enter floor area (in sq.m)"
-                name="Store floor area"
-                id="modal-create-store-floor-area"
-              />
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Floor Area:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-store-floor-area-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="number"
+                  min="0"
+                  class="modal-window__field-input"
+                  placeholder="Enter floor area (in sq.m)"
+                  name="Store floor area"
+                  id="modal-create-store-floor-area"
+                />
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
         <div class="modal-window__btns-wrapper">
           <button
             class="modal-window__btn modal-window__btn_confirm"
@@ -420,157 +422,159 @@
     <div class="modal-window" id="modal-create-product">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">Create new product</h2>
-        <form
-          action="#"
-          class="modal-window__form"
-          name="create-product-form"
-          id="create-product-form"
-        >
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Name:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-name-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Enter name"
-                name="Product name"
-                id="modal-create-product-name"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Price:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-price-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="number"
-                min="0"
-                class="modal-window__field-input"
-                placeholder="Enter price"
-                name="Product price"
-                id="modal-create-product-price"
-              />
-              <span class="modal-window__field-input-mark">USD</span>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Specs:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-specs-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <textarea
-                type="text"
-                class="modal-window__field-input resize-none"
-                placeholder="Enter product specs"
-                name="Product specs"
-                id="modal-create-product-specs"
-                rows="2"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Rating:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-rating-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="number"
-                min="1"
-                max="5"
-                class="modal-window__field-input"
-                placeholder="Enter rating 1..5"
-                name="Product rating"
-                id="modal-create-product-rating"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Supplier info:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-supplier-info-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <textarea
-                type="text"
-                class="modal-window__field-input resize-none"
-                placeholder="Enter supplier info"
-                name="Product supplier info"
-                id="modal-create-product-supplier-info"
-                rows="2"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Made in:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-country-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Enter origin country"
-                name="Product origin country"
-                id="modal-create-product-country"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label"
-              >Production company name:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-prod-company-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Enter manufacturer name"
-                name="Product production company"
-                id="modal-create-product-prod-company"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Status:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-create-product-status-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <select
-                class="modal-window__field-input"
-                name="Product status"
-                id="modal-create-product-status"
+        <div class="modal-window__form-wrapper">
+          <form
+            action="#"
+            class="modal-window__form"
+            name="create-product-form"
+            id="create-product-form"
+          >
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Name:</span
               >
-                <option value="OK" selected="selected">OK</option>
-                <option value="STORAGE">Storage</option>
-                <option value="OUT_OF_STOCK">Out of stock</option>
-              </select>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-name-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Enter name"
+                  name="Product name"
+                  id="modal-create-product-name"
+                />
+              </div>
             </div>
-          </div>
-        </form>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Price:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-price-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="number"
+                  min="0"
+                  class="modal-window__field-input"
+                  placeholder="Enter price"
+                  name="Product price"
+                  id="modal-create-product-price"
+                />
+                <span class="modal-window__field-input-mark">USD</span>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Specs:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-specs-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <textarea
+                  type="text"
+                  class="modal-window__field-input resize-none"
+                  placeholder="Enter product specs"
+                  name="Product specs"
+                  id="modal-create-product-specs"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Rating:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-rating-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  class="modal-window__field-input"
+                  placeholder="Enter rating 1..5"
+                  name="Product rating"
+                  id="modal-create-product-rating"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Supplier info:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-supplier-info-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <textarea
+                  type="text"
+                  class="modal-window__field-input resize-none"
+                  placeholder="Enter supplier info"
+                  name="Product supplier info"
+                  id="modal-create-product-supplier-info"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Made in:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-country-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Enter origin country"
+                  name="Product origin country"
+                  id="modal-create-product-country"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label"
+                >Production company name:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-prod-company-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Enter manufacturer name"
+                  name="Product production company"
+                  id="modal-create-product-prod-company"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Status:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-create-product-status-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <select
+                  class="modal-window__field-input"
+                  name="Product status"
+                  id="modal-create-product-status"
+                >
+                  <option value="OK" selected="selected">OK</option>
+                  <option value="STORAGE">Storage</option>
+                  <option value="OUT_OF_STOCK">Out of stock</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
         <div class="modal-window__btns-wrapper">
           <button
             class="modal-window__btn modal-window__btn_confirm"
@@ -590,157 +594,159 @@
     <div class="modal-window" id="modal-edit-product">
       <div class="modal-window__wrapper">
         <h2 class="modal-window__headline">Edit product</h2>
-        <form
-          action="#"
-          class="modal-window__form"
-          name="edit-product-form"
-          id="edit-product-form"
-        >
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Name:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-name-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Edit name"
-                name="Product name"
-                id="modal-edit-product-name"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Price:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-price-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="number"
-                min="0"
-                class="modal-window__field-input"
-                placeholder="Edit price"
-                name="Product price"
-                id="modal-edit-product-price"
-              />
-              <span class="modal-window__field-input-mark">USD</span>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span
-              class="modal-window__field-label modal-window__field-label_mandatory"
-              >Specs:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-specs-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <textarea
-                type="text"
-                class="modal-window__field-input resize-none"
-                placeholder="Edit product specs"
-                name="Product specs"
-                id="modal-edit-product-specs"
-                rows="2"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Rating:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-rating-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="number"
-                min="1"
-                max="5"
-                class="modal-window__field-input"
-                placeholder="Edit rating 1..5"
-                name="Product rating"
-                id="modal-edit-product-rating"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Supplier info:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-supplier-info-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <textarea
-                type="text"
-                class="modal-window__field-input resize-none"
-                placeholder="Edit supplier info"
-                name="Product supplier info"
-                id="modal-edit-product-supplier-info"
-                rows="2"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Made in:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-country-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Edit origin country"
-                name="Product origin country"
-                id="modal-edit-product-country"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label"
-              >Production company name:</span
-            >
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-prod-company-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <input
-                type="text"
-                class="modal-window__field-input"
-                placeholder="Edit manufacturer name"
-                name="Product production company"
-                id="modal-edit-product-prod-company"
-              />
-            </div>
-          </div>
-          <div class="modal-window__field-wrapper">
-            <span class="modal-window__field-label">Status:</span>
-            <div
-              class="modal-window__field-input-wrapper"
-              id="modal-edit-product-status-wrapper"
-              data-error-msg="No errors yet..."
-            >
-              <select
-                class="modal-window__field-input"
-                name="Product status"
-                id="modal-edit-product-status"
+        <div class="modal-window__form-wrapper">
+          <form
+            action="#"
+            class="modal-window__form"
+            name="edit-product-form"
+            id="edit-product-form"
+          >
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Name:</span
               >
-                <option value="OK" selected="selected">OK</option>
-                <option value="STORAGE">Storage</option>
-                <option value="OUT_OF_STOCK">Out of stock</option>
-              </select>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-name-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Edit name"
+                  name="Product name"
+                  id="modal-edit-product-name"
+                />
+              </div>
             </div>
-          </div>
-        </form>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Price:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-price-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="number"
+                  min="0"
+                  class="modal-window__field-input"
+                  placeholder="Edit price"
+                  name="Product price"
+                  id="modal-edit-product-price"
+                />
+                <span class="modal-window__field-input-mark">USD</span>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span
+                class="modal-window__field-label modal-window__field-label_mandatory"
+                >Specs:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-specs-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <textarea
+                  type="text"
+                  class="modal-window__field-input resize-none"
+                  placeholder="Edit product specs"
+                  name="Product specs"
+                  id="modal-edit-product-specs"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Rating:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-rating-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  class="modal-window__field-input"
+                  placeholder="Edit rating 1..5"
+                  name="Product rating"
+                  id="modal-edit-product-rating"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Supplier info:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-supplier-info-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <textarea
+                  type="text"
+                  class="modal-window__field-input resize-none"
+                  placeholder="Edit supplier info"
+                  name="Product supplier info"
+                  id="modal-edit-product-supplier-info"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Made in:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-country-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Edit origin country"
+                  name="Product origin country"
+                  id="modal-edit-product-country"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label"
+                >Production company name:</span
+              >
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-prod-company-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <input
+                  type="text"
+                  class="modal-window__field-input"
+                  placeholder="Edit manufacturer name"
+                  name="Product production company"
+                  id="modal-edit-product-prod-company"
+                />
+              </div>
+            </div>
+            <div class="modal-window__field-wrapper">
+              <span class="modal-window__field-label">Status:</span>
+              <div
+                class="modal-window__field-input-wrapper"
+                id="modal-edit-product-status-wrapper"
+                data-error-msg="No errors yet..."
+              >
+                <select
+                  class="modal-window__field-input"
+                  name="Product status"
+                  id="modal-edit-product-status"
+                >
+                  <option value="OK" selected="selected">OK</option>
+                  <option value="STORAGE">Storage</option>
+                  <option value="OUT_OF_STOCK">Out of stock</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
         <div class="modal-window__btns-wrapper">
           <button
             class="modal-window__btn modal-window__btn_confirm"
