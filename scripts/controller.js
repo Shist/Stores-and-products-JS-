@@ -36,7 +36,7 @@ export default class Controller {
     this._setTableRowsBtnsListeners();
 
     this._setFootersBtnsListeners();
-    // setModalsConfirmBtnsListeners();
+    this._setModalsConfirmBtnsListeners();
     // setModalsCancelBtnsListeners();
 
     // loadStoreIdFromBookmark();
@@ -617,6 +617,42 @@ export default class Controller {
 
     modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
   }
+
+  _setModalsConfirmBtnsListeners() {
+    const btnConfirmCreateStore = this.view.getBtnConfirmCreateStore();
+    const btnConfirmDeleteStore = this.view.getBtnConfirmDeleteStore();
+    const btnConfirmCreateProduct = this.view.getBtnConfirmCreateProduct();
+    const btnConfirmEditProduct = this.view.getBtnConfirmEditProduct();
+    const btnConfirmDeleteProduct = this.view.getBtnConfirmDeleteProduct();
+
+    btnConfirmCreateStore.addEventListener(
+      "click",
+      this._onConfirmCreateStoreClick
+    );
+    btnConfirmDeleteStore.addEventListener(
+      "click",
+      this._onConfirmDeleteStoreClick
+    );
+    btnConfirmCreateProduct.addEventListener(
+      "click",
+      this._onConfirmCreateProductClick
+    );
+    btnConfirmEditProduct.addEventListener(
+      "click",
+      this._onConfirmEditProductClick
+    );
+    btnConfirmDeleteProduct.addEventListener(
+      "click",
+      this._onConfirmDeleteProductClick
+    );
+  }
+
+  // TODO
+  _onConfirmCreateStoreClick() {}
+  _onConfirmDeleteStoreClick() {}
+  _onConfirmCreateProductClick() {}
+  _onConfirmEditProductClick() {}
+  _onConfirmDeleteProductClick() {}
 
   _setProductsListSpinnerResizeListeners() {
     const storeDetailsWrapper = this.view.getStoreDetailsWrapper();

@@ -261,6 +261,36 @@ export default class View {
     ["Rating", "Rating", "align-start"],
   ];
 
+  getBtnConfirmCreateStore() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.BTN_CONFIRM}`
+    );
+  }
+
+  getBtnConfirmCreateProduct() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_PRODUCT.BTN_CONFIRM}`
+    );
+  }
+
+  getBtnConfirmDeleteStore() {
+    return document.querySelector(
+      `#${View.ID.MODALS.DELETE_STORE.BTN_CONFIRM}`
+    );
+  }
+
+  getBtnConfirmDeleteProduct() {
+    return document.querySelector(
+      `#${View.ID.MODALS.DELETE_PRODUCT.BTN_CONFIRM}`
+    );
+  }
+
+  getBtnConfirmEditProduct() {
+    return document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.BTN_CONFIRM}`
+    );
+  }
+
   getBtnCreateStore() {
     return document.querySelector(`#${View.ID.BTN.CREATE_STORE}`);
   }
