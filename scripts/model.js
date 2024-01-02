@@ -175,18 +175,6 @@ export default class Model {
         "{storeId}",
         storeId
       );
-      //   const filterId = localStorage.getItem(
-      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
-      //   );
-      //   const sortKey = localStorage.getItem(
-      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
-      //   );
-      //   const sortOrder = localStorage.getItem(
-      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
-      //   );
-      //   const searchFilterValue = document.querySelector(
-      //     `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
-      //   ).value;
       const filterObj = {};
 
       if (searchFilterValue) {

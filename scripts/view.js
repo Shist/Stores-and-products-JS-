@@ -261,6 +261,10 @@ export default class View {
     ["Rating", "Rating", "align-start"],
   ];
 
+  getClosestFilterBtn(element) {
+    return element.closest(`.${View.CLASS.BTN.FILTER}`);
+  }
+
   getClosestStoresListItem(element) {
     return element.closest(`.${View.CLASS.STORES_LIST_ITEM}`);
   }

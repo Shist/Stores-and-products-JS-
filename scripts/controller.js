@@ -31,7 +31,7 @@ export default class Controller {
     this._setSearchStoresListeners();
     this._setStoresCardsClickListener();
 
-    // setProductsFiltersBtnsListener();
+    this._setProductsFiltersBtnsListener();
     // renderProductsTableHead();
     // setTableRowsBtnsListeners();
 
@@ -249,6 +249,59 @@ export default class Controller {
       }
 
       this._updateAllStoreDetails();
+    }
+  }
+
+  _setProductsFiltersBtnsListener() {
+    const filtersWrapper = this.view.getFilterWrapper();
+
+    filtersWrapper.addEventListener("click", this._onProductsFilterBtnClick);
+  }
+
+  _onProductsFilterBtnClick(e) {
+    const newFilterBtn = this.view.getClosestFilterBtn(e.target);
+
+    if (
+      newFilterBtn &&
+      newFilterBtn.id !==
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER)
+    ) {
+      this.view.setCurrProductsFilterBtn(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+        newFilterBtn.id
+      );
+
+      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+      const filterOptions = {
+        filterId: localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+        sortKey: localStorage.getItem(
+          Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+        ),
+        sortOrder: localStorage.getItem(Controller.LOCAL_STORAGE_ID.SORT_ORDER),
+        searchFilterValue: this.view.getProductsSearchInput().value,
+      };
+
+      this.model
+        .getFullFilteredProductsListByStoreId(
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+          filterOptions
+        )
+        .then((fullFilteredProductsList) => {
+          if (Array.isArray(fullFilteredProductsList)) {
+            this.view.updateProductsTableBody(fullFilteredProductsList);
+          }
+        })
+        .catch((error) => {
+          this.view.showPopupWithMsg(
+            error.message,
+            View.POPUP_COLOR.ERROR,
+            8000
+          );
+        })
+        .finally(() => {
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+        });
     }
   }
 
