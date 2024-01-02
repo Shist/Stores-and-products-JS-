@@ -41,20 +41,24 @@ export default class Controller {
 
     this._loadStoreIdFromBookmark();
 
-    // setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
+    this.view.setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.LOADING);
 
-    // getSearchedStoresList()
-    //   .then((storesList) => {
-    //     if (Array.isArray(storesList)) {
-    //       updateStoresList(storesList);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     showPopupWithMsg(error.message, CONSTANTS.POPUP_ERROR_COLOR, 8000);
-    //   })
-    //   .finally(() => {
-    //     requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
-    //   });
+    this.model
+      .getSearchedStoresList(this.view.getStoresSearchInput().value)
+      .then((storesList) => {
+        if (Array.isArray(storesList)) {
+          this.view.updateStoresList(
+            storesList,
+            localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+          );
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+      });
   }
 
   _updateAllStoreDetails() {
