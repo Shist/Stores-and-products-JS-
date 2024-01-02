@@ -20,9 +20,9 @@ export default class Controller {
 
   static BOOKMARK_QUERY_STORE_ID = "store-id";
 
-  constructor(/*TODO - add view and model as parameters*/) {
-    this.view = new View();
-    this.model = new Model();
+  constructor(view, model) {
+    this.view = view;
+    this.model = model;
   }
 
   init() {
