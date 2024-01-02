@@ -817,7 +817,7 @@ export default class View {
     return this;
   }
 
-  updateStoreDetailsLayout(currStoreExists) {
+  updateStoreDetailsLayout(currStore) {
     const storeDetailsWrapper = document.querySelector(
       `#${View.ID.STORE_DETAILS.WRAPPER}`
     );
@@ -828,7 +828,7 @@ export default class View {
       `#${View.ID.STORE_NOT_FOUND_WRAPPER}`
     );
 
-    if (currStoreExists) {
+    if (currStore) {
       storeDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
       noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
       storeNotFoundWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
@@ -1119,6 +1119,16 @@ export default class View {
     );
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  disableStoreDetailsFooterBtns() {
+    document.querySelector(`#${View.ID.BTN.CREATE_PRODUCT}`).disabled = true;
+    document.querySelector(`#${View.ID.BTN.DELETE_STORE}`).disabled = true;
+  }
+
+  unlockStoreDetailsFooterBtns() {
+    document.querySelector(`#${View.ID.BTN.CREATE_PRODUCT}`).disabled = false;
+    document.querySelector(`#${View.ID.BTN.DELETE_STORE}`).disabled = false;
   }
 
   addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {

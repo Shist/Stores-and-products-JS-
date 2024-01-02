@@ -704,7 +704,108 @@ export default class Controller {
     }
   }
 
-  _onConfirmDeleteStoreClick() {}
+  _onConfirmDeleteStoreClick() {
+    this.view.disableStoreDetailsFooterBtns();
+
+    this.view.closeDeleteStoreModal();
+
+    this.view.setStoresListSpinner(
+      View.SPINNER_TEXT.STORES_LIST.DELETING_STORE_PRODUCTS
+    );
+    this.view.setProductsListSpinner(
+      View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE_PRODUCTS
+    );
+
+    this.model
+      .deleteStoreProducts(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "All products of store have been successfully deleted.",
+          View.POPUP_COLOR.ATTENTION,
+          5000
+        );
+
+        this.view.setStoresListSpinner(
+          View.SPINNER_TEXT.STORES_LIST.DELETING_STORE
+        );
+        this.view.setProductsListSpinner(
+          View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE
+        );
+
+        this.model
+          .deleteStore(
+            localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+          )
+          .then(() => {
+            this.view.showPopupWithMsg(
+              "The store has been successfully deleted.",
+              View.POPUP_COLOR.ATTENTION,
+              5000
+            );
+
+            localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_STORE);
+            if (
+              localStorage.getItem(
+                Controller.LOCAL_STORAGE_ID.BOOKMARK_DETECTED
+              )
+            ) {
+              this._updateBookmarkInsideURL();
+            }
+            this.view.updateStoreDetailsLayout(
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+            );
+
+            this.view.setStoresListSpinner(
+              View.SPINNER_TEXT.STORES_LIST.UPDATING
+            );
+
+            this.model
+              .getSearchedStoresList(this.view.getStoresSearchInput().value)
+              .then((storesList) => {
+                if (Array.isArray(storesList)) {
+                  this.view.updateStoresList(
+                    storesList,
+                    localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+                  );
+                }
+              })
+              .catch((error) => {
+                this.view.showPopupWithMsg(
+                  error.message,
+                  View.POPUP_COLOR.ERROR,
+                  8000
+                );
+              })
+              .finally(() => {
+                this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+              });
+          })
+          .catch((error) => {
+            this.view.showPopupWithMsg(
+              error.message,
+              View.POPUP_COLOR.ERROR,
+              8000
+            );
+          })
+          .finally(() => {
+            this.view.unlockStoreDetailsFooterBtns();
+
+            this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+          });
+      })
+      .catch((error) => {
+        this.view.unlockStoreDetailsFooterBtns();
+
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
 
   _onConfirmCreateProductClick() {}
 
