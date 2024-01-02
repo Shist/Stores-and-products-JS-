@@ -381,7 +381,7 @@ export default class Controller {
 
           this._setTableSortFiltersToLocalStorage(
             sortKey,
-            CONSTANTS.SORT_ORDER.ASC
+            Model.SORT_ORDER.ASC
           );
 
           this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
@@ -416,7 +416,7 @@ export default class Controller {
 
           this._setTableSortFiltersToLocalStorage(
             sortKey,
-            CONSTANTS.SORT_ORDER.DESC
+            Model.SORT_ORDER.DESC
           );
 
           this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
@@ -838,14 +838,14 @@ export default class Controller {
 
           const searchedProductsPromise = this.model
             .getSearchedProductsListByStoreId(
-              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
               this.view.getProductsSearchInput().value
             )
             .then((searchedProductsList) => {
               if (Array.isArray(searchedProductsList)) {
                 this.view.updateProductsAmounts(
                   searchedProductsList,
-                  localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+                  localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
                 );
               }
             });
@@ -865,7 +865,7 @@ export default class Controller {
 
           const fullFilteredProductsPromise = this.model
             .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
               filterOptions
             )
             .then((fullFilteredProductsList) => {
@@ -941,14 +941,14 @@ export default class Controller {
 
           const searchedProductsPromise = this.model
             .getSearchedProductsListByStoreId(
-              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
               this.view.getProductsSearchInput().value
             )
             .then((searchedProductsList) => {
               if (Array.isArray(searchedProductsList)) {
                 this.view.updateProductsAmounts(
                   searchedProductsList,
-                  localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+                  localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
                 );
               }
             });
@@ -968,7 +968,7 @@ export default class Controller {
 
           const fullFilteredProductsPromise = this.model
             .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
               filterOptions
             )
             .then((fullFilteredProductsList) => {
@@ -1036,14 +1036,14 @@ export default class Controller {
 
         const searchedProductsPromise = this.model
           .getSearchedProductsListByStoreId(
-            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+            localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
             this.view.getProductsSearchInput().value
           )
           .then((searchedProductsList) => {
             if (Array.isArray(searchedProductsList)) {
               this.view.updateProductsAmounts(
                 searchedProductsList,
-                localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+                localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
               );
             }
           });
@@ -1063,7 +1063,7 @@ export default class Controller {
 
         const fullFilteredProductsPromise = this.model
           .getFullFilteredProductsListByStoreId(
-            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+            localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
             filterOptions
           )
           .then((fullFilteredProductsList) => {

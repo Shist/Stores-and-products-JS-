@@ -895,12 +895,12 @@ export default class View {
     );
 
     if (currStore) {
-      storeDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
-      noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
-      storeNotFoundWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+      storeDetailsWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+      noStoreDetailsWrapper.classList.add(View.JS_CLASS.ELEMENT.HIDDEN);
+      storeNotFoundWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
     } else {
-      storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
-      noStoreDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
+      storeDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+      noStoreDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
     }
   }
 
@@ -1072,12 +1072,12 @@ export default class View {
     if (filterToOff) {
       document
         .querySelector(`#${filterToOff}`)
-        ?.classList.add(CONSTANTS.JS_CLASS.FILTER_OFF);
+        ?.classList.add(View.JS_CLASS.FILTER_OFF);
     }
 
     document
       .querySelector(`#${filterToSet}`)
-      ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
+      ?.classList.remove(View.JS_CLASS.FILTER_OFF);
 
     return this;
   }
