@@ -3,7 +3,7 @@
 class Model {
   static API_PREFIX = "http://localhost:3000/api";
 
-  static STORE_KEYS = {
+  static STORE_KEY = {
     NAME: "Name",
     EMAIL: "Email",
     PHONE: "PhoneNumber",
@@ -12,7 +12,7 @@ class Model {
     FLOOR_AREA: "FloorArea",
   };
 
-  static PRODUCT_KEYS = {
+  static PRODUCT_KEY = {
     NAME: "Name",
     PRICE: "Price",
     SPECS: "Specs",
@@ -24,23 +24,23 @@ class Model {
     STORE_ID: "StoreId",
   };
 
-  static GET_ENDPOINTS = {
+  static GET_ENDPOINT = {
     STORES: "/Stores",
     STORE_BY_ID: "/Stores/{storeId}",
     PRODUCTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
     PRODUCT_BY_ID: "/Products/{productId}",
   };
 
-  static POST_ENDPOINTS = {
+  static POST_ENDPOINT = {
     STORE: "/Stores",
     PRODUCT_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
   };
 
-  static PUT_ENDPOINTS = {
+  static PUT_ENDPOINT = {
     PRODUCT_BY_ID: "/Products/{productId}",
   };
 
-  static DELETE_ENDPOINTS = {
+  static DELETE_ENDPOINT = {
     STORE_BY_ID: "/Stores/{storeId}",
     PRDOCUTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
     PRODUCT_BY_ID: "/Products/{productId}",
