@@ -37,7 +37,7 @@ export default class Controller {
 
     this._setFootersBtnsListeners();
     this._setModalsConfirmBtnsListeners();
-    // setModalsCancelBtnsListeners();
+    this._setModalsCancelBtnsListeners();
 
     // loadStoreIdFromBookmark();
 
@@ -647,12 +647,113 @@ export default class Controller {
     );
   }
 
-  // TODO
-  _onConfirmCreateStoreClick() {}
+  _onConfirmCreateStoreClick() {
+    if (this._validateCreateStoreForm()) {
+      const resultObj = this._getStoreObjFromFormInputs();
+
+      this.view.closeCreateStoreModal();
+
+      this.view.setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.CREATING);
+
+      this.model
+        .postStore()(JSON.stringify(resultObj))
+        .then(() => {
+          this.view.showPopupWithMsg(
+            "New store has been successfully created!",
+            View.POPUP_COLOR.SUCCESS,
+            5000
+          );
+
+          this.view.setStoresListSpinner(
+            View.SPINNER_TEXT.STORES_LIST.UPDATING
+          );
+
+          this.model
+            .getSearchedStoresList(this.view.getStoresSearchInput().value)
+            .then((storesList) => {
+              if (Array.isArray(storesList)) {
+                this.view.updateStoresList(
+                  storesList,
+                  localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+                );
+              }
+            })
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+            });
+        })
+        .catch((error) => {
+          this.view.showPopupWithMsg(
+            error.message,
+            View.POPUP_COLOR.ERROR,
+            8000
+          );
+        })
+        .finally(() => {
+          this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+        });
+    } else {
+      this.view.showErrorModal();
+    }
+  }
+
   _onConfirmDeleteStoreClick() {}
+
   _onConfirmCreateProductClick() {}
+
   _onConfirmEditProductClick() {}
+
   _onConfirmDeleteProductClick() {}
+
+  _setModalsCancelBtnsListeners() {
+    const btnCancelCreateStore = this.view.getBtnCancelCreateStore();
+    const btnCancelDeleteStore = this.view.getBtnCancelDeleteStore();
+    const btnCancelCreateProduct = this.view.getBtnCancelCreateProduct();
+    const btnCancelEditProduct = this.view.getBtnCancelEditProduct();
+    const btnCancelDeleteProduct = this.view.getBtnCancelDeleteProduct();
+    const btnOkModalError = this.view.getBtnOkModalError();
+
+    btnCancelCreateStore.addEventListener(
+      "click",
+      this.view.closeCreateStoreModal
+    );
+    btnCancelDeleteStore.addEventListener(
+      "click",
+      this.view.closeDeleteStoreModal
+    );
+    btnCancelCreateProduct.addEventListener(
+      "click",
+      this.view.closeCreateProductModal
+    );
+    btnCancelEditProduct.addEventListener(
+      "click",
+      this._onCancelEditProductBtnClick
+    );
+    btnCancelDeleteProduct.addEventListener(
+      "click",
+      this._onCancelDeleteProductBtnClick
+    );
+    btnOkModalError.addEventListener("click", this.view.closeErrorModal);
+  }
+
+  _onCancelEditProductBtnClick() {
+    this.view.closeEditProductModal();
+
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT);
+  }
+
+  _onCancelDeleteProductBtnClick() {
+    this.view.closeDeleteProductModal();
+
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT);
+  }
 
   _setProductsListSpinnerResizeListeners() {
     const storeDetailsWrapper = this.view.getStoreDetailsWrapper();
@@ -1095,6 +1196,90 @@ export default class Controller {
 
       spinnerToRemove.remove();
     }
+  }
+
+  _validateCreateStoreForm() {
+    const validateObj = {
+      name: {
+        wrapper: this.view.getModalCreateStoreInputNameWrapper(),
+        input: this.view.getModalCreateStoreInputName(),
+      },
+      email: {
+        wrapper: this.view.getModalCreateStoreInputEmail(),
+        input: this.view.getModalCreateStoreInputEmailWrapper(),
+      },
+      phone: {
+        wrapper: this.view.getModalCreateStoreInputPhone(),
+        input: this.view.getModalCreateStoreInputPhoneWrapper(),
+      },
+      floorArea: {
+        wrapper: this.view.getModalCreateStoreInputFloorArea(),
+        input: this.view.getModalCreateStoreInputFloorAreaWrapper(),
+      },
+    };
+
+    validateObj.name.state = this.model.validateCreateStoreName(
+      validateObj.name.input
+    );
+    validateObj.email.state = this.model.validateCreateStoreEmail(
+      validateObj.email.input
+    );
+    validateObj.phone.state = this.model.validateCreateStorePhone(
+      validateObj.phone.input
+    );
+    validateObj.floorArea.state = this.model.validateCreateStoreFloorArea(
+      validateObj.floorArea.input
+    );
+
+    Object.keys(validateObj).forEach(({ wrapper, input, state }) => {
+      if (state === "OK") {
+        this.view.removeErrorFromInput(
+          input,
+          View.JS_CLASS.ERROR_FIELD,
+          wrapper
+        );
+      } else {
+        this.view.addErrorToInput(
+          input,
+          View.JS_CLASS.ERROR_FIELD,
+          wrapper,
+          state
+        );
+      }
+    });
+
+    return Object.values(validateObj).every((item) => item.state === "OK");
+  }
+
+  _getStoreObjFromFormInputs() {
+    const inputName = this.view.getModalCreateStoreInputName();
+    const inputEmail = this.view.getModalCreateStoreInputEmail();
+    const inputPhone = this.view.getModalCreateStoreInputPhone();
+    const inputAddress = this.view.getModalCreateStoreInputAddress();
+    const inputEstablishedDate = this.view.getModalCreateStoreInputEstDate();
+    const inputFloorArea = this.view.getModalCreateStoreInputFloorArea();
+    const resultObj = {};
+
+    if (inputName.value) {
+      resultObj[Model.STORE_KEY.NAME] = inputName.value;
+    }
+    if (inputEmail.value) {
+      resultObj[Model.STORE_KEY.EMAIL] = inputEmail.value;
+    }
+    if (inputPhone.value) {
+      resultObj[Model.STORE_KEY.PHONE] = inputPhone.value;
+    }
+    if (inputAddress.value) {
+      resultObj[Model.STORE_KEY.ADDRESS] = inputAddress.value;
+    }
+    if (inputEstablishedDate.value) {
+      resultObj[Model.STORE_KEY.ESTABLISHED_DATE] = inputEstablishedDate.value;
+    }
+    if (inputFloorArea.value) {
+      resultObj[Model.STORE_KEY.FLOOR_AREA] = inputFloorArea.value;
+    }
+
+    return resultObj;
   }
 
   _updateBookmarkInsideURL() {

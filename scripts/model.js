@@ -63,6 +63,49 @@ export default class Model {
     return /^[^#%&*()\[\]{}\\]*$/.test(searchInput.value);
   }
 
+  validateCreateStoreName(inputName) {
+    if (!inputName.value) {
+      return "Name can not be empty!";
+    } else if (
+      inputName.value
+        .split(" ")
+        .map((word) => word.length)
+        .find((wordLength) => wordLength > 15)
+    ) {
+      return "Name can not contain words with >15 symbols!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateCreateStoreEmail(inputEmail) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!inputEmail.value) {
+      return "Email can not be empty!";
+    } else if (!emailRegex.test(inputEmail.value)) {
+      return "Email you have entered is invalid!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateCreateStorePhone(inputPhone) {
+    if (!inputPhone.value) {
+      return "Phone can not be empty!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateCreateStoreFloorArea(inputFloorArea) {
+    if (inputFloorArea.value && +inputFloorArea.value <= 0) {
+      return "Floor area must be positive!";
+    } else {
+      return "OK";
+    }
+  }
+
   async getData(endPoint) {
     try {
       const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {

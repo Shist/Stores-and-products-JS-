@@ -261,6 +261,30 @@ export default class View {
     ["Rating", "Rating", "align-start"],
   ];
 
+  getBtnCancelCreateStore() {
+    return document.querySelector(`#${View.ID.MODALS.CREATE_STORE.BTN_CANCEL}`);
+  }
+
+  getBtnCancelCreateProduct() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_PRODUCT.BTN_CANCEL}`
+    );
+  }
+
+  getBtnCancelDeleteStore() {
+    return document.querySelector(`#${View.ID.MODALS.DELETE_STORE.BTN_CANCEL}`);
+  }
+
+  getBtnCancelDeleteProduct() {
+    return document.querySelector(
+      `#${View.ID.MODALS.DELETE_PRODUCT.BTN_CANCEL}`
+    );
+  }
+
+  getBtnCancelEditProduct() {
+    return document.querySelector(`#${View.ID.MODALS.EDIT_PRODUCT.BTN_CANCEL}`);
+  }
+
   getBtnConfirmCreateStore() {
     return document.querySelector(
       `#${View.ID.MODALS.CREATE_STORE.BTN_CONFIRM}`
@@ -303,6 +327,10 @@ export default class View {
     return document.querySelector(`#${View.ID.BTN.DELETE_STORE}`);
   }
 
+  getBtnOkModalError() {
+    return document.querySelector(`#${View.ID.MODALS.ERROR.BTN_OK}`);
+  }
+
   getClosestFilterBtn(element) {
     return element.closest(`.${View.CLASS.BTN.FILTER}`);
   }
@@ -321,6 +349,76 @@ export default class View {
 
   getModalCreateStoreWrapper() {
     return document.querySelector(`#${View.ID.MODALS.CREATE_STORE.WRAPPER}`);
+  }
+
+  getModalCreateStoreInputName() {
+    return document.querySelector(`#${View.ID.MODALS.CREATE_STORE.INPUT_NAME}`);
+  }
+
+  getModalCreateStoreInputNameWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_NAME_WRAPPER}`
+    );
+  }
+
+  getModalCreateStoreInputEmail() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_EMAIL}`
+    );
+  }
+
+  getModalCreateStoreInputEmailWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_EMAIL_WRAPPER}`
+    );
+  }
+
+  getModalCreateStoreInputPhone() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_PHONE}`
+    );
+  }
+
+  getModalCreateStoreInputPhoneWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_PHONE_WRAPPER}`
+    );
+  }
+
+  getModalCreateStoreInputAddress() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_ADDRESS}`
+    );
+  }
+
+  getModalCreateStoreInputAddressWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_ADDRESS_WRAPPER}`
+    );
+  }
+
+  getModalCreateStoreInputEstDate() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_ESTABLISHED_DATE}`
+    );
+  }
+
+  getModalCreateStoreInputEstDateWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_ESTABLISHED_DATE_WRAPPER}`
+    );
+  }
+
+  getModalCreateStoreInputFloorArea() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_FLOOR_AREA}`
+    );
+  }
+
+  getModalCreateStoreInputFloorAreaWrapper() {
+    return document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.INPUT_FLOOR_AREA_WRAPPER}`
+    );
   }
 
   getModalDeleteProductWrapper() {
@@ -938,6 +1036,91 @@ export default class View {
     return this;
   }
 
+  closeCreateStoreModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.WRAPPER}`
+    );
+    const modalForm = document.querySelector(
+      `#${View.ID.MODALS.CREATE_STORE.FORM}`
+    );
+    const formInputWrappers = modalForm.querySelectorAll(
+      `.${View.CLASS.MODAL_FIELD_INPUT_WRAPPER}`
+    );
+
+    formInputWrappers.forEach((inputWrapper) => {
+      const input = inputWrapper.querySelector(
+        `.${View.CLASS.MODAL_FIELD_INPUT}`
+      );
+      this.removeErrorFromInput(input, View.JS_CLASS.ERROR_FIELD, inputWrapper);
+    });
+
+    modalForm.reset();
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  closeDeleteStoreModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.DELETE_STORE.WRAPPER}`
+    );
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  closeCreateProductModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.CREATE_PRODUCT.WRAPPER}`
+    );
+    const modalForm = document.querySelector(
+      `#${View.ID.MODALS.CREATE_PRODUCT.FORM}`
+    );
+    const formInputWrappers = modalForm.querySelectorAll(
+      `.${View.CLASS.MODAL_FIELD_INPUT_WRAPPER}`
+    );
+
+    formInputWrappers.forEach((inputWrapper) => {
+      const input = inputWrapper.querySelector(
+        `.${View.CLASS.MODAL_FIELD_INPUT}`
+      );
+      this.removeErrorFromInput(input, View.JS_CLASS.ERROR_FIELD, inputWrapper);
+    });
+
+    modalForm.reset();
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  closeEditProductModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.WRAPPER}`
+    );
+    const modalForm = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.FORM}`
+    );
+    const formInputWrappers = modalForm.querySelectorAll(
+      `.${View.CLASS.MODAL_FIELD_INPUT_WRAPPER}`
+    );
+
+    formInputWrappers.forEach((inputWrapper) => {
+      const input = inputWrapper.querySelector(
+        `.${View.CLASS.MODAL_FIELD_INPUT}`
+      );
+      this.removeErrorFromInput(input, View.JS_CLASS.ERROR_FIELD, inputWrapper);
+    });
+
+    modalForm.reset();
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  closeDeleteProductModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.DELETE_PRODUCT.WRAPPER}`
+    );
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
   addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {
     input.classList.add(inputErrClass);
     inputWrapper.dataset[View.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
@@ -978,5 +1161,21 @@ export default class View {
     }, timeMillisecs);
 
     return this;
+  }
+
+  showErrorModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.ERROR.WRAPPER}`
+    );
+
+    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  closeErrorModal() {
+    const modalWrapper = document.querySelector(
+      `#${View.ID.MODALS.ERROR.WRAPPER}`
+    );
+
+    modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
   }
 }
