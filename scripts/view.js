@@ -1,6 +1,6 @@
 "use strict";
 
-class View {
+export default class View {
   static ID = {
     SPINNER: {
       STORES_LIST: "stores-list-spinner",
@@ -40,12 +40,6 @@ class View {
       ADDRESS: "store-address",
     },
     FILTER_WRAPPER: "filters-wrapper",
-    FILTER: {
-      ALL: "filter-all",
-      OK: "filter-ok",
-      STORAGE: "filter-storage",
-      OUT_OF_STOCK: "filter-out-of-stock",
-    },
     PRODUCTS_AMOUNTS: {
       ALL: "all-prod-amount",
       OK: "ok-prod-amount",
@@ -255,6 +249,8 @@ class View {
 
   static DEFAULT_NOT_SPECIFIED_MSG = "(not specified)";
 
+  static ERROR_SEARCH_MSG = "Prohibited symbols entered!";
+
   static PRODUCTS_TABLE_COLUMNS = [
     ["Name", "Name", "align-start"],
     ["Price", "Price", "align-end"],
@@ -264,4 +260,182 @@ class View {
     ["ProductionCompanyName", "Prod. company", "align-start"],
     ["Rating", "Rating", "align-start"],
   ];
+
+  getSpinnerById(spinnerId) {
+    return document.querySelector(`#${spinnerId}`);
+  }
+
+  getStoreDetailsHeader() {
+    return document.querySelector(`#${View.ID.STORE_DETAILS.HEADER}`);
+  }
+
+  getStoreDetailsWrapper() {
+    return document.querySelector(`#${View.ID.STORE_DETAILS.WRAPPER}`);
+  }
+
+  getStoresListHeader() {
+    return document.querySelector(`#${View.ID.STORES_LIST.HEADER}`);
+  }
+
+  getStoresListSection() {
+    return document.querySelector(`#${View.ID.STORES_LIST.SECTION}`);
+  }
+
+  getStoresSearchBtn() {
+    return document.querySelector(`#${View.ID.STORES_SEARCH.BTN}`);
+  }
+
+  getStoresSearchInput() {
+    return document.querySelector(`#${View.ID.STORES_SEARCH.INPUT}`);
+  }
+
+  getStoresSearchWrapper() {
+    return document.querySelector(`#${View.ID.STORES_SEARCH.WRAPPER}`);
+  }
+
+  getProductsTableHeadName() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_NAME}`);
+  }
+
+  getProductsTableHeadTitles() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_TITLES}`);
+  }
+
+  getProductsTableWrapper() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE_WRAPPER}`);
+  }
+
+  getSpinnerStructure({
+    spinnerId,
+    targetText,
+    targetWidth,
+    targetMinWidth,
+    targetHeight,
+    targetBgColor,
+  }) {
+    const windowWidth = window.innerWidth;
+    return `<div class="stores-list-section__loading-data-layout" id="${spinnerId}"
+            style="width:${targetWidth};min-width:${targetMinWidth};height:${targetHeight};background-color:${targetBgColor}"
+            data-${View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB}="${targetHeight}"
+            data-${View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.KEBAB}="${targetWidth}"
+            data-${View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.KEBAB}="${windowWidth}">
+              <span class="stores-list-section__loading-data-text"
+                >${targetText}</span
+              >
+              <div class="loading-spinner">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+              </div>
+            </div>`;
+  }
+
+  _getStructureForStoresList(storesList) {
+    return storesList.reduce((storesStr, nextStore) => {
+      const storeName = nextStore.Name
+        ? nextStore.Name
+        : View.DEFAULT_NOT_SPECIFIED_MSG;
+      const storeAddress = nextStore.Address
+        ? nextStore.Address
+        : View.DEFAULT_NOT_SPECIFIED_MSG;
+      const storeFLoorArea = nextStore.FloorArea ? nextStore.FloorArea : "-";
+      storesStr += `
+                <div class="${View.CLASS.STORES_LIST_ITEM}" data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
+                    <div class="${View.CLASS.STORES_LIST_ITEM}__name-address-wrapper">
+                        <h3 class="${View.CLASS.STORES_LIST_ITEM}__name-headline">
+                            ${storeName}
+                        </h3>
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__address-text">
+                            ${storeAddress}
+                        </span>
+                    </div>
+                    <div class="${View.CLASS.STORES_LIST_ITEM}__area-data-wrapper">
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-number">
+                            ${storeFLoorArea}
+                        </span>
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-unit">sq.m</span>
+                    </div>
+                </div>
+                `;
+      return storesStr;
+    }, "");
+  }
+
+  _updateStoresListLayout(storesList) {
+    const noStoresLayout = document.querySelector(
+      `#${View.ID.NO_STORES_LAYOUT}`
+    );
+
+    if (storesList.length) {
+      noStoresLayout.classList.add(View.JS_CLASS.ELEMENT.HIDDEN);
+    } else {
+      noStoresLayout.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
+    }
+  }
+
+  _highlightActiveStoreCard(currStoreId) {
+    const storesListLayout = document.querySelector(
+      `#${View.ID.STORES_LAYOUT}`
+    );
+
+    storesListLayout
+      .querySelector(`.${View.JS_CLASS.SELECTED_ITEM}`)
+      ?.classList.remove(View.JS_CLASS.SELECTED_ITEM);
+
+    storesListLayout
+      .querySelector(
+        `[data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${currStoreId}"]`
+      )
+      ?.classList.add(View.JS_CLASS.SELECTED_ITEM);
+  }
+
+  updateStoresList(storesList, currStoreId) {
+    const storesListSection = document.querySelector(
+      `#${View.ID.STORES_LAYOUT}`
+    );
+
+    this._updateStoresListLayout(storesList);
+
+    storesListSection.innerHTML = this._getStructureForStoresList(storesList);
+
+    if (currStoreId) {
+      this._highlightActiveStoreCard(currStoreId);
+    }
+  }
+
+  addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {
+    input.classList.add(inputErrClass);
+    inputWrapper.dataset[View.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
+    inputWrapper.classList.add(View.JS_CLASS.ERROR_FIELD_WRAPPER);
+  }
+
+  removeErrorFromInput(input, inputErrClass, inputWrapper) {
+    input.classList.remove(inputErrClass);
+    inputWrapper.dataset[View.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
+      View.DEFAULT_ERROR_MSG;
+    inputWrapper.classList.remove(View.JS_CLASS.ERROR_FIELD_WRAPPER);
+  }
+
+  showPopupWithMsg(msg, color, timeMillisecs) {
+    const popupsWrapper = document.querySelector(`#${View.ID.POPUPS_WRAPPER}`);
+
+    const msgSpan = document.createElement("span");
+    msgSpan.classList.add(View.CLASS.POPUP_TEXT);
+    msgSpan.textContent = msg;
+    msgSpan.style.color = color;
+
+    const popup = document.createElement("div");
+    popup.classList.add(View.CLASS.POPUP);
+    popup.insertAdjacentElement("afterbegin", msgSpan);
+
+    popupsWrapper.insertAdjacentElement("beforeend", popup);
+
+    setTimeout(() => {
+      popup.style.opacity = "0";
+
+      setTimeout(() => {
+        popup.remove();
+      }, 2000);
+    }, timeMillisecs);
+  }
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-class Model {
+export default class Model {
   static API_PREFIX = "http://localhost:3000/api";
 
   static STORE_KEY = {
@@ -45,4 +45,367 @@ class Model {
     PRDOCUTS_BY_STORE_ID: "/Stores/{storeId}/rel_Products",
     PRODUCT_BY_ID: "/Products/{productId}",
   };
+
+  static FILTER_ID = {
+    ALL: "filter-all",
+    OK: "filter-ok",
+    STORAGE: "filter-storage",
+    OUT_OF_STOCK: "filter-out-of-stock",
+  };
+
+  static SORT_ORDER = {
+    ASC: "asc",
+    DESC: "desc",
+    DEFAULT: "default",
+  };
+
+  validateSearch(searchInput) {
+    return /^[^#%&*()\[\]{}\\]*$/.test(searchInput.value);
+  }
+
+  async getData(endPoint) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async getSearchedStoresList(searchFilterValue) {
+    try {
+      let neededURL = Model.GET_ENDPOINT.STORES;
+      const filterObj = {};
+
+      if (searchFilterValue) {
+        filterObj.where = {
+          or: [
+            { Name: { regexp: `/${searchFilterValue}/i` } },
+            { Address: { regexp: `/${searchFilterValue}/i` } },
+            { FloorArea: searchFilterValue },
+          ],
+        };
+      }
+
+      if (filterObj.where) {
+        neededURL += `?filter=${JSON.stringify(filterObj)}`;
+      }
+
+      return await getData(neededURL);
+    } catch (error) {
+      console.error(
+        `Error while fetching stores list. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while fetching stores list. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async getStoreById(storeId) {
+    try {
+      return await getData(
+        Model.GET_ENDPOINT.STORE_BY_ID.replace("{storeId}", storeId)
+      );
+    } catch (error) {
+      console.error(
+        `Error while fetching store with id=${storeId}. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while fetching store with id=${storeId}. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async getSearchedProductsListByStoreId(storeId, searchFilterValue) {
+    try {
+      let neededURL = Model.GET_ENDPOINT.PRODUCTS_BY_STORE_ID.replace(
+        "{storeId}",
+        storeId
+      );
+      //   const searchFilterValue = document.querySelector(
+      //     `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
+      //   ).value;
+      const filterObj = {};
+
+      if (searchFilterValue) {
+        filterObj.where = {
+          or: [
+            { Name: { regexp: `/${searchFilterValue}/i` } },
+            { Price: searchFilterValue },
+            { Specs: { regexp: `/${searchFilterValue}/i` } },
+            { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+            { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+            {
+              ProductionCompanyName: { regexp: `/${searchFilterValue}/i` },
+            },
+            { Rating: searchFilterValue },
+          ],
+        };
+      }
+
+      if (filterObj.where) {
+        neededURL += `?filter=${JSON.stringify(filterObj)}`;
+      }
+
+      return await getData(neededURL);
+    } catch (error) {
+      console.error(
+        `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async getFullFilteredProductsListByStoreId(
+    storeId,
+    { filterId, sortKey, sortOrder, searchFilterValue }
+  ) {
+    try {
+      let neededURL = Model.GET_ENDPOINT.PRODUCTS_BY_STORE_ID.replace(
+        "{storeId}",
+        storeId
+      );
+      //   const filterId = localStorage.getItem(
+      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID
+      //   );
+      //   const sortKey = localStorage.getItem(
+      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY
+      //   );
+      //   const sortOrder = localStorage.getItem(
+      //     CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER
+      //   );
+      //   const searchFilterValue = document.querySelector(
+      //     `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
+      //   ).value;
+      const filterObj = {};
+
+      if (searchFilterValue) {
+        if (filterId && filterId !== Model.FILTER_ID.ALL) {
+          filterObj.where = {
+            and: [
+              { Status: getProductsFilterTypeById(filterId) },
+              {
+                or: [
+                  { Name: { regexp: `/${searchFilterValue}/i` } },
+                  { Price: searchFilterValue },
+                  { Specs: { regexp: `/${searchFilterValue}/i` } },
+                  { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+                  { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+                  {
+                    ProductionCompanyName: {
+                      regexp: `/${searchFilterValue}/i`,
+                    },
+                  },
+                  { Rating: searchFilterValue },
+                ],
+              },
+            ],
+          };
+        } else {
+          filterObj.where = {
+            or: [
+              { Name: { regexp: `/${searchFilterValue}/i` } },
+              { Price: searchFilterValue },
+              { Specs: { regexp: `/${searchFilterValue}/i` } },
+              { SupplierInfo: { regexp: `/${searchFilterValue}/i` } },
+              { MadeIn: { regexp: `/${searchFilterValue}/i` } },
+              {
+                ProductionCompanyName: { regexp: `/${searchFilterValue}/i` },
+              },
+              { Rating: searchFilterValue },
+            ],
+          };
+        }
+      } else {
+        if (filterId && filterId !== Model.FILTER_ID.ALL) {
+          filterObj.where = {
+            Status: getProductsFilterTypeById(filterId),
+          };
+        }
+      }
+
+      if (sortKey && sortOrder && sortOrder !== Model.SORT_ORDER.DEFAULT) {
+        filterObj.order = `${sortKey} ${getProductsSortOrderTypeByAttribute(
+          sortOrder
+        )}`;
+      }
+
+      if (filterObj.where || filterObj.order) {
+        neededURL += `?filter=${JSON.stringify(filterObj)}`;
+      }
+
+      return await getData(neededURL);
+    } catch (error) {
+      console.error(
+        `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async getProductById(productId) {
+    try {
+      return await getData(
+        Model.GET_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId)
+      );
+    } catch (error) {
+      console.error(
+        `Error while fetching product with id=${productId}. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while fetching product with id=${productId}. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async postData(endPoint, data) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async postStore(storeObj) {
+    try {
+      return await postData(Model.POST_ENDPOINT.STORE, storeObj);
+    } catch (error) {
+      console.error(`Error while posting store. Reason: ${error.message}`);
+      throw new Error(`Error while posting store. Reason: ${error.message}`);
+    }
+  }
+
+  async postProduct(storeId, productObj) {
+    try {
+      return await postData(
+        Model.POST_ENDPOINT.PRODUCT_BY_STORE_ID.replace("{storeId}", storeId),
+        productObj
+      );
+    } catch (error) {
+      console.error(`Error while posting product. Reason: ${error.message}`);
+      throw new Error(`Error while posting product. Reason: ${error.message}`);
+    }
+  }
+
+  async putData(endPoint, data) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async editProduct(productId, productObj) {
+    try {
+      return await putData(
+        Model.PUT_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId),
+        productObj
+      );
+    } catch (error) {
+      console.error(`Error while editing product. Reason: ${error.message}`);
+      throw new Error(`Error while editing product. Reason: ${error.message}`);
+    }
+  }
+
+  async deleteData(endPoint) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      if (response.status === 204) {
+        return;
+      } else {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteStoreProducts(storeId) {
+    try {
+      return await deleteData(
+        Model.DELETE_ENDPOINT.PRDOCUTS_BY_STORE_ID.replace("{storeId}", storeId)
+      );
+    } catch (error) {
+      console.error(
+        `Error while deleting all products of store. Reason: ${error.message}`
+      );
+      throw new Error(
+        `Error while deleting all products of store. Reason: ${error.message}`
+      );
+    }
+  }
+
+  async deleteStore(storeId) {
+    try {
+      return await deleteData(
+        Model.DELETE_ENDPOINT.STORE_BY_ID.replace("{storeId}", storeId)
+      );
+    } catch (error) {
+      console.error(`Error while deleting store. Reason: ${error.message}`);
+      throw new Error(`Error while deleting store. Reason: ${error.message}`);
+    }
+  }
+
+  async deleteProduct(productId) {
+    try {
+      return await deleteData(
+        Model.DELETE_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId)
+      );
+    } catch (error) {
+      console.error(`Error while deleting product. Reason: ${error.message}`);
+      throw new Error(`Error while deleting product. Reason: ${error.message}`);
+    }
+  }
 }
