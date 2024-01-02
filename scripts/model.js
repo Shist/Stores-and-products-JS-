@@ -106,6 +106,42 @@ export default class Model {
     }
   }
 
+  validateProductName(inputName) {
+    if (!inputName.value) {
+      return "Name can not be empty!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateProductPrice(inputPrice) {
+    if (inputPrice.value && +inputPrice.value <= 0) {
+      return "Price must be positive!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateProductSpecs(inputSpecs) {
+    if (!inputSpecs.value) {
+      return "Specs can not be empty!";
+    } else {
+      return "OK";
+    }
+  }
+
+  validateProductRating(inputRating) {
+    if (inputRating.value && +inputRating.value < 1) {
+      return "Rating must be at least 1!";
+    } else if (inputRating.value && +inputRating.value > 5) {
+      return "Rating must be no more than 5!";
+    } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
+      return "Rating must have an integer value";
+    } else {
+      return "OK";
+    }
+  }
+
   async getData(endPoint) {
     try {
       const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {

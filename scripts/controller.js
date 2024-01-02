@@ -807,7 +807,106 @@ export default class Controller {
       });
   }
 
-  _onConfirmCreateProductClick() {}
+  _onConfirmCreateProductClick() {
+    if (this._validateProductForm(View.ID.MODALS.CREATE_PRODUCT)) {
+      const resultObj = this._getProductObjFromFormInputs(
+        View.ID.MODALS.CREATE_PRODUCT
+      );
+
+      this.view.closeCreateProductModal();
+
+      this._setProductsAmountSpinner(
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING
+      );
+      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.CREATING);
+
+      this.model
+        .postProduct(
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+          JSON.stringify(resultObj)
+        )
+        .then(() => {
+          this.view.showPopupWithMsg(
+            "New product has been successfully created!",
+            View.POPUP_COLOR.SUCCESS,
+            5000
+          );
+
+          const searchedProductsPromise = this.model
+            .getSearchedProductsListByStoreId(
+              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              this.view.getProductsSearchInput().value
+            )
+            .then((searchedProductsList) => {
+              if (Array.isArray(searchedProductsList)) {
+                this.view.updateProductsAmounts(
+                  searchedProductsList,
+                  localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+                );
+              }
+            });
+
+          const filterOptions = {
+            filterId: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.CURR_FILTER
+            ),
+            sortKey: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+            ),
+            sortOrder: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.SORT_ORDER
+            ),
+            searchFilterValue: this.view.getProductsSearchInput().value,
+          };
+
+          const fullFilteredProductsPromise = this.model
+            .getFullFilteredProductsListByStoreId(
+              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              filterOptions
+            )
+            .then((fullFilteredProductsList) => {
+              if (Array.isArray(fullFilteredProductsList)) {
+                this.view.updateProductsTableBody(fullFilteredProductsList);
+              }
+            });
+
+          this.view.setProductsAmountSpinner(
+            View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+          );
+          this.view.setProductsListSpinner(
+            View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+          );
+
+          Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(
+                View.ID.SPINNER.PRODUCTS_AMOUNTS
+              );
+              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+            });
+        })
+        .catch((error) => {
+          this.view.showPopupWithMsg(
+            error.message,
+            View.POPUP_COLOR.ERROR,
+            8000
+          );
+        })
+        .finally(() => {
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+        });
+    } else {
+      this.view.showErrorModal();
+    }
+  }
 
   _onConfirmEditProductClick() {}
 
@@ -1352,6 +1451,59 @@ export default class Controller {
     return Object.values(validateObj).every((item) => item.state === "OK");
   }
 
+  _validateProductForm(modalIdsObj) {
+    const validateObj = {
+      name: {
+        wrapper: this.view.getProductInputNameByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputNameWrapperByModalIdsObj(modalIdsObj),
+      },
+      price: {
+        wrapper: this.view.getProductInputPriceByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputPriceWrapperByModalIdsObj(modalIdsObj),
+      },
+      specs: {
+        wrapper: this.view.getProductInputSpecsByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputSpecsWrapperByModalIdsObj(modalIdsObj),
+      },
+      rating: {
+        wrapper: this.view.getProductInputRatingByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputRatingWrapperByModalIdsObj(modalIdsObj),
+      },
+    };
+
+    validateObj.name.state = this.model.validateProductName(
+      validateObj.name.input
+    );
+    validateObj.price.state = this.model.validateProductPrice(
+      validateObj.price.input
+    );
+    validateObj.specs.state = this.model.validateProductSpecs(
+      validateObj.specs.input
+    );
+    validateObj.rating.state = this.model.validateProductRating(
+      validateObj.rating.input
+    );
+
+    Object.keys(validateObj).forEach(({ wrapper, input, state }) => {
+      if (state === "OK") {
+        this.view.removeErrorFromInput(
+          input,
+          View.JS_CLASS.ERROR_FIELD,
+          wrapper
+        );
+      } else {
+        this.view.addErrorToInput(
+          input,
+          View.JS_CLASS.ERROR_FIELD,
+          wrapper,
+          state
+        );
+      }
+    });
+
+    return Object.values(validateObj).every((item) => item.state === "OK");
+  }
+
   _getStoreObjFromFormInputs() {
     const inputName = this.view.getModalCreateStoreInputName();
     const inputEmail = this.view.getModalCreateStoreInputEmail();
@@ -1381,6 +1533,33 @@ export default class Controller {
     }
 
     return resultObj;
+  }
+
+  _getProductObjFromFormInputs(modalIdsObj) {
+    const inputName = this.view.getProductInputNameByModalIdsObj(modalIdsObj);
+    const inputPrice = this.view.getProductInputPriceByModalIdsObj(modalIdsObj);
+    const inputSpecs = this.view.getProductInputSpecsByModalIdsObj(modalIdsObj);
+    const inputRating =
+      this.view.getProductInputRatingByModalIdsObj(modalIdsObj);
+    const inputSupplierInfo =
+      this.view.getProductInputSupplierInfoByModalIdsObj(modalIdsObj);
+    const inputCountry =
+      this.view.getProductInputCountryByModalIdsObj(modalIdsObj);
+    const inputProdCompany =
+      this.view.getProductInputProdCompanyByModalIdsObj(modalIdsObj);
+    const inputStatus =
+      this.view.getProductInputStatusByModalIdsObj(modalIdsObj);
+
+    return {
+      [Model.PRODUCT_KEY.NAME]: inputName.value,
+      [Model.PRODUCT_KEY.PRICE]: inputPrice.value,
+      [Model.PRODUCT_KEY.SPECS]: inputSpecs.value,
+      [Model.PRODUCT_KEY.RATING]: inputRating.value,
+      [Model.PRODUCT_KEY.SUPPLIER_INFO]: inputSupplierInfo.value,
+      [Model.PRODUCT_KEY.COUNTRY]: inputCountry.value,
+      [Model.PRODUCT_KEY.PROD_COMPANY]: inputProdCompany.value,
+      [Model.PRODUCT_KEY.STATUS]: inputStatus.value,
+    };
   }
 
   _updateBookmarkInsideURL() {

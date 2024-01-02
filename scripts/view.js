@@ -347,6 +347,72 @@ export default class View {
     return document.querySelector(`#${View.ID.MODALS.CREATE_PRODUCT.WRAPPER}`);
   }
 
+  getProductInputNameByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_NAME}`);
+  }
+
+  getProductInputNameWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_NAME_WRAPPER}`);
+  }
+
+  getProductInputPriceByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_PRICE}`);
+  }
+
+  getProductInputPriceWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_PRICE_WRAPPER}`);
+  }
+
+  getProductInputSpecsByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_SPECS}`);
+  }
+
+  getProductInputSpecsWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_SPECS_WRAPPER}`);
+  }
+
+  getProductInputRatingByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_RATING}`);
+  }
+
+  getProductInputRatingWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_RATING_WRAPPER}`);
+  }
+
+  getProductInputSupplierInfoByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_SUPPLIER_INFO}`);
+  }
+
+  getProductInputSupplierInfoWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(
+      `#${modalIdsObj.INPUT_SUPPLIER_INFO_WRAPPER}`
+    );
+  }
+
+  getProductInputCountryByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_COUNTRY}`);
+  }
+
+  getProductInputCountryWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_COUNTRY_WRAPPER}`);
+  }
+
+  getProductInputProdCompanyByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_PROD_COMPANY}`);
+  }
+
+  getProductInputProdCompanyWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_PROD_COMPANY_WRAPPER}`);
+  }
+
+  getProductInputStatusByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_STATUS}`);
+  }
+
+  getProductInputStatusWrapperByModalIdsObj(modalIdsObj) {
+    return document.querySelector(`#${modalIdsObj.INPUT_STATUS_WRAPPER}`);
+  }
+
   getModalCreateStoreWrapper() {
     return document.querySelector(`#${View.ID.MODALS.CREATE_STORE.WRAPPER}`);
   }
