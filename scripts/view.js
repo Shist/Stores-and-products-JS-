@@ -273,6 +273,18 @@ export default class View {
     return document.querySelector(`#${View.ID.FILTER_WRAPPER}`);
   }
 
+  getModalDeleteProductWrapper() {
+    return document.querySelector(`#${View.ID.MODALS.DELETE_PRODUCT.WRAPPER}`);
+  }
+
+  getModalEditProductForm() {
+    return document.querySelector(`#${View.ID.MODALS.EDIT_PRODUCT.FORM}`);
+  }
+
+  getModalEditProductWrapper() {
+    return document.querySelector(`#${View.ID.MODALS.EDIT_PRODUCT.WRAPPER}`);
+  }
+
   getSpinnerById(spinnerId) {
     return document.querySelector(`#${spinnerId}`);
   }
@@ -331,6 +343,14 @@ export default class View {
     return document.querySelector(`#${View.ID.PRODUCTS_SEARCH.WRAPPER}`);
   }
 
+  getProductsTable() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE}`);
+  }
+
+  getProductsTableBody() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.BODY}`);
+  }
+
   getProductsTableHeadName() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_NAME}`);
   }
@@ -345,10 +365,6 @@ export default class View {
 
   getProductsTableWrapper() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE_WRAPPER}`);
-  }
-
-  getProductsTable() {
-    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE}`);
   }
 
   getSpinnerStructure({
@@ -717,6 +733,58 @@ export default class View {
       storeFloorAreaField.textContent = store.FloorArea;
     } else {
       storeFloorAreaField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+  }
+
+  updateEditProductFormFields(product) {
+    const inputName = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_NAME}`
+    );
+    const inputPrice = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_PRICE}`
+    );
+    const inputSpecs = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_SPECS}`
+    );
+    const inputRating = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_RATING}`
+    );
+    const inputSupplierInfo = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_SUPPLIER_INFO}`
+    );
+    const inputCountry = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_COUNTRY}`
+    );
+    const inputProdCompany = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_PROD_COMPANY}`
+    );
+    const inputStatus = document.querySelector(
+      `#${View.ID.MODALS.EDIT_PRODUCT.INPUT_STATUS}`
+    );
+
+    if (product.Name) {
+      inputName.value = product.Name;
+    }
+    if (product.Price) {
+      inputPrice.value = product.Price;
+    }
+    if (product.Specs) {
+      inputSpecs.value = product.Specs;
+    }
+    if (product.Rating) {
+      inputRating.value = product.Rating;
+    }
+    if (product.SupplierInfo) {
+      inputSupplierInfo.value = product.SupplierInfo;
+    }
+    if (product.MadeIn) {
+      inputCountry.value = product.MadeIn;
+    }
+    if (product.ProductionCompanyName) {
+      inputProdCompany.value = product.ProductionCompanyName;
+    }
+    if (product.Status) {
+      inputStatus.value = product.Status;
     }
   }
 

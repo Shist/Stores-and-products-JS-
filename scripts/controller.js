@@ -33,7 +33,7 @@ export default class Controller {
 
     this._setProductsFiltersBtnsListener();
     this._renderProductsTableHead();
-    // setTableRowsBtnsListeners();
+    this._setTableRowsBtnsListeners();
 
     // setFootersBtnsListeners();
     // setModalsConfirmBtnsListeners();
@@ -152,6 +152,28 @@ export default class Controller {
     this._setTableSortBtnsListener();
 
     this._setSearchProductsListeners();
+  }
+
+  _loadProductDataToEditForm() {
+    this._setEditProductFormSpinner(
+      View.SPINNER_TEXT.EDIT_PRODUCT_FORM.LOADING
+    );
+
+    this.model
+      .getProductById(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT)
+      )
+      .then((product) => {
+        if (product) {
+          this.view.updateEditProductFormFields(product);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.EDIT_PRODUCT_FORM);
+      });
   }
 
   _setTableSortFiltersToLocalStorage(sortKey, sortOrder) {
@@ -538,6 +560,36 @@ export default class Controller {
     }
   }
 
+  _setTableRowsBtnsListeners() {
+    const tableBody = this.view.getProductsTableBody();
+
+    tableBody.addEventListener("click", this._onTableRowsBtnClick);
+  }
+
+  _onTableRowsBtnClick(e) {
+    if (e.target.classList.contains(View.CLASS.BTN.EDIT)) {
+      const modalWrapper = this.view.getModalEditProductWrapper();
+
+      localStorage.setItem(
+        Controller.LOCAL_STORAGE_ID.CURR_PRODUCT,
+        e.target.dataset[View.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
+      );
+
+      modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+
+      this._loadProductDataToEditForm();
+    } else if (e.target.classList.contains(View.CLASS.BTN.CROSS)) {
+      const modalWrapper = this.view.getModalDeleteProductWrapper();
+
+      localStorage.setItem(
+        Controller.LOCAL_STORAGE_ID.CURR_PRODUCT,
+        e.target.dataset[View.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
+      );
+
+      modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+    }
+  }
+
   _setProductsListSpinnerResizeListeners() {
     const storeDetailsWrapper = this.view.getStoreDetailsWrapper();
 
@@ -889,6 +941,40 @@ export default class Controller {
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+  }
+
+  _setEditProductFormSpinner(spinnerText) {
+    if (
+      !this._getFetchOperationsAmountForSpinner(
+        View.ID.SPINNER.EDIT_PRODUCT_FORM
+      )
+    ) {
+      const editProductForm = this.view.getModalEditProductForm();
+
+      const spinnerOptions = {
+        spinnerId: View.ID.SPINNER.EDIT_PRODUCT_FORM,
+        targetText: spinnerText,
+        targetWidth: `${editProductForm.offsetWidth}px`,
+        targetMinWidth: 0,
+        targetHeight: `${editProductForm.offsetHeight}px`,
+        targetBgColor: "white",
+      };
+
+      editProductForm.insertAdjacentHTML(
+        "afterbegin",
+        this.view.getSpinnerStructure(spinnerOptions)
+      );
+    } else {
+      const currSpinner = document.querySelector(
+        `#${View.ID.SPINNER.EDIT_PRODUCT_FORM}`
+      );
+      if (currSpinner) {
+        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+        spinnerSpan.textContent = spinnerText;
+      }
+    }
+
+    this._plusFetchOperationForSpinner(View.ID.SPINNER.EDIT_PRODUCT_FORM);
   }
 
   _setProductsListSpinner(spinnerText) {
