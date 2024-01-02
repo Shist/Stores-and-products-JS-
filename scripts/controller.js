@@ -35,7 +35,7 @@ export default class Controller {
     this._renderProductsTableHead();
     this._setTableRowsBtnsListeners();
 
-    // setFootersBtnsListeners();
+    this._setFootersBtnsListeners();
     // setModalsConfirmBtnsListeners();
     // setModalsCancelBtnsListeners();
 
@@ -588,6 +588,34 @@ export default class Controller {
 
       modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
     }
+  }
+
+  _setFootersBtnsListeners() {
+    const btnCreateStore = this.view.getBtnCreateStore();
+    const btnDeleteStore = this.view.getBtnDeleteStore();
+    const btnCreateProduct = this.view.getBtnCreateProduct();
+
+    btnCreateStore.addEventListener("click", this._onCreateStoreClick);
+    btnDeleteStore.addEventListener("click", this._onDeleteStoreClick);
+    btnCreateProduct.addEventListener("click", this._onCreateProductClick);
+  }
+
+  _onCreateStoreClick() {
+    const modalWrapper = this.view.getModalCreateStoreWrapper();
+
+    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  _onDeleteStoreClick() {
+    const modalWrapper = this.view.getModalDeleteStoreWrapper();
+
+    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+  }
+
+  _onCreateProductClick() {
+    const modalWrapper = this.view.getModalCreateProductWrapper();
+
+    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
   }
 
   _setProductsListSpinnerResizeListeners() {

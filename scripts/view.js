@@ -261,6 +261,18 @@ export default class View {
     ["Rating", "Rating", "align-start"],
   ];
 
+  getBtnCreateStore() {
+    return document.querySelector(`#${View.ID.BTN.CREATE_STORE}`);
+  }
+
+  getBtnCreateProduct() {
+    return document.querySelector(`#${View.ID.BTN.CREATE_PRODUCT}`);
+  }
+
+  getBtnDeleteStore() {
+    return document.querySelector(`#${View.ID.BTN.DELETE_STORE}`);
+  }
+
   getClosestFilterBtn(element) {
     return element.closest(`.${View.CLASS.BTN.FILTER}`);
   }
@@ -273,8 +285,20 @@ export default class View {
     return document.querySelector(`#${View.ID.FILTER_WRAPPER}`);
   }
 
+  getModalCreateProductWrapper() {
+    return document.querySelector(`#${View.ID.MODALS.CREATE_PRODUCT.WRAPPER}`);
+  }
+
+  getModalCreateStoreWrapper() {
+    return document.querySelector(`#${View.ID.MODALS.CREATE_STORE.WRAPPER}`);
+  }
+
   getModalDeleteProductWrapper() {
     return document.querySelector(`#${View.ID.MODALS.DELETE_PRODUCT.WRAPPER}`);
+  }
+
+  getModalDeleteStoreWrapper() {
+    return document.querySelector(`#${View.ID.MODALS.DELETE_STORE.WRAPPER}`);
   }
 
   getModalEditProductForm() {
