@@ -327,12 +327,20 @@ export default class View {
     return document.querySelector(`#${View.ID.PRODUCTS_SEARCH.INPUT}`);
   }
 
+  getProductsSearchWrapper() {
+    return document.querySelector(`#${View.ID.PRODUCTS_SEARCH.WRAPPER}`);
+  }
+
   getProductsTableHeadName() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_NAME}`);
   }
 
   getProductsTableHeadTitles() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_TITLES}`);
+  }
+
+  getProductsTableHead() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD}`);
   }
 
   getProductsTableWrapper() {
@@ -397,6 +405,72 @@ export default class View {
                 `;
       return storesStr;
     }, "");
+  }
+
+  getStructureForTableHead(defaultSortOrder) {
+    return `<tr class="products-table__table-name-row"
+            id="${View.ID.PRODUCTS_TABLE.HEAD_NAME}">
+              <th colspan="${
+                View.PRODUCTS_TABLE_COLUMNS.length
+              }" class="products-table__table-name-headline">
+                <div class="product-table__name-search-wrapper">
+                  <span class="products-table__table-name-text">
+                    Products
+                  </span>
+                  <div class="products-table__search-wrapper" 
+                  id="${View.ID.PRODUCTS_SEARCH.WRAPPER}"
+                  data-${View.DATA_ATTRIBUTE.ERROR_MSG.KEBAB}=
+                  "${View.DEFAULT_ERROR_MSG}">
+                    <input
+                      type="search"
+                      class="products-table__search-line"
+                      name="${View.ID.PRODUCTS_SEARCH.INPUT}"
+                      placeholder="Enter value to search"
+                      id="${View.ID.PRODUCTS_SEARCH.INPUT}"
+                    />
+                    <button
+                      class="products-table__search-btn"
+                      id="${View.ID.PRODUCTS_SEARCH.BTN}"
+                      title="Search"
+                    ></button>
+                  </div>
+                </div>
+              </th>
+            </tr>
+            <tr class="products-table__product-specifications-row"
+            id="${View.ID.PRODUCTS_TABLE.HEAD_TITLES}"
+              >${this._getStructureForTableHeaders(defaultSortOrder)}
+            </tr>`;
+  }
+
+  _getStructureForTableHeaders(defaultSortOrder) {
+    return View.PRODUCTS_TABLE_COLUMNS.reduce(
+      (tablesHeadersStr, [columnKey, columnName, alignType]) => {
+        const wrapperClassesStr =
+          alignType === "align-start"
+            ? "products-table__product-field-wrapper"
+            : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
+
+        tablesHeadersStr += `
+              <th class="products-table__product-field">
+                <div class="${wrapperClassesStr}">
+                  <button
+                    class="${View.CLASS.BTN.SORT}"
+                    title="Sort"
+                    data-${View.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnKey}"
+                    data-${View.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="${defaultSortOrder}"
+                  ></button>
+                  <span class="products-table__product-field-name"
+                    >${columnName}</span
+                  >
+                </div>
+              </th>
+              `;
+
+        return tablesHeadersStr;
+      },
+      ""
+    );
   }
 
   _getStructureForTableBody(productsList) {

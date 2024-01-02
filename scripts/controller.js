@@ -32,7 +32,7 @@ export default class Controller {
     this._setStoresCardsClickListener();
 
     this._setProductsFiltersBtnsListener();
-    // renderProductsTableHead();
+    this._renderProductsTableHead();
     // setTableRowsBtnsListeners();
 
     // setFootersBtnsListeners();
@@ -142,35 +142,55 @@ export default class Controller {
       });
   }
 
+  _renderProductsTableHead() {
+    const productsTableHead = this.view.getProductsTableHead();
+
+    productsTableHead.innerHTML = this.view.getStructureForTableHead(
+      Model.SORT_ORDER.DEFAULT
+    );
+
+    this._setTableSortBtnsListener();
+
+    this._setSearchProductsListeners();
+  }
+
+  _setTableSortFiltersToLocalStorage(sortKey, sortOrder) {
+    localStorage.setItem(Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY, sortKey);
+    localStorage.setItem(
+      Controller.LOCAL_STORAGE_ID.CURR_SORT_ORDER,
+      sortOrder
+    );
+  }
+
   _clearTableSortFiltersFromLocalStorage() {
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_KEY);
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_SORT_ORDER);
   }
 
   _initLocalStorageData() {
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID);
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.BOOKMARK_DETECTED);
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_PRODUCT_ID);
-    localStorage.removeItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_FILTER_ID);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_STORE);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.BOOKMARK_DETECTED);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT);
+    localStorage.removeItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER);
     this._clearTableSortFiltersFromLocalStorage();
     localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
+      Controller.LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
       "0"
     );
     localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
+      Controller.LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
       "0"
     );
     localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
+      Controller.LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
       "0"
     );
     localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
+      Controller.LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
       "0"
     );
     localStorage.setItem(
-      CONSTANTS.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
+      Controller.LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
       "0"
     );
   }
@@ -302,6 +322,219 @@ export default class Controller {
         .finally(() => {
           this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
         });
+    }
+  }
+
+  _setTableSortBtnsListener() {
+    const productTableHeadTitles = this.view.getProductsTableHeadTitles();
+
+    productTableHeadTitles.addEventListener("click", this._onTableSortBtnClick);
+  }
+
+  _onTableSortBtnClick(e) {
+    if (e.target.classList.contains(View.CLASS.BTN.SORT)) {
+      const currSortBtn = e.target;
+      const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
+
+      const filterOptions = {
+        filterId: localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+        sortKey: localStorage.getItem(
+          Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+        ),
+        sortOrder: localStorage.getItem(Controller.LOCAL_STORAGE_ID.SORT_ORDER),
+        searchFilterValue: this.view.getProductsSearchInput().value,
+      };
+
+      switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
+        case Model.SORT_ORDER.DEFAULT:
+          this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
+
+          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            Model.SORT_ORDER.ASC;
+          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
+
+          this._setTableSortFiltersToLocalStorage(
+            sortKey,
+            CONSTANTS.SORT_ORDER.ASC
+          );
+
+          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+          this.model
+            .getFullFilteredProductsListByStoreId(
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+              filterOptions
+            )
+            .then((fullFilteredProductsList) => {
+              if (Array.isArray(fullFilteredProductsList)) {
+                this.view.updateProductsTableBody(fullFilteredProductsList);
+              }
+            })
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+            });
+
+          break;
+        case Model.SORT_ORDER.ASC:
+          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            Model.SORT_ORDER.DESC;
+          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
+          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
+
+          this._setTableSortFiltersToLocalStorage(
+            sortKey,
+            CONSTANTS.SORT_ORDER.DESC
+          );
+
+          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+          this.model
+            .getFullFilteredProductsListByStoreId(
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+              filterOptions
+            )
+            .then((fullFilteredProductsList) => {
+              if (Array.isArray(fullFilteredProductsList)) {
+                this.view.updateProductsTableBody(fullFilteredProductsList);
+              }
+            })
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+            });
+
+          break;
+        case Model.SORT_ORDER.DEFAULT:
+          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+            Model.SORT_ORDER.DEFAULT;
+          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
+
+          this._clearTableSortFiltersFromLocalStorage();
+
+          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+          this.model
+            .getFullFilteredProductsListByStoreId(
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+              filterOptions
+            )
+            .then((fullFilteredProductsList) => {
+              if (Array.isArray(fullFilteredProductsList)) {
+                this.view.updateProductsTableBody(fullFilteredProductsList);
+              }
+            })
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+            });
+
+          break;
+        default:
+          console.warn(
+            `One of sort buttons had unknown data-${
+              View.DATA_ATTRIBUTE.SORT_STATE.KEBAB
+            } type: ${e.target.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]}`
+          );
+      }
+    }
+  }
+
+  _setSearchProductsListeners() {
+    const searchInput = this.view.getProductsSearchInput();
+    const searchBtn = this.view.getProductsSearchBtn();
+
+    searchInput.addEventListener("search", this._onSearchProductsClick);
+    searchBtn.addEventListener("click", this._onSearchProductsClick);
+  }
+
+  _onSearchProductsClick() {
+    const searchWrapper = this.view.getProductsSearchWrapper();
+    const searchInput = this.view.getProductsSearchInput();
+
+    if (this.model.validateSearch(searchInput)) {
+      this.view.removeErrorFromInput(
+        searchInput,
+        View.JS_CLASS.ERROR_SEARCH_FIELD,
+        searchWrapper
+      );
+
+      const searchedProductsPromise = this.model
+        .getSearchedProductsListByStoreId(
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+          searchInput.value
+        )
+        .then((searchedProductsList) => {
+          if (Array.isArray(searchedProductsList)) {
+            this.view.updateProductsAmounts(
+              searchedProductsList,
+              localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+            );
+          }
+        });
+
+      const filterOptions = {
+        filterId: localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+        sortKey: localStorage.getItem(
+          Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+        ),
+        sortOrder: localStorage.getItem(Controller.LOCAL_STORAGE_ID.SORT_ORDER),
+        searchFilterValue: this.view.getProductsSearchInput().value,
+      };
+
+      const fullFilteredProductsPromise = this.model
+        .getFullFilteredProductsListByStoreId(
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+          filterOptions
+        )
+        .then((fullFilteredProductsList) => {
+          if (Array.isArray(fullFilteredProductsList)) {
+            this.view.updateProductsTableBody(fullFilteredProductsList);
+          }
+        });
+
+      this._setProductsAmountSpinner(
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING
+      );
+      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+      Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+        .catch((error) => {
+          this.view.showPopupWithMsg(
+            error.message,
+            View.POPUP_COLOR.ERROR,
+            8000
+          );
+        })
+        .finally(() => {
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+        });
+    } else {
+      this.view.addErrorToInput(
+        searchInput,
+        View.JS_CLASS.ERROR_SEARCH_FIELD,
+        searchWrapper,
+        View.ERROR_SEARCH_MSG
+      );
     }
   }
 
