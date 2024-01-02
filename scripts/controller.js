@@ -1013,7 +1013,91 @@ export default class Controller {
     }
   }
 
-  _onConfirmDeleteProductClick() {}
+  _onConfirmDeleteProductClick() {
+    this._setProductsAmountSpinner(View.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING);
+    this._setProductsListSpinner(
+      View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_PRODUCT
+    );
+
+    this.model
+      .deleteProduct(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "The product has been successfully deleted.",
+          View.POPUP_COLOR.ATTENTION,
+          5000
+        );
+
+        const searchedProductsPromise = this.model
+          .getSearchedProductsListByStoreId(
+            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+            this.view.getProductsSearchInput().value
+          )
+          .then((searchedProductsList) => {
+            if (Array.isArray(searchedProductsList)) {
+              this.view.updateProductsAmounts(
+                searchedProductsList,
+                localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+              );
+            }
+          });
+
+        const filterOptions = {
+          filterId: localStorage.getItem(
+            Controller.LOCAL_STORAGE_ID.CURR_FILTER
+          ),
+          sortKey: localStorage.getItem(
+            Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+          ),
+          sortOrder: localStorage.getItem(
+            Controller.LOCAL_STORAGE_ID.SORT_ORDER
+          ),
+          searchFilterValue: this.view.getProductsSearchInput().value,
+        };
+
+        const fullFilteredProductsPromise = this.model
+          .getFullFilteredProductsListByStoreId(
+            localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+            filterOptions
+          )
+          .then((fullFilteredProductsList) => {
+            if (Array.isArray(fullFilteredProductsList)) {
+              this.view.updateProductsTableBody(fullFilteredProductsList);
+            }
+          });
+
+        this.view.setProductsAmountSpinner(
+          View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+        );
+        this.view.setProductsListSpinner(
+          View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+        );
+
+        Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+          .catch((error) => {
+            this.view.showPopupWithMsg(
+              error.message,
+              View.POPUP_COLOR.ERROR,
+              8000
+            );
+          })
+          .finally(() => {
+            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+          });
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+
+    this._onCancelDeleteProductBtnClick();
+  }
 
   _setModalsCancelBtnsListeners() {
     const btnCancelCreateStore = this.view.getBtnCancelCreateStore();
