@@ -39,7 +39,7 @@ export default class Controller {
     this._setModalsConfirmBtnsListeners();
     this._setModalsCancelBtnsListeners();
 
-    // loadStoreIdFromBookmark();
+    this._loadStoreIdFromBookmark();
 
     // setStoresListSpinner(CONSTANTS.SPINNER_TEXT.STORES_LIST.LOADING);
 
@@ -1747,6 +1747,21 @@ export default class Controller {
       [Model.PRODUCT_KEY.PROD_COMPANY]: inputProdCompany.value,
       [Model.PRODUCT_KEY.STATUS]: inputStatus.value,
     };
+  }
+
+  _loadStoreIdFromBookmark() {
+    const queryParams = new URLSearchParams(window.location.search);
+
+    const storeId = queryParams.get(Controller.BOOKMARK_QUERY_STORE_ID);
+
+    if (storeId) {
+      localStorage.setItem(
+        Controller.LOCAL_STORAGE_ID.BOOKMARK_DETECTED,
+        "true"
+      );
+      localStorage.setItem(Controller.LOCAL_STORAGE_ID.CURR_STORE, storeId);
+      this._updateAllStoreDetails();
+    }
   }
 
   _updateBookmarkInsideURL() {
