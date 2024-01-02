@@ -261,8 +261,22 @@ export default class View {
     ["Rating", "Rating", "align-start"],
   ];
 
+  getClosestStoresListItem(element) {
+    return element.closest(`.${View.CLASS.STORES_LIST_ITEM}`);
+  }
+
+  getFilterWrapper() {
+    return document.querySelector(`#${View.ID.FILTER_WRAPPER}`);
+  }
+
   getSpinnerById(spinnerId) {
     return document.querySelector(`#${spinnerId}`);
+  }
+
+  getStoreDetailsDescriptionWrapper() {
+    return document.querySelector(
+      `#${View.ID.STORE_DETAILS.DESCRIPTION_WRAPPER}`
+    );
   }
 
   getStoreDetailsHeader() {
@@ -271,6 +285,14 @@ export default class View {
 
   getStoreDetailsWrapper() {
     return document.querySelector(`#${View.ID.STORE_DETAILS.WRAPPER}`);
+  }
+
+  getStoreNotFoundWrapper() {
+    return document.querySelector(`#${View.ID.STORE_NOT_FOUND_WRAPPER}`);
+  }
+
+  getStoresLayout() {
+    return document.querySelector(`#${View.ID.STORES_LAYOUT}`);
   }
 
   getStoresListHeader() {
@@ -293,6 +315,14 @@ export default class View {
     return document.querySelector(`#${View.ID.STORES_SEARCH.WRAPPER}`);
   }
 
+  getProductsSearchBtn() {
+    return document.querySelector(`#${View.ID.PRODUCTS_SEARCH.BTN}`);
+  }
+
+  getProductsSearchInput() {
+    return document.querySelector(`#${View.ID.PRODUCTS_SEARCH.INPUT}`);
+  }
+
   getProductsTableHeadName() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.HEAD_NAME}`);
   }
@@ -303,6 +333,10 @@ export default class View {
 
   getProductsTableWrapper() {
     return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE_WRAPPER}`);
+  }
+
+  getProductsTable() {
+    return document.querySelector(`#${View.ID.PRODUCTS_TABLE.TABLE}`);
   }
 
   getSpinnerStructure({
@@ -361,6 +395,134 @@ export default class View {
     }, "");
   }
 
+  _getStructureForTableBody(productsList) {
+    let productTableBodyStr = "";
+
+    if (Array.isArray(productsList)) {
+      productTableBodyStr = productsList?.reduce((neededStr, product) => {
+        neededStr += `
+          <tr class="product-table-item">
+            ${this._getStructureForTableRow(product)}
+          </tr>`;
+        return neededStr;
+      }, "");
+    }
+
+    if (!productTableBodyStr) {
+      productTableBodyStr = `
+        <tr class="product-table-empty-item">
+          <td colspan="${View.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
+            No data
+          </td>
+        </tr>`;
+    }
+
+    return productTableBodyStr;
+  }
+
+  _getStructureForTableRow(product) {
+    return View.PRODUCTS_TABLE_COLUMNS.reduce(
+      (productTableDataStr, [productKey, ,]) => {
+        switch (productKey) {
+          case "Name":
+            const productName = product.Name
+              ? product.Name
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            const productId = product.id
+              ? product.id
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            productTableDataStr += this._getTableStructureForNameField(
+              productName,
+              productId
+            );
+            break;
+          case "Price":
+            const productPrice = product.Price ? product.Price : "-";
+            productTableDataStr +=
+              this._getTableStructureForPriceField(productPrice);
+            break;
+          case "Rating":
+            const productRating = product.Rating ? product.Rating : 0;
+            productTableDataStr += this._getTableStructureForRatingField(
+              productRating,
+              product.id
+            );
+            break;
+          default:
+            const productStandardField = product[productKey]
+              ? product[productKey]
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            productTableDataStr +=
+              this._getTableStructureForStandardField(productStandardField);
+        }
+        return productTableDataStr;
+      },
+      ""
+    );
+  }
+
+  _getTableStructureForNameField(productName, productId) {
+    return `<td class="product-table-item__name">
+              <div class="product-table-item__name-num-wrapper">
+                <span class="product-table-item__name-text">
+                  ${productName}
+                </span>
+                <span class="product-table-item__num-text">
+                  ${productId}
+                </span>
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForPriceField(productPrice) {
+    return `<td class="product-table-item__price">
+              <div class="product-table-item__price-wrapper">
+                <span class="product-table-item__price-value">
+                  ${productPrice}
+                </span>
+                <span class="product-table-item__price-currency">
+                  USD
+                </span>
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForRatingField(productRating, productId) {
+    return `<td class="product-table-item__rating">
+              <div class="product-table-item__stars-wrapper">
+                ${this._getStructureForRatingStars(productRating, productId)}
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForStandardField(productField) {
+    return `<td class="product-table-item__standard-field">
+              <span
+              class="product-table-item__standard-field-text"
+              title="${productField}">
+                ${productField}
+              </span>
+            </td>`;
+  }
+
+  _getStructureForRatingStars(productRating, productId) {
+    return (
+      Array(5)
+        .fill()
+        .reduce((neededStr, _, index) => {
+          if (index < productRating) {
+            return neededStr + `<span class="yellow-star"></span>`;
+          } else {
+            return neededStr + `<span class="empty-star"></span>`;
+          }
+        }, "") +
+      `<div class="arrow-cross-wrapper">
+          <span class="${View.CLASS.BTN.EDIT}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
+          <span class="${View.CLASS.BTN.CROSS}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
+      </div>`
+    );
+  }
+
   _updateStoresListLayout(storesList) {
     const noStoresLayout = document.querySelector(
       `#${View.ID.NO_STORES_LAYOUT}`
@@ -371,9 +533,11 @@ export default class View {
     } else {
       noStoresLayout.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
     }
+
+    return this;
   }
 
-  _highlightActiveStoreCard(currStoreId) {
+  highlightActiveStoreCard(currStoreId) {
     const storesListLayout = document.querySelector(
       `#${View.ID.STORES_LAYOUT}`
     );
@@ -387,6 +551,8 @@ export default class View {
         `[data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${currStoreId}"]`
       )
       ?.classList.add(View.JS_CLASS.SELECTED_ITEM);
+
+    return this;
   }
 
   updateStoresList(storesList, currStoreId) {
@@ -399,14 +565,185 @@ export default class View {
     storesListSection.innerHTML = this._getStructureForStoresList(storesList);
 
     if (currStoreId) {
-      this._highlightActiveStoreCard(currStoreId);
+      this.highlightActiveStoreCard(currStoreId);
     }
+
+    return this;
+  }
+
+  updateStoreDetailsLayout(currStoreExists) {
+    const storeDetailsWrapper = document.querySelector(
+      `#${View.ID.STORE_DETAILS.WRAPPER}`
+    );
+    const noStoreDetailsWrapper = document.querySelector(
+      `#${View.ID.NO_STORE_DETAILS_WRAPPER}`
+    );
+    const storeNotFoundWrapper = document.querySelector(
+      `#${View.ID.STORE_NOT_FOUND_WRAPPER}`
+    );
+
+    if (currStoreExists) {
+      storeDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+      noStoreDetailsWrapper.classList.add(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
+      storeNotFoundWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+    } else {
+      storeDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.FLEX_ELEMENT);
+      noStoreDetailsWrapper.classList.remove(CONSTANTS.JS_CLASS.HIDDEN_ELEMENT);
+    }
+  }
+
+  updateStoreDescriptionFields(store) {
+    const storeEmailField = document.querySelector(
+      `#${View.ID.STORE_LABELS.EMAIL}`
+    );
+    const storeEstDateField = document.querySelector(
+      `#${View.ID.STORE_LABELS.EST_DATE}`
+    );
+    const storePhoneField = document.querySelector(
+      `#${View.ID.STORE_LABELS.PHONE}`
+    );
+    const storeFloorAreaField = document.querySelector(
+      `#${View.ID.STORE_LABELS.FLOOR_AREA}`
+    );
+    const storeAddressField = document.querySelector(
+      `#${View.ID.STORE_LABELS.ADDRESS}`
+    );
+
+    if (store.Email) {
+      storeEmailField.textContent = store.Email;
+    } else {
+      storeEmailField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+    if (store.Established) {
+      storeEstDateField.textContent = new Date(
+        store.Established
+      ).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } else {
+      storeEstDateField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+    if (store.Address) {
+      storeAddressField.textContent = store.Address;
+    } else {
+      storeAddressField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+    if (store.PhoneNumber) {
+      storePhoneField.textContent = store.PhoneNumber;
+    } else {
+      storePhoneField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+    if (store.FloorArea) {
+      storeFloorAreaField.textContent = store.FloorArea;
+    } else {
+      storeFloorAreaField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
+    }
+  }
+
+  _getCurrProductsAmounts(searchedProductsListWithoutFilter, storeId) {
+    const amountsData = {
+      all: searchedProductsListWithoutFilter.length,
+      ok: 0,
+      storage: 0,
+      outOfStock: 0,
+    };
+
+    searchedProductsListWithoutFilter.forEach((product) => {
+      switch (product.Status) {
+        case "OK":
+          amountsData.ok++;
+          break;
+        case "STORAGE":
+          amountsData.storage++;
+          break;
+        case "OUT_OF_STOCK":
+          amountsData.outOfStock++;
+          break;
+        default:
+          console.warn(
+            `Store with id=${storeId} had product with unknown status type: ${product.Status}`
+          );
+      }
+    });
+
+    return amountsData;
+  }
+
+  updateProductsAmounts(searchedProductsListWithoutFilter, storeId) {
+    const prodAmountField = document.querySelector(
+      `#${View.ID.PRODUCTS_AMOUNTS.ALL}`
+    );
+    const prodOkAmountField = document.querySelector(
+      `#${View.ID.PRODUCTS_AMOUNTS.OK}`
+    );
+    const prodStorageAmountField = document.querySelector(
+      `#${View.ID.PRODUCTS_AMOUNTS.STORAGE}`
+    );
+    const prodOutOfStockAmountField = document.querySelector(
+      `#${View.ID.PRODUCTS_AMOUNTS.OUT_OF_STOCK}`
+    );
+
+    const amountsData = this._getCurrProductsAmounts(
+      searchedProductsListWithoutFilter,
+      storeId
+    );
+
+    prodAmountField.textContent = amountsData.all;
+    prodOkAmountField.textContent = amountsData.ok;
+    prodStorageAmountField.textContent = amountsData.storage;
+    prodOutOfStockAmountField.textContent = amountsData.outOfStock;
+  }
+
+  updateProductsTableBody(productsList) {
+    const productsTableBody = document.querySelector(
+      `#${View.ID.PRODUCTS_TABLE.BODY}`
+    );
+
+    productsTableBody.innerHTML = this._getStructureForTableBody(productsList);
+  }
+
+  setCurrProductsFilterBtn(filterToOff, filterToSet) {
+    if (filterToOff) {
+      document
+        .querySelector(`#${filterToOff}`)
+        ?.classList.add(CONSTANTS.JS_CLASS.FILTER_OFF);
+    }
+
+    document
+      .querySelector(`#${filterToSet}`)
+      ?.classList.remove(CONSTANTS.JS_CLASS.FILTER_OFF);
+
+    return this;
+  }
+
+  setAllSortBtnsToDefault(defaultSortOrder) {
+    const sortBtns = document.querySelectorAll(`.${View.CLASS.BTN.SORT}`);
+
+    sortBtns.forEach((btn) => {
+      btn.classList.remove(
+        View.JS_CLASS.SORT_BTN.ASC,
+        View.JS_CLASS.SORT_BTN.DESC
+      );
+      btn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] = defaultSortOrder;
+    });
+
+    return this;
+  }
+
+  setProductSearchLineToDefault() {
+    document.querySelector(`#${View.ID.PRODUCTS_SEARCH.INPUT}`).value = "";
+
+    return this;
   }
 
   addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {
     input.classList.add(inputErrClass);
     inputWrapper.dataset[View.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] = errorMsg;
     inputWrapper.classList.add(View.JS_CLASS.ERROR_FIELD_WRAPPER);
+
+    return this;
   }
 
   removeErrorFromInput(input, inputErrClass, inputWrapper) {
@@ -414,6 +751,8 @@ export default class View {
     inputWrapper.dataset[View.DATA_ATTRIBUTE.ERROR_MSG.CAMEL] =
       View.DEFAULT_ERROR_MSG;
     inputWrapper.classList.remove(View.JS_CLASS.ERROR_FIELD_WRAPPER);
+
+    return this;
   }
 
   showPopupWithMsg(msg, color, timeMillisecs) {
@@ -437,5 +776,7 @@ export default class View {
         popup.remove();
       }, 2000);
     }, timeMillisecs);
+
+    return this;
   }
 }

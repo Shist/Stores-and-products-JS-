@@ -133,9 +133,6 @@ export default class Model {
         "{storeId}",
         storeId
       );
-      //   const searchFilterValue = document.querySelector(
-      //     `#${CONSTANTS.PRODUCTS_SEARCH_ID.INPUT}`
-      //   ).value;
       const filterObj = {};
 
       if (searchFilterValue) {

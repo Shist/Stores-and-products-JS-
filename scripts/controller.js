@@ -29,7 +29,7 @@ export default class Controller {
     this._initLocalStorageData();
 
     this._setSearchStoresListeners();
-    // setStoresCardsClickListener();
+    this._setStoresCardsClickListener();
 
     // setProductsFiltersBtnsListener();
     // renderProductsTableHead();
@@ -55,6 +55,91 @@ export default class Controller {
     //   .finally(() => {
     //     requestSpinnerRemovingById(CONSTANTS.SPINNERS_ID.STORES_LIST);
     //   });
+  }
+
+  _updateAllStoreDetails() {
+    this._setProductsTableHeadToDefault();
+
+    this.view.highlightActiveStoreCard(
+      localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+    );
+
+    this.view.updateStoreDetailsLayout(
+      localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+    );
+
+    this._updateStoreDescription();
+
+    this._setProductsAmountSpinner(View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
+    this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+
+    this.model
+      .getSearchedProductsListByStoreId(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE),
+        this.view.getProductsSearchInput().value
+      )
+      .then((searchedProductsList) => {
+        if (Array.isArray(searchedProductsList)) {
+          this.view.updateProductsAmounts(
+            searchedProductsList,
+            localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+          );
+
+          this.view.updateProductsTableBody(searchedProductsList);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+        if (
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
+        ) {
+          const storeDetailsWrapper = this.view.getStoreDetailsWrapper();
+          const storeNotFoundWrapper = this.view.getStoreNotFoundWrapper();
+          storeDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+          storeNotFoundWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+        }
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  _setProductsTableHeadToDefault() {
+    this.view.setCurrProductsFilterBtn(
+      localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+      Model.FILTER_ID.ALL
+    );
+    localStorage.setItem(
+      Controller.LOCAL_STORAGE_ID.CURR_FILTER,
+      Model.FILTER_ID.ALL
+    );
+
+    this._clearTableSortFiltersFromLocalStorage();
+
+    this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
+
+    this.view.setProductSearchLineToDefault();
+  }
+
+  _updateStoreDescription() {
+    this._setStoreDescriptionSpinner(View.SPINNER_TEXT.STORE_DETAILS.LOADING);
+
+    this.model
+      .getStoreById(
+        localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
+      )
+      .then((store) => {
+        if (store) {
+          this.view.updateStoreDescriptionFields(store);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORE_DETAILS);
+      });
   }
 
   _clearTableSortFiltersFromLocalStorage() {
@@ -138,6 +223,32 @@ export default class Controller {
         searchWrapper,
         View.ERROR_SEARCH_MSG
       );
+    }
+  }
+
+  _setStoresCardsClickListener() {
+    const storesLayout = this.view.getStoresLayout();
+
+    storesLayout.addEventListener("click", this._onStoreCardClick);
+  }
+
+  _onStoreCardClick(e) {
+    const currItemCard = this.view.getClosestStoresListItem(e.target);
+
+    if (
+      currItemCard &&
+      View.DATA_ATTRIBUTE.STORE_ID.CAMEL in currItemCard.dataset
+    ) {
+      localStorage.setItem(
+        Controller.LOCAL_STORAGE_ID.CURR_STORE,
+        currItemCard.dataset[View.DATA_ATTRIBUTE.STORE_ID.CAMEL]
+      );
+
+      if (localStorage.getItem(Controller.LOCAL_STORAGE_ID.BOOKMARK_DETECTED)) {
+        this._updateBookmarkInsideURL();
+      }
+
+      this._updateAllStoreDetails();
     }
   }
 
@@ -416,6 +527,123 @@ export default class Controller {
     this._plusFetchOperationForSpinner(View.ID.SPINNER.STORES_LIST);
   }
 
+  _setStoreDescriptionSpinner(spinnerText) {
+    if (
+      !this._getFetchOperationsAmountForSpinner(View.ID.SPINNER.STORE_DETAILS)
+    ) {
+      const storesDetailsDescriptionWrapper =
+        this.view.getStoreDetailsDescriptionWrapper();
+      const targetWidthPercent =
+        (storesDetailsDescriptionWrapper.offsetWidth /
+          document.body.offsetWidth) *
+        100;
+
+      const spinnerOptions = {
+        spinnerId: View.ID.SPINNER.STORE_DETAILS,
+        targetText: spinnerText,
+        targetWidth: `${targetWidthPercent}%`,
+        targetMinWidth: "450px",
+        targetHeight: `${storesDetailsDescriptionWrapper.offsetHeight}px`,
+        targetBgColor: "#eff4f8",
+      };
+
+      storesDetailsDescriptionWrapper.insertAdjacentHTML(
+        "afterbegin",
+        this.view.getSpinnerStructure(spinnerOptions)
+      );
+    } else {
+      const currSpinner = document.querySelector(
+        `#${View.ID.SPINNER.STORE_DETAILS}`
+      );
+      if (currSpinner) {
+        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+        spinnerSpan.textContent = spinnerText;
+      }
+    }
+
+    this._plusFetchOperationForSpinner(View.ID.SPINNER.STORE_DETAILS);
+  }
+
+  _setProductsAmountSpinner(spinnerText) {
+    if (
+      !this._getFetchOperationsAmountForSpinner(
+        View.ID.SPINNER.PRODUCTS_AMOUNTS
+      )
+    ) {
+      const filtersWrapper = this.view.getFilterWrapper();
+      const filtersWrapperComputedStyle = getComputedStyle(filtersWrapper);
+      const targetWidth =
+        filtersWrapper.offsetWidth -
+        parseFloat(filtersWrapperComputedStyle.paddingLeft) -
+        parseFloat(filtersWrapperComputedStyle.paddingRight);
+      const targetWidthPercent =
+        (targetWidth / document.body.offsetWidth) * 100;
+
+      const spinnerOptions = {
+        spinnerId: View.ID.SPINNER.PRODUCTS_AMOUNTS,
+        targetText: spinnerText,
+        targetWidth: `${targetWidthPercent}%`,
+        targetMinWidth: "400px",
+        targetHeight: `${filtersWrapper.offsetHeight}px`,
+        targetBgColor: "#eff4f8",
+      };
+
+      filtersWrapper.insertAdjacentHTML(
+        "afterbegin",
+        this.view.getSpinnerStructure(spinnerOptions)
+      );
+    } else {
+      const currSpinner = document.querySelector(
+        `#${View.ID.SPINNER.PRODUCTS_AMOUNTS}`
+      );
+      if (currSpinner) {
+        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+        spinnerSpan.textContent = spinnerText;
+      }
+    }
+
+    this._plusFetchOperationForSpinner(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+  }
+
+  _setProductsListSpinner(spinnerText) {
+    if (
+      !this._getFetchOperationsAmountForSpinner(View.ID.SPINNER.PRODUCTS_LIST)
+    ) {
+      const table = this.view.getProductsTable();
+      const topOffsetObj = this._getTopOffsetForProductsListSpinner();
+      const targetHeight = window.innerHeight - topOffsetObj.wholeOffset;
+
+      const spinnerOptions = {
+        spinnerId: View.ID.SPINNER.PRODUCTS_LIST,
+        targetText: spinnerText,
+        targetWidth: `${table.offsetWidth}px`,
+        targetMinWidth: 0,
+        targetHeight: `${targetHeight}px`,
+        targetBgColor: "white",
+      };
+
+      table.insertAdjacentHTML(
+        "afterbegin",
+        this.view.getSpinnerStructure(spinnerOptions)
+      );
+
+      this._resizeWidthForProductsListSpinner();
+      this._resizeHeightAndMoveProductsListSpinner();
+
+      this._setProductsListSpinnerResizeListeners();
+    } else {
+      const currSpinner = document.querySelector(
+        `#${View.ID.SPINNER.PRODUCTS_LIST}`
+      );
+      if (currSpinner) {
+        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+        spinnerSpan.textContent = spinnerText;
+      }
+    }
+
+    this._plusFetchOperationForSpinner(View.ID.SPINNER.PRODUCTS_LIST);
+  }
+
   _requestSpinnerRemovingById(spinnerId) {
     this._minusFetchOperationForSpinner(spinnerId);
 
@@ -431,5 +659,21 @@ export default class Controller {
 
       spinnerToRemove.remove();
     }
+  }
+
+  _updateBookmarkInsideURL() {
+    const currURL = window.location.href;
+    const currStoreId = localStorage.getItem(
+      Controller.LOCAL_STORAGE_ID.CURR_STORE
+    );
+    const bookmarkKey = Controller.BOOKMARK_QUERY_STORE_ID;
+    const regexPattern = new RegExp(bookmarkKey + "=[^&]+");
+
+    const newUrl = currURL.replace(
+      regexPattern,
+      `${bookmarkKey}=${currStoreId}`
+    );
+
+    history.pushState(null, null, newUrl);
   }
 }
