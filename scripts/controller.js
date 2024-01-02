@@ -908,7 +908,110 @@ export default class Controller {
     }
   }
 
-  _onConfirmEditProductClick() {}
+  _onConfirmEditProductClick() {
+    if (this._validateProductForm(View.ID.MODALS.EDIT_PRODUCT)) {
+      const resultObj = this._getProductObjFromFormInputs(
+        View.ID.MODALS.EDIT_PRODUCT
+      );
+
+      resultObj[Model.PRODUCT_KEY.STORE_ID] = localStorage.getItem(
+        Controller.LOCAL_STORAGE_ID.CURR_STORE
+      );
+
+      this._setProductsAmountSpinner(
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.EDITING
+      );
+      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.EDITING);
+
+      this.model
+        .editProduct(
+          localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_PRODUCT),
+          JSON.stringify(resultObj)
+        )
+        .then(() => {
+          this.view.showPopupWithMsg(
+            "The product has been successfully edited!",
+            View.POPUP_COLOR.SUCCESS,
+            5000
+          );
+
+          const searchedProductsPromise = this.model
+            .getSearchedProductsListByStoreId(
+              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              this.view.getProductsSearchInput().value
+            )
+            .then((searchedProductsList) => {
+              if (Array.isArray(searchedProductsList)) {
+                this.view.updateProductsAmounts(
+                  searchedProductsList,
+                  localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID)
+                );
+              }
+            });
+
+          const filterOptions = {
+            filterId: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.CURR_FILTER
+            ),
+            sortKey: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
+            ),
+            sortOrder: localStorage.getItem(
+              Controller.LOCAL_STORAGE_ID.SORT_ORDER
+            ),
+            searchFilterValue: this.view.getProductsSearchInput().value,
+          };
+
+          const fullFilteredProductsPromise = this.model
+            .getFullFilteredProductsListByStoreId(
+              localStorage.getItem(CONSTANTS.LOCAL_STORAGE_ID.CURR_STORE_ID),
+              filterOptions
+            )
+            .then((fullFilteredProductsList) => {
+              if (Array.isArray(fullFilteredProductsList)) {
+                this.view.updateProductsTableBody(fullFilteredProductsList);
+              }
+            });
+
+          this.view.setProductsAmountSpinner(
+            View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
+          );
+          this.view.setProductsListSpinner(
+            View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+          );
+
+          Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+            .catch((error) => {
+              this.view.showPopupWithMsg(
+                error.message,
+                View.POPUP_COLOR.ERROR,
+                8000
+              );
+            })
+            .finally(() => {
+              this._requestSpinnerRemovingById(
+                View.ID.SPINNER.PRODUCTS_AMOUNTS
+              );
+              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+            });
+        })
+        .catch((error) => {
+          this.view.showPopupWithMsg(
+            error.message,
+            View.POPUP_COLOR.ERROR,
+            8000
+          );
+        })
+        .finally(() => {
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+        });
+
+      this._onCancelEditProductBtnClick();
+    } else {
+      this.view.showErrorModal();
+    }
+  }
 
   _onConfirmDeleteProductClick() {}
 
