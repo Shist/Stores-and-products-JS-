@@ -713,11 +713,9 @@ class Controller {
         currItemCard.dataset[View.DATA_ATTRIBUTE.STORE_ID.CAMEL]
       );
 
-      if (
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
-      ) {
-        this._updateBookmarkInsideURL();
-      }
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
+        ? this._updateBookmarkInsideURL()
+        : null;
 
       this._updateAllStoreDetails();
     }
@@ -745,23 +743,25 @@ class Controller {
     const newFilterBtn = this.view.getClosestFilterBtn(e.target);
 
     if (
-      newFilterBtn &&
-      newFilterBtn.id !==
+      !newFilterBtn ||
+      newFilterBtn.id ===
         localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER)
     ) {
-      this.view.setCurrProductsFilterBtn(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
-        newFilterBtn.id
-      );
-      localStorage.setItem(
-        Controller._LOCAL_STORAGE_ID.CURR_FILTER,
-        newFilterBtn.id
-      );
-
-      this._loadFilteredProductsListAndUpdateTable(
-        View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-      );
+      return;
     }
+
+    this.view.setCurrProductsFilterBtn(
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
+      newFilterBtn.id
+    );
+    localStorage.setItem(
+      Controller._LOCAL_STORAGE_ID.CURR_FILTER,
+      newFilterBtn.id
+    );
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
   }
 
   /**
@@ -783,30 +783,32 @@ class Controller {
    * @private
    */
   _onTableSortBtnClick(e) {
-    if (e.target.classList.contains(View.CLASS.BTN.SORT)) {
-      const currSortBtn = e.target;
-      const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
+    if (!e.target.classList.contains(View.CLASS.BTN.SORT)) {
+      return;
+    }
 
-      switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
-        case Model.SORT_ORDER.DEFAULT:
-          this._onSortOrderDefaultBtnClicked(currSortBtn, sortKey);
+    const currSortBtn = e.target;
+    const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
 
-          break;
-        case Model.SORT_ORDER.ASC:
-          this._onSortOrderAscBtnClicked(currSortBtn, sortKey);
+    switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
+      case Model.SORT_ORDER.DEFAULT:
+        this._onSortOrderDefaultBtnClicked(currSortBtn, sortKey);
 
-          break;
-        case Model.SORT_ORDER.DESC:
-          this._onSortOrderDescBtnClicked(currSortBtn);
+        break;
+      case Model.SORT_ORDER.ASC:
+        this._onSortOrderAscBtnClicked(currSortBtn, sortKey);
 
-          break;
-        default:
-          console.warn(
-            `One of sort buttons had unknown data-${
-              View.DATA_ATTRIBUTE.SORT_STATE.KEBAB
-            } type: ${e.target.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]}`
-          );
-      }
+        break;
+      case Model.SORT_ORDER.DESC:
+        this._onSortOrderDescBtnClicked(currSortBtn);
+
+        break;
+      default:
+        console.warn(
+          `One of sort buttons had unknown data-${
+            View.DATA_ATTRIBUTE.SORT_STATE.KEBAB
+          } type: ${e.target.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]}`
+        );
     }
   }
 
@@ -1260,22 +1262,24 @@ class Controller {
       View.ID.SPINNER.PRODUCTS_LIST
     );
 
-    if (productsListSpinner) {
-      let offsetDiff = storeDetailsWrapper.scrollTop;
-      const spinnerInitHeight = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
-      ].replace(/\D/g, "");
-      const offsetObj = this._getTopOffsetForProductsListSpinner();
-      const maxOffsetDiff =
-        offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
-
-      if (offsetDiff > maxOffsetDiff) {
-        offsetDiff = maxOffsetDiff;
-      }
-
-      productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
-      productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
+    if (!productsListSpinner) {
+      return;
     }
+
+    let offsetDiff = storeDetailsWrapper.scrollTop;
+    const spinnerInitHeight = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
+    ].replace(/\D/g, "");
+    const offsetObj = this._getTopOffsetForProductsListSpinner();
+    const maxOffsetDiff =
+      offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
+
+    if (offsetDiff > maxOffsetDiff) {
+      offsetDiff = maxOffsetDiff;
+    }
+
+    productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
+    productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
   }
 
   /**
@@ -1287,21 +1291,23 @@ class Controller {
       View.ID.SPINNER.PRODUCTS_LIST
     );
 
-    if (productsListSpinner) {
-      const windowInitWidth = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.CAMEL
-      ].replace(/\D/g, "");
-      const spinnerInitWidth = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.CAMEL
-      ].replace(/\D/g, "");
-      let offsetDiff = window.innerWidth - windowInitWidth;
-
-      if (window.innerWidth <= 960) {
-        offsetDiff += 320;
-      }
-
-      productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
+    if (!productsListSpinner) {
+      return;
     }
+
+    const windowInitWidth = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    const spinnerInitWidth = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    let offsetDiff = window.innerWidth - windowInitWidth;
+
+    if (window.innerWidth <= 960) {
+      offsetDiff += 320;
+    }
+
+    productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
   }
 
   /**
