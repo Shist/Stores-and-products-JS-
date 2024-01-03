@@ -1,11 +1,39 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: model.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: model.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
 
 /** Model class. Knows everything about API endpoint and data structure. Can format/map data to any structure. */
 class Model {
   /**
    * Static object for storing keys of store entity
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @public
    */
@@ -21,7 +49,7 @@ class Model {
   /**
    * Static object for storing keys of product entity
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @public
    */
@@ -40,7 +68,7 @@ class Model {
   /**
    * Static object for storing possible filter identifiers (keys - server format, values - DOM identifiers)
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @public
    */
@@ -54,7 +82,7 @@ class Model {
   /**
    * Static object for storing possible sorting order values (keys - server format, values - DOM data-attributes)
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @public
    */
@@ -77,7 +105,7 @@ class Model {
   /**
    * Static object with URL templates for getting stores and products from server
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @private
    * @example let neededURL = Model._GET_ENDPOINT.STORES;
@@ -95,7 +123,7 @@ class Model {
   /**
    * Static object with URL templates for posting stores and products to server
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @private
    * @example let neededURL = Model._POST_ENDPOINT.STORE;
@@ -109,7 +137,7 @@ class Model {
   /**
    * Static object with URL templates for editing stores and products on server
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @private
    * @example let neededURL = Model._PUT_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId);
@@ -121,7 +149,7 @@ class Model {
   /**
    * Static object with URL templates for deleting stores and products from server
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @private
    * @example let neededURL = Model._DELETE_ENDPOINT.PRDOCUTS_BY_STORE_ID.replace("{storeId}", storeId);
@@ -141,7 +169,7 @@ class Model {
    * @public
    */
   validateSearch(searchInput) {
-    return /^[^#%&*()\[\]{}\\]*$/.test(searchInput.value);
+    return /^[^#%&amp;*()\[\]{}\\]*$/.test(searchInput.value);
   }
 
   /**
@@ -204,7 +232,7 @@ class Model {
    * @public
    */
   validateCreateStoreFloorArea(inputFloorArea) {
-    if (inputFloorArea.value && +inputFloorArea.value <= 0) {
+    if (inputFloorArea.value &amp;&amp; +inputFloorArea.value &lt;= 0) {
       return "Floor area must be positive!";
     } else {
       return "OK";
@@ -232,7 +260,7 @@ class Model {
    * @public
    */
   validateProductPrice(inputPrice) {
-    if (inputPrice.value && +inputPrice.value <= 0) {
+    if (inputPrice.value &amp;&amp; +inputPrice.value &lt;= 0) {
       return "Price must be positive!";
     } else {
       return "OK";
@@ -260,11 +288,11 @@ class Model {
    * @public
    */
   validateProductRating(inputRating) {
-    if (inputRating.value && +inputRating.value < 1) {
+    if (inputRating.value &amp;&amp; +inputRating.value &lt; 1) {
       return "Rating must be at least 1!";
-    } else if (inputRating.value && +inputRating.value > 5) {
+    } else if (inputRating.value &amp;&amp; +inputRating.value > 5) {
       return "Rating must be no more than 5!";
-    } else if (inputRating.value && !Number.isInteger(+inputRating.value)) {
+    } else if (inputRating.value &amp;&amp; !Number.isInteger(+inputRating.value)) {
       return "Rating must have an integer value";
     } else {
       return "OK";
@@ -380,7 +408,7 @@ class Model {
   /**
    * Gets the list of products by its store identifier from server using all filters
    * @param {string} storeId the identifier of store
-   * @param {Object.<string, string>} filterOptions the object with filter options
+   * @param {Object.&lt;string, string>} filterOptions the object with filter options
    * @returns {Promise} the promise object will be resolved once the products list gets loaded
    * @public
    * @async
@@ -397,7 +425,7 @@ class Model {
       const filterObj = {};
 
       if (searchFilterValue) {
-        if (filterId && filterId !== Model.FILTER_ID.ALL) {
+        if (filterId &amp;&amp; filterId !== Model.FILTER_ID.ALL) {
           filterObj.where = {
             and: [
               { Status: this._getProductsFilterTypeById(filterId) },
@@ -434,14 +462,14 @@ class Model {
           };
         }
       } else {
-        if (filterId && filterId !== Model.FILTER_ID.ALL) {
+        if (filterId &amp;&amp; filterId !== Model.FILTER_ID.ALL) {
           filterObj.where = {
             Status: this._getProductsFilterTypeById(filterId),
           };
         }
       }
 
-      if (sortKey && sortOrder && sortOrder !== Model.SORT_ORDER.DEFAULT) {
+      if (sortKey &amp;&amp; sortOrder &amp;&amp; sortOrder !== Model.SORT_ORDER.DEFAULT) {
         filterObj.order = `${sortKey} ${this._getProductsSortOrderTypeByAttribute(
           sortOrder
         )}`;
@@ -742,3 +770,26 @@ class Model {
 }
 
 export default Model;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Model.html">Model</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 14:48:05 GMT+0300 (Москва, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

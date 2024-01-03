@@ -1,6 +1,6 @@
 "use strict";
 
-export default class View {
+class View {
   static ID = {
     SPINNER: {
       STORES_LIST: "stores-list-spinner",
@@ -1283,3 +1283,5 @@ export default class View {
     return amountsData;
   }
 }
+
+export default View;

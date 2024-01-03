@@ -11,5 +11,8 @@
     "url": "https://leverx-edu-sapui5-course-2023.leverx-group.com/pavel.zhukouski/lx-course-dec23-zhukouski-pavel-vanillajs"
   },
   "author": "Zhukouski Pavel",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jsdoc": "^4.0.2"
+  }
 }

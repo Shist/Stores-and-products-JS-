@@ -3,7 +3,7 @@
 import Model from "./model.js";
 import View from "./view.js";
 
-export default class Controller {
+class Controller {
   static LOCAL_STORAGE_ID = {
     CURR_STORE: "currStoreId",
     BOOKMARK_DETECTED: "bookmarkIsDetected",
@@ -1817,3 +1817,5 @@ export default class Controller {
     history.pushState(null, null, newUrl);
   }
 }
+
+export default Controller;
