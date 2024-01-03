@@ -789,48 +789,15 @@ class Controller {
 
       switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
         case Model.SORT_ORDER.DEFAULT:
-          this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
-
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.ASC;
-          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
-
-          this._setTableSortFiltersToLocalStorage(
-            sortKey,
-            Model.SORT_ORDER.ASC
-          );
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
+          this._onSortOrderDefaultBtnClicked(currSortBtn, sortKey);
 
           break;
         case Model.SORT_ORDER.ASC:
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.DESC;
-          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
-          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
-
-          this._setTableSortFiltersToLocalStorage(
-            sortKey,
-            Model.SORT_ORDER.DESC
-          );
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
+          this._onSortOrderAscBtnClicked(currSortBtn, sortKey);
 
           break;
         case Model.SORT_ORDER.DESC:
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.DEFAULT;
-          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
-
-          this._clearTableSortFiltersFromLocalStorage();
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
+          this._onSortOrderDescBtnClicked(currSortBtn);
 
           break;
         default:
@@ -841,6 +808,62 @@ class Controller {
           );
       }
     }
+  }
+
+  /**
+   * Handles click on sorting button with default sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @param {string} sortKey string containing current sorting key
+   * @private
+   */
+  _onSortOrderDefaultBtnClicked(currSortBtn, sortKey) {
+    this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
+
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.ASC;
+    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
+
+    this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.ASC);
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
+  }
+
+  /**
+   * Handles click on sorting button with ASC sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @param {string} sortKey string containing current sorting key
+   * @private
+   */
+  _onSortOrderAscBtnClicked(currSortBtn, sortKey) {
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.DESC;
+    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
+    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
+
+    this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.DESC);
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
+  }
+
+  /**
+   * Handles click on sorting button with DESC sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @private
+   */
+  _onSortOrderDescBtnClicked(currSortBtn) {
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.DEFAULT;
+    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
+
+    this._clearTableSortFiltersFromLocalStorage();
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
   }
 
   /**
