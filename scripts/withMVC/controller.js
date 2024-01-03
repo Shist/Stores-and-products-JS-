@@ -163,8 +163,14 @@ class Controller {
         ) {
           const storeDetailsWrapper = this.view.getStoreDetailsWrapper();
           const storeNotFoundWrapper = this.view.getStoreNotFoundWrapper();
-          storeDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
-          storeNotFoundWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+          this.view.removeClassFromElement(
+            storeDetailsWrapper,
+            View.JS_CLASS.ELEMENT.FLEX
+          );
+          this.view.addClassForElement(
+            storeNotFoundWrapper,
+            View.JS_CLASS.ELEMENT.FLEX
+          );
         }
       })
       .finally(() => {
@@ -577,11 +583,7 @@ class Controller {
    * @private
    */
   _renderProductsTableHead() {
-    const productsTableHead = this.view.getProductsTableHead();
-
-    productsTableHead.innerHTML = this.view.getStructureForTableHead(
-      Model.SORT_ORDER.DEFAULT
-    );
+    this.view.updateProductsTableHead(Model.SORT_ORDER.DEFAULT);
 
     this._setTableSortBtnsListener();
 
@@ -823,7 +825,7 @@ class Controller {
 
     currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
       Model.SORT_ORDER.ASC;
-    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
+    this.view.addClassForElement(currSortBtn, View.JS_CLASS.SORT_BTN.ASC);
 
     this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.ASC);
 
@@ -841,8 +843,8 @@ class Controller {
   _onSortOrderAscBtnClicked(currSortBtn, sortKey) {
     currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
       Model.SORT_ORDER.DESC;
-    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
-    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
+    this.view.removeClassFromElement(currSortBtn, View.JS_CLASS.SORT_BTN.ASC);
+    this.view.addClassForElement(currSortBtn, View.JS_CLASS.SORT_BTN.DESC);
 
     this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.DESC);
 
@@ -859,7 +861,7 @@ class Controller {
   _onSortOrderDescBtnClicked(currSortBtn) {
     currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
       Model.SORT_ORDER.DEFAULT;
-    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
+    this.view.removeClassFromElement(currSortBtn, View.JS_CLASS.SORT_BTN.DESC);
 
     this._clearTableSortFiltersFromLocalStorage();
 
@@ -936,7 +938,7 @@ class Controller {
         e.target.dataset[View.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
       );
 
-      modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+      this.view.addClassForElement(modalWrapper, View.JS_CLASS.ELEMENT.FLEX);
 
       this._loadProductAndUpdateEditForm(
         View.SPINNER_TEXT.EDIT_PRODUCT_FORM.LOADING
@@ -949,7 +951,7 @@ class Controller {
         e.target.dataset[View.DATA_ATTRIBUTE.PRODUCT_ID.CAMEL]
       );
 
-      modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+      this.view.addClassForElement(modalWrapper, View.JS_CLASS.ELEMENT.FLEX);
     }
   }
 
@@ -983,7 +985,7 @@ class Controller {
   _onCreateStoreClick() {
     const modalWrapper = this.view.getModalCreateStoreWrapper();
 
-    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+    this.view.addClassForElement(modalWrapper, View.JS_CLASS.ELEMENT.FLEX);
   }
 
   /**
@@ -993,7 +995,7 @@ class Controller {
   _onDeleteStoreClick() {
     const modalWrapper = this.view.getModalDeleteStoreWrapper();
 
-    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+    this.view.addClassForElement(modalWrapper, View.JS_CLASS.ELEMENT.FLEX);
   }
 
   /**
@@ -1003,7 +1005,7 @@ class Controller {
   _onCreateProductClick() {
     const modalWrapper = this.view.getModalCreateProductWrapper();
 
-    modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+    this.view.addClassForElement(modalWrapper, View.JS_CLASS.ELEMENT.FLEX);
   }
 
   /**
@@ -1278,8 +1280,14 @@ class Controller {
       offsetDiff = maxOffsetDiff;
     }
 
-    productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
-    productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
+    this.view.changeElementInlineHeight(
+      productsListSpinner,
+      `${spinnerInitHeight + offsetDiff}px`
+    );
+    this.view.changeElementInlineTopOffset(
+      productsListSpinner,
+      `${offsetObj.wholeOffset - offsetDiff}px`
+    );
   }
 
   /**
@@ -1307,7 +1315,10 @@ class Controller {
       offsetDiff += 320;
     }
 
-    productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
+    this.view.changeElementInlineWidth(
+      productsListSpinner,
+      `${spinnerInitWidth + offsetDiff}px`
+    );
   }
 
   /**
@@ -1471,7 +1482,8 @@ class Controller {
         targetBgColor: "white",
       };
 
-      storesListSection.insertAdjacentHTML(
+      this.view.insertHTMLInsideElement(
+        storesListSection,
         "afterbegin",
         this.view.getSpinnerStructure(spinnerOptions)
       );
@@ -1507,7 +1519,8 @@ class Controller {
         targetBgColor: "#eff4f8",
       };
 
-      storesDetailsDescriptionWrapper.insertAdjacentHTML(
+      this.view.insertHTMLInsideElement(
+        storesDetailsDescriptionWrapper,
         "afterbegin",
         this.view.getSpinnerStructure(spinnerOptions)
       );
@@ -1550,7 +1563,8 @@ class Controller {
         targetBgColor: "#eff4f8",
       };
 
-      filtersWrapper.insertAdjacentHTML(
+      this.view.insertHTMLInsideElement(
+        filtersWrapper,
         "afterbegin",
         this.view.getSpinnerStructure(spinnerOptions)
       );
@@ -1586,7 +1600,8 @@ class Controller {
         targetBgColor: "white",
       };
 
-      editProductForm.insertAdjacentHTML(
+      this.view.insertHTMLInsideElement(
+        editProductForm,
         "afterbegin",
         this.view.getSpinnerStructure(spinnerOptions)
       );
@@ -1622,7 +1637,8 @@ class Controller {
         targetBgColor: "white",
       };
 
-      table.insertAdjacentHTML(
+      this.view.insertHTMLInsideElement(
+        table,
         "afterbegin",
         this.view.getSpinnerStructure(spinnerOptions)
       );
