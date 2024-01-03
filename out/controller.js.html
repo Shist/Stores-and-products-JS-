@@ -331,7 +331,7 @@ class Controller {
       .postStore(JSON.stringify(resultObj))
       .then(() => {
         this.view.showPopupWithMsg(
-          "New store has been successfully created!",
+          View.POPUP_MSG.SUCCESS_CREATE_STORE,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -370,7 +370,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "New product has been successfully created!",
+          View.POPUP_MSG.SUCCESS_CREATE_PRODUCT,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -411,7 +411,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The product has been successfully edited!",
+          View.POPUP_MSG.SUCCESS_EDIT_PRODUCT,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -449,7 +449,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "All products of store have been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_ALL_PRODUCTS,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
@@ -486,7 +486,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The store has been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_STORE,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
@@ -535,7 +535,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The product has been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_PRODUCT,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
@@ -741,11 +741,9 @@ class Controller {
         currItemCard.dataset[View.DATA_ATTRIBUTE.STORE_ID.CAMEL]
       );
 
-      if (
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
-      ) {
-        this._updateBookmarkInsideURL();
-      }
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
+        ? this._updateBookmarkInsideURL()
+        : null;
 
       this._updateAllStoreDetails();
     }
@@ -773,23 +771,25 @@ class Controller {
     const newFilterBtn = this.view.getClosestFilterBtn(e.target);
 
     if (
-      newFilterBtn &amp;&amp;
-      newFilterBtn.id !==
+      !newFilterBtn ||
+      newFilterBtn.id ===
         localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER)
     ) {
-      this.view.setCurrProductsFilterBtn(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
-        newFilterBtn.id
-      );
-      localStorage.setItem(
-        Controller._LOCAL_STORAGE_ID.CURR_FILTER,
-        newFilterBtn.id
-      );
-
-      this._loadFilteredProductsListAndUpdateTable(
-        View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-      );
+      return;
     }
+
+    this.view.setCurrProductsFilterBtn(
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
+      newFilterBtn.id
+    );
+    localStorage.setItem(
+      Controller._LOCAL_STORAGE_ID.CURR_FILTER,
+      newFilterBtn.id
+    );
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
   }
 
   /**
@@ -811,64 +811,89 @@ class Controller {
    * @private
    */
   _onTableSortBtnClick(e) {
-    if (e.target.classList.contains(View.CLASS.BTN.SORT)) {
-      const currSortBtn = e.target;
-      const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
-
-      switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
-        case Model.SORT_ORDER.DEFAULT:
-          this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
-
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.ASC;
-          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
-
-          this._setTableSortFiltersToLocalStorage(
-            sortKey,
-            Model.SORT_ORDER.ASC
-          );
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
-
-          break;
-        case Model.SORT_ORDER.ASC:
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.DESC;
-          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
-          currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
-
-          this._setTableSortFiltersToLocalStorage(
-            sortKey,
-            Model.SORT_ORDER.DESC
-          );
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
-
-          break;
-        case Model.SORT_ORDER.DESC:
-          currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
-            Model.SORT_ORDER.DEFAULT;
-          currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
-
-          this._clearTableSortFiltersFromLocalStorage();
-
-          this._loadFilteredProductsListAndUpdateTable(
-            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
-          );
-
-          break;
-        default:
-          console.warn(
-            `One of sort buttons had unknown data-${
-              View.DATA_ATTRIBUTE.SORT_STATE.KEBAB
-            } type: ${e.target.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]}`
-          );
-      }
+    if (!e.target.classList.contains(View.CLASS.BTN.SORT)) {
+      return;
     }
+
+    const currSortBtn = e.target;
+    const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
+
+    switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
+      case Model.SORT_ORDER.DEFAULT:
+        this._onSortOrderDefaultBtnClicked(currSortBtn, sortKey);
+
+        break;
+      case Model.SORT_ORDER.ASC:
+        this._onSortOrderAscBtnClicked(currSortBtn, sortKey);
+
+        break;
+      case Model.SORT_ORDER.DESC:
+        this._onSortOrderDescBtnClicked(currSortBtn);
+
+        break;
+      default:
+        console.warn(
+          `One of sort buttons had unknown data-${
+            View.DATA_ATTRIBUTE.SORT_STATE.KEBAB
+          } type: ${e.target.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]}`
+        );
+    }
+  }
+
+  /**
+   * Handles click on sorting button with default sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @param {string} sortKey string containing current sorting key
+   * @private
+   */
+  _onSortOrderDefaultBtnClicked(currSortBtn, sortKey) {
+    this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
+
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.ASC;
+    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.ASC);
+
+    this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.ASC);
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
+  }
+
+  /**
+   * Handles click on sorting button with ASC sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @param {string} sortKey string containing current sorting key
+   * @private
+   */
+  _onSortOrderAscBtnClicked(currSortBtn, sortKey) {
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.DESC;
+    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.ASC);
+    currSortBtn.classList.add(View.JS_CLASS.SORT_BTN.DESC);
+
+    this._setTableSortFiltersToLocalStorage(sortKey, Model.SORT_ORDER.DESC);
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
+  }
+
+  /**
+   * Handles click on sorting button with DESC sort order state
+   * @param {HTMLButtonElement} currSortBtn button DOM element
+   * @private
+   */
+  _onSortOrderDescBtnClicked(currSortBtn) {
+    currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
+      Model.SORT_ORDER.DEFAULT;
+    currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
+
+    this._clearTableSortFiltersFromLocalStorage();
+
+    this._loadFilteredProductsListAndUpdateTable(
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
   }
 
   /**
@@ -1265,22 +1290,24 @@ class Controller {
       View.ID.SPINNER.PRODUCTS_LIST
     );
 
-    if (productsListSpinner) {
-      let offsetDiff = storeDetailsWrapper.scrollTop;
-      const spinnerInitHeight = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
-      ].replace(/\D/g, "");
-      const offsetObj = this._getTopOffsetForProductsListSpinner();
-      const maxOffsetDiff =
-        offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
-
-      if (offsetDiff > maxOffsetDiff) {
-        offsetDiff = maxOffsetDiff;
-      }
-
-      productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
-      productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
+    if (!productsListSpinner) {
+      return;
     }
+
+    let offsetDiff = storeDetailsWrapper.scrollTop;
+    const spinnerInitHeight = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.CAMEL
+    ].replace(/\D/g, "");
+    const offsetObj = this._getTopOffsetForProductsListSpinner();
+    const maxOffsetDiff =
+      offsetObj.tableWrapperPaddingOffset + offsetObj.tableHeadNameOffset;
+
+    if (offsetDiff > maxOffsetDiff) {
+      offsetDiff = maxOffsetDiff;
+    }
+
+    productsListSpinner.style.height = `${spinnerInitHeight + offsetDiff}px`;
+    productsListSpinner.style.top = `${offsetObj.wholeOffset - offsetDiff}px`;
   }
 
   /**
@@ -1292,21 +1319,23 @@ class Controller {
       View.ID.SPINNER.PRODUCTS_LIST
     );
 
-    if (productsListSpinner) {
-      const windowInitWidth = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.CAMEL
-      ].replace(/\D/g, "");
-      const spinnerInitWidth = +productsListSpinner.dataset[
-        View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.CAMEL
-      ].replace(/\D/g, "");
-      let offsetDiff = window.innerWidth - windowInitWidth;
-
-      if (window.innerWidth &lt;= 960) {
-        offsetDiff += 320;
-      }
-
-      productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
+    if (!productsListSpinner) {
+      return;
     }
+
+    const windowInitWidth = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    const spinnerInitWidth = +productsListSpinner.dataset[
+      View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.CAMEL
+    ].replace(/\D/g, "");
+    let offsetDiff = window.innerWidth - windowInitWidth;
+
+    if (window.innerWidth &lt;= 960) {
+      offsetDiff += 320;
+    }
+
+    productsListSpinner.style.width = `${spinnerInitWidth + offsetDiff}px`;
   }
 
   /**
@@ -1952,7 +1981,7 @@ export default Controller;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 20:54:25 GMT+0300 (Москва, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 21:48:00 GMT+0300 (Москва, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

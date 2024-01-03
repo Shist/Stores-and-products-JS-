@@ -289,6 +289,23 @@ class View {
   };
 
   /**
+   * Static object for storing all possible success and attention messages for popup
+   * @constant
+   * @type {Object.<string, string>}
+   * @static
+   * @public
+   */
+  static POPUP_MSG = {
+    SUCCESS_CREATE_STORE: "New store has been successfully created!",
+    SUCCESS_CREATE_PRODUCT: "New product has been successfully created!",
+    SUCCESS_EDIT_PRODUCT: "The product has been successfully edited!",
+    ATTENTION_DELETE_STORE: "The store has been successfully deleted.",
+    ATTENTION_DELETE_PRODUCT: "The product has been successfully deleted.",
+    ATTENTION_DELETE_ALL_PRODUCTS:
+      "All products of store have been successfully deleted.",
+  };
+
+  /**
    * Static string for storing message for default error state
    * @constant
    * @type {string}

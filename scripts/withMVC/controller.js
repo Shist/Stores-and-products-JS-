@@ -303,7 +303,7 @@ class Controller {
       .postStore(JSON.stringify(resultObj))
       .then(() => {
         this.view.showPopupWithMsg(
-          "New store has been successfully created!",
+          View.POPUP_MSG.SUCCESS_CREATE_STORE,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -342,7 +342,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "New product has been successfully created!",
+          View.POPUP_MSG.SUCCESS_CREATE_PRODUCT,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -383,7 +383,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The product has been successfully edited!",
+          View.POPUP_MSG.SUCCESS_EDIT_PRODUCT,
           View.POPUP_COLOR.SUCCESS,
           5000
         );
@@ -421,7 +421,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "All products of store have been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_ALL_PRODUCTS,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
@@ -458,7 +458,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The store has been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_STORE,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
@@ -507,7 +507,7 @@ class Controller {
       )
       .then(() => {
         this.view.showPopupWithMsg(
-          "The product has been successfully deleted.",
+          View.POPUP_MSG.ATTENTION_DELETE_PRODUCT,
           View.POPUP_COLOR.ATTENTION,
           5000
         );
