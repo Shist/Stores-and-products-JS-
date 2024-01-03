@@ -1476,11 +1476,7 @@ class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = this.view.getSpinnerById(View.ID.SPINNER.STORES_LIST);
-      if (currSpinner) {
-        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
-        spinnerSpan.textContent = spinnerText;
-      }
+      this._changeExistingSpinnerText(View.ID.SPINNER.STORES_LIST, spinnerText);
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.STORES_LIST);
@@ -1516,13 +1512,10 @@ class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = this.view.getSpinnerById(
-        View.ID.SPINNER.STORE_DETAILS
+      this._changeExistingSpinnerText(
+        View.ID.SPINNER.STORE_DETAILS,
+        spinnerText
       );
-      if (currSpinner) {
-        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
-        spinnerSpan.textContent = spinnerText;
-      }
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.STORE_DETAILS);
@@ -1562,13 +1555,10 @@ class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = this.view.getSpinnerById(
-        View.ID.SPINNER.PRODUCTS_AMOUNTS
+      this._changeExistingSpinnerText(
+        View.ID.SPINNER.PRODUCTS_AMOUNTS,
+        spinnerText
       );
-      if (currSpinner) {
-        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
-        spinnerSpan.textContent = spinnerText;
-      }
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.PRODUCTS_AMOUNTS);
@@ -1601,13 +1591,10 @@ class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = this.view.getSpinnerById(
-        View.ID.SPINNER.EDIT_PRODUCT_FORM
+      this._changeExistingSpinnerText(
+        View.ID.SPINNER.EDIT_PRODUCT_FORM,
+        spinnerText
       );
-      if (currSpinner) {
-        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
-        spinnerSpan.textContent = spinnerText;
-      }
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.EDIT_PRODUCT_FORM);
@@ -1645,16 +1632,27 @@ class Controller {
 
       this._setProductsListSpinnerResizeListeners();
     } else {
-      const currSpinner = this.view.getSpinnerById(
-        View.ID.SPINNER.PRODUCTS_LIST
+      this._changeExistingSpinnerText(
+        View.ID.SPINNER.PRODUCTS_LIST,
+        spinnerText
       );
-      if (currSpinner) {
-        const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
-        spinnerSpan.textContent = spinnerText;
-      }
     }
 
     this._plusFetchOperationForSpinner(View.ID.SPINNER.PRODUCTS_LIST);
+  }
+
+  /**
+   * Changes the text of the existing spinner via given spinner identifier and text
+   * @param {string} spinnerId identifier of the spinner to be changed
+   * @param {string} spinnerText the text to be shown inside spinner
+   * @private
+   */
+  _changeExistingSpinnerText(spinnerId, spinnerText) {
+    const currSpinner = this.view.getSpinnerById(spinnerId);
+    if (currSpinner) {
+      const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
+      spinnerSpan.textContent = spinnerText;
+    }
   }
 
   /**
