@@ -159,7 +159,7 @@ export default class View {
   static JS_CLASS = {
     ELEMENT: {
       HIDDEN: "js-hidden-element",
-      FLEX: "js-hidden-element",
+      FLEX: "js-flex-element",
     },
     SELECTED_ITEM: "js-selected-item",
     SORT_BTN: {
@@ -902,6 +902,8 @@ export default class View {
       storeDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
       noStoreDetailsWrapper.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
     }
+
+    return this;
   }
 
   updateStoreDescriptionFields(store) {
@@ -952,6 +954,8 @@ export default class View {
     } else {
       storeFloorAreaField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
     }
+
+    return this;
   }
 
   updateEditProductFormFields(product) {
@@ -1004,6 +1008,8 @@ export default class View {
     if (product.Status) {
       inputStatus.value = product.Status;
     }
+
+    return this;
   }
 
   _getCurrProductsAmounts(searchedProductsListWithoutFilter, storeId) {
@@ -1058,6 +1064,8 @@ export default class View {
     prodOkAmountField.textContent = amountsData.ok;
     prodStorageAmountField.textContent = amountsData.storage;
     prodOutOfStockAmountField.textContent = amountsData.outOfStock;
+
+    return this;
   }
 
   updateProductsTableBody(productsList) {
@@ -1066,6 +1074,8 @@ export default class View {
     );
 
     productsTableBody.innerHTML = this._getStructureForTableBody(productsList);
+
+    return this;
   }
 
   setCurrProductsFilterBtn(filterToOff, filterToSet) {
@@ -1123,6 +1133,8 @@ export default class View {
     modalForm.reset();
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   closeDeleteStoreModal() {
@@ -1131,6 +1143,8 @@ export default class View {
     );
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   closeCreateProductModal() {
@@ -1154,6 +1168,8 @@ export default class View {
     modalForm.reset();
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   closeEditProductModal() {
@@ -1177,6 +1193,8 @@ export default class View {
     modalForm.reset();
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   closeDeleteProductModal() {
@@ -1185,16 +1203,22 @@ export default class View {
     );
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   disableStoreDetailsFooterBtns() {
     document.querySelector(`#${View.ID.BTN.CREATE_PRODUCT}`).disabled = true;
     document.querySelector(`#${View.ID.BTN.DELETE_STORE}`).disabled = true;
+
+    return this;
   }
 
   unlockStoreDetailsFooterBtns() {
     document.querySelector(`#${View.ID.BTN.CREATE_PRODUCT}`).disabled = false;
     document.querySelector(`#${View.ID.BTN.DELETE_STORE}`).disabled = false;
+
+    return this;
   }
 
   addErrorToInput(input, inputErrClass, inputWrapper, errorMsg) {
@@ -1245,6 +1269,8 @@ export default class View {
     );
 
     modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 
   closeErrorModal() {
@@ -1253,5 +1279,7 @@ export default class View {
     );
 
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
+
+    return this;
   }
 }

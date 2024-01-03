@@ -23,6 +23,11 @@ export default class Controller {
   constructor(view, model) {
     this.view = view;
     this.model = model;
+
+    this._resizeHeightAndMoveProductsListSpinnerBound =
+      this._resizeHeightAndMoveProductsListSpinner.bind(this);
+    this._resizeWidthForProductsListSpinnerBound =
+      this._resizeWidthForProductsListSpinner.bind(this);
   }
 
   init() {
@@ -41,7 +46,7 @@ export default class Controller {
 
     this._loadStoreIdFromBookmark();
 
-    this.view.setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.LOADING);
+    this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.LOADING);
 
     this.model
       .getSearchedStoresList(this.view.getStoresSearchInput().value)
@@ -225,8 +230,11 @@ export default class Controller {
     const searchInput = this.view.getStoresSearchInput();
     const searchBtn = this.view.getStoresSearchBtn();
 
-    searchInput.addEventListener("search", this._onSearchStoresClick);
-    searchBtn.addEventListener("click", this._onSearchStoresClick);
+    searchInput.addEventListener(
+      "search",
+      this._onSearchStoresClick.bind(this)
+    );
+    searchBtn.addEventListener("click", this._onSearchStoresClick.bind(this));
   }
 
   _onSearchStoresClick() {
@@ -275,7 +283,7 @@ export default class Controller {
   _setStoresCardsClickListener() {
     const storesLayout = this.view.getStoresLayout();
 
-    storesLayout.addEventListener("click", this._onStoreCardClick);
+    storesLayout.addEventListener("click", this._onStoreCardClick.bind(this));
   }
 
   _onStoreCardClick(e) {
@@ -301,7 +309,10 @@ export default class Controller {
   _setProductsFiltersBtnsListener() {
     const filtersWrapper = this.view.getFilterWrapper();
 
-    filtersWrapper.addEventListener("click", this._onProductsFilterBtnClick);
+    filtersWrapper.addEventListener(
+      "click",
+      this._onProductsFilterBtnClick.bind(this)
+    );
   }
 
   _onProductsFilterBtnClick(e) {
@@ -314,6 +325,10 @@ export default class Controller {
     ) {
       this.view.setCurrProductsFilterBtn(
         localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
+        newFilterBtn.id
+      );
+      localStorage.setItem(
+        Controller.LOCAL_STORAGE_ID.CURR_FILTER,
         newFilterBtn.id
       );
 
@@ -354,7 +369,10 @@ export default class Controller {
   _setTableSortBtnsListener() {
     const productTableHeadTitles = this.view.getProductsTableHeadTitles();
 
-    productTableHeadTitles.addEventListener("click", this._onTableSortBtnClick);
+    productTableHeadTitles.addEventListener(
+      "click",
+      this._onTableSortBtnClick.bind(this)
+    );
   }
 
   _onTableSortBtnClick(e) {
@@ -364,10 +382,8 @@ export default class Controller {
 
       const filterOptions = {
         filterId: localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_FILTER),
-        sortKey: localStorage.getItem(
-          Controller.LOCAL_STORAGE_ID.CURR_SORT_KEY
-        ),
-        sortOrder: localStorage.getItem(Controller.LOCAL_STORAGE_ID.SORT_ORDER),
+        sortKey: sortKey,
+        sortOrder: null,
         searchFilterValue: this.view.getProductsSearchInput().value,
       };
 
@@ -383,6 +399,8 @@ export default class Controller {
             sortKey,
             Model.SORT_ORDER.ASC
           );
+
+          filterOptions.sortOrder = Model.SORT_ORDER.ASC;
 
           this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
 
@@ -419,6 +437,8 @@ export default class Controller {
             Model.SORT_ORDER.DESC
           );
 
+          filterOptions.sortOrder = Model.SORT_ORDER.DESC;
+
           this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
 
           this.model
@@ -443,7 +463,7 @@ export default class Controller {
             });
 
           break;
-        case Model.SORT_ORDER.DEFAULT:
+        case Model.SORT_ORDER.DESC:
           currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL] =
             Model.SORT_ORDER.DEFAULT;
           currSortBtn.classList.remove(View.JS_CLASS.SORT_BTN.DESC);
@@ -488,8 +508,11 @@ export default class Controller {
     const searchInput = this.view.getProductsSearchInput();
     const searchBtn = this.view.getProductsSearchBtn();
 
-    searchInput.addEventListener("search", this._onSearchProductsClick);
-    searchBtn.addEventListener("click", this._onSearchProductsClick);
+    searchInput.addEventListener(
+      "search",
+      this._onSearchProductsClick.bind(this)
+    );
+    searchBtn.addEventListener("click", this._onSearchProductsClick.bind(this));
   }
 
   _onSearchProductsClick() {
@@ -567,7 +590,7 @@ export default class Controller {
   _setTableRowsBtnsListeners() {
     const tableBody = this.view.getProductsTableBody();
 
-    tableBody.addEventListener("click", this._onTableRowsBtnClick);
+    tableBody.addEventListener("click", this._onTableRowsBtnClick.bind(this));
   }
 
   _onTableRowsBtnClick(e) {
@@ -599,9 +622,18 @@ export default class Controller {
     const btnDeleteStore = this.view.getBtnDeleteStore();
     const btnCreateProduct = this.view.getBtnCreateProduct();
 
-    btnCreateStore.addEventListener("click", this._onCreateStoreClick);
-    btnDeleteStore.addEventListener("click", this._onDeleteStoreClick);
-    btnCreateProduct.addEventListener("click", this._onCreateProductClick);
+    btnCreateStore.addEventListener(
+      "click",
+      this._onCreateStoreClick.bind(this)
+    );
+    btnDeleteStore.addEventListener(
+      "click",
+      this._onDeleteStoreClick.bind(this)
+    );
+    btnCreateProduct.addEventListener(
+      "click",
+      this._onCreateProductClick.bind(this)
+    );
   }
 
   _onCreateStoreClick() {
@@ -631,23 +663,23 @@ export default class Controller {
 
     btnConfirmCreateStore.addEventListener(
       "click",
-      this._onConfirmCreateStoreClick
+      this._onConfirmCreateStoreClick.bind(this)
     );
     btnConfirmDeleteStore.addEventListener(
       "click",
-      this._onConfirmDeleteStoreClick
+      this._onConfirmDeleteStoreClick.bind(this)
     );
     btnConfirmCreateProduct.addEventListener(
       "click",
-      this._onConfirmCreateProductClick
+      this._onConfirmCreateProductClick.bind(this)
     );
     btnConfirmEditProduct.addEventListener(
       "click",
-      this._onConfirmEditProductClick
+      this._onConfirmEditProductClick.bind(this)
     );
     btnConfirmDeleteProduct.addEventListener(
       "click",
-      this._onConfirmDeleteProductClick
+      this._onConfirmDeleteProductClick.bind(this)
     );
   }
 
@@ -657,10 +689,10 @@ export default class Controller {
 
       this.view.closeCreateStoreModal();
 
-      this.view.setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.CREATING);
+      this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.CREATING);
 
       this.model
-        .postStore()(JSON.stringify(resultObj))
+        .postStore(JSON.stringify(resultObj))
         .then(() => {
           this.view.showPopupWithMsg(
             "New store has been successfully created!",
@@ -668,9 +700,7 @@ export default class Controller {
             5000
           );
 
-          this.view.setStoresListSpinner(
-            View.SPINNER_TEXT.STORES_LIST.UPDATING
-          );
+          this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.UPDATING);
 
           this.model
             .getSearchedStoresList(this.view.getStoresSearchInput().value)
@@ -713,10 +743,10 @@ export default class Controller {
 
     this.view.closeDeleteStoreModal();
 
-    this.view.setStoresListSpinner(
+    this._setStoresListSpinner(
       View.SPINNER_TEXT.STORES_LIST.DELETING_STORE_PRODUCTS
     );
-    this.view.setProductsListSpinner(
+    this._setProductsListSpinner(
       View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE_PRODUCTS
     );
 
@@ -731,10 +761,10 @@ export default class Controller {
           5000
         );
 
-        this.view.setStoresListSpinner(
+        this._setStoresListSpinner(
           View.SPINNER_TEXT.STORES_LIST.DELETING_STORE
         );
-        this.view.setProductsListSpinner(
+        this._setProductsListSpinner(
           View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE
         );
 
@@ -761,9 +791,7 @@ export default class Controller {
               localStorage.getItem(Controller.LOCAL_STORAGE_ID.CURR_STORE)
             );
 
-            this.view.setStoresListSpinner(
-              View.SPINNER_TEXT.STORES_LIST.UPDATING
-            );
+            this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.UPDATING);
 
             this.model
               .getSearchedStoresList(this.view.getStoresSearchInput().value)
@@ -874,10 +902,10 @@ export default class Controller {
               }
             });
 
-          this.view.setProductsAmountSpinner(
+          this._setProductsAmountSpinner(
             View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
           );
-          this.view.setProductsListSpinner(
+          this._setProductsListSpinner(
             View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
           );
 
@@ -977,10 +1005,10 @@ export default class Controller {
               }
             });
 
-          this.view.setProductsAmountSpinner(
+          this._setProductsAmountSpinner(
             View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
           );
-          this.view.setProductsListSpinner(
+          this._setProductsListSpinner(
             View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
           );
 
@@ -1072,12 +1100,10 @@ export default class Controller {
             }
           });
 
-        this.view.setProductsAmountSpinner(
+        this._setProductsAmountSpinner(
           View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
         );
-        this.view.setProductsListSpinner(
-          View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
-        );
+        this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
 
         Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
           .catch((error) => {
@@ -1113,25 +1139,28 @@ export default class Controller {
 
     btnCancelCreateStore.addEventListener(
       "click",
-      this.view.closeCreateStoreModal
+      this.view.closeCreateStoreModal.bind(this.view)
     );
     btnCancelDeleteStore.addEventListener(
       "click",
-      this.view.closeDeleteStoreModal
+      this.view.closeDeleteStoreModal.bind(this.view)
     );
     btnCancelCreateProduct.addEventListener(
       "click",
-      this.view.closeCreateProductModal
+      this.view.closeCreateProductModal.bind(this.view)
     );
     btnCancelEditProduct.addEventListener(
       "click",
-      this._onCancelEditProductBtnClick
+      this._onCancelEditProductBtnClick.bind(this)
     );
     btnCancelDeleteProduct.addEventListener(
       "click",
-      this._onCancelDeleteProductBtnClick
+      this._onCancelDeleteProductBtnClick.bind(this)
     );
-    btnOkModalError.addEventListener("click", this.view.closeErrorModal);
+    btnOkModalError.addEventListener(
+      "click",
+      this.view.closeErrorModal.bind(this.view)
+    );
   }
 
   _onCancelEditProductBtnClick() {
@@ -1151,9 +1180,12 @@ export default class Controller {
 
     storeDetailsWrapper.addEventListener(
       "scroll",
-      this._resizeHeightAndMoveProductsListSpinner
+      this._resizeHeightAndMoveProductsListSpinnerBound
     );
-    window.addEventListener("resize", this._resizeWidthForProductsListSpinner);
+    window.addEventListener(
+      "resize",
+      this._resizeWidthForProductsListSpinnerBound
+    );
   }
 
   _describeProductsListSpinnerResizeListeners() {
@@ -1161,11 +1193,11 @@ export default class Controller {
 
     storeDetailsWrapper.removeEventListener(
       "scroll",
-      this._resizeHeightAndMoveProductsListSpinner
+      this._resizeHeightAndMoveProductsListSpinnerBound
     );
     window.removeEventListener(
       "resize",
-      this._resizeWidthForProductsListSpinner
+      this._resizeWidthForProductsListSpinnerBound
     );
   }
 
@@ -1409,9 +1441,7 @@ export default class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = document.querySelector(
-        `#${View.ID.SPINNER.STORES_LIST}`
-      );
+      const currSpinner = this.view.getSpinnerById(View.ID.SPINNER.STORES_LIST);
       if (currSpinner) {
         const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
         spinnerSpan.textContent = spinnerText;
@@ -1446,8 +1476,8 @@ export default class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = document.querySelector(
-        `#${View.ID.SPINNER.STORE_DETAILS}`
+      const currSpinner = this.view.getSpinnerById(
+        View.ID.SPINNER.STORE_DETAILS
       );
       if (currSpinner) {
         const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
@@ -1487,8 +1517,8 @@ export default class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = document.querySelector(
-        `#${View.ID.SPINNER.PRODUCTS_AMOUNTS}`
+      const currSpinner = this.view.getSpinnerById(
+        View.ID.SPINNER.PRODUCTS_AMOUNTS
       );
       if (currSpinner) {
         const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
@@ -1521,8 +1551,8 @@ export default class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
     } else {
-      const currSpinner = document.querySelector(
-        `#${View.ID.SPINNER.EDIT_PRODUCT_FORM}`
+      const currSpinner = this.view.getSpinnerById(
+        View.ID.SPINNER.EDIT_PRODUCT_FORM
       );
       if (currSpinner) {
         const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
@@ -1555,13 +1585,13 @@ export default class Controller {
         this.view.getSpinnerStructure(spinnerOptions)
       );
 
-      this._resizeWidthForProductsListSpinner();
-      this._resizeHeightAndMoveProductsListSpinner();
+      this._resizeWidthForProductsListSpinnerBound();
+      this._resizeHeightAndMoveProductsListSpinnerBound();
 
       this._setProductsListSpinnerResizeListeners();
     } else {
-      const currSpinner = document.querySelector(
-        `#${View.ID.SPINNER.PRODUCTS_LIST}`
+      const currSpinner = this.view.getSpinnerById(
+        View.ID.SPINNER.PRODUCTS_LIST
       );
       if (currSpinner) {
         const spinnerSpan = currSpinner.getElementsByTagName("span")[0];
@@ -1596,16 +1626,16 @@ export default class Controller {
         input: this.view.getModalCreateStoreInputName(),
       },
       email: {
-        wrapper: this.view.getModalCreateStoreInputEmail(),
-        input: this.view.getModalCreateStoreInputEmailWrapper(),
+        wrapper: this.view.getModalCreateStoreInputEmailWrapper(),
+        input: this.view.getModalCreateStoreInputEmail(),
       },
       phone: {
-        wrapper: this.view.getModalCreateStoreInputPhone(),
-        input: this.view.getModalCreateStoreInputPhoneWrapper(),
+        wrapper: this.view.getModalCreateStoreInputPhoneWrapper(),
+        input: this.view.getModalCreateStoreInputPhone(),
       },
       floorArea: {
-        wrapper: this.view.getModalCreateStoreInputFloorArea(),
-        input: this.view.getModalCreateStoreInputFloorAreaWrapper(),
+        wrapper: this.view.getModalCreateStoreInputFloorAreaWrapper(),
+        input: this.view.getModalCreateStoreInputFloorArea(),
       },
     };
 
@@ -1622,7 +1652,7 @@ export default class Controller {
       validateObj.floorArea.input
     );
 
-    Object.keys(validateObj).forEach(({ wrapper, input, state }) => {
+    Object.values(validateObj).forEach(({ wrapper, input, state }) => {
       if (state === "OK") {
         this.view.removeErrorFromInput(
           input,
@@ -1645,20 +1675,23 @@ export default class Controller {
   _validateProductForm(modalIdsObj) {
     const validateObj = {
       name: {
-        wrapper: this.view.getProductInputNameByModalIdsObj(modalIdsObj),
-        input: this.view.getProductInputNameWrapperByModalIdsObj(modalIdsObj),
+        wrapper: this.view.getProductInputNameWrapperByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputNameByModalIdsObj(modalIdsObj),
       },
       price: {
-        wrapper: this.view.getProductInputPriceByModalIdsObj(modalIdsObj),
-        input: this.view.getProductInputPriceWrapperByModalIdsObj(modalIdsObj),
+        wrapper:
+          this.view.getProductInputPriceWrapperByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputPriceByModalIdsObj(modalIdsObj),
       },
       specs: {
-        wrapper: this.view.getProductInputSpecsByModalIdsObj(modalIdsObj),
-        input: this.view.getProductInputSpecsWrapperByModalIdsObj(modalIdsObj),
+        wrapper:
+          this.view.getProductInputSpecsWrapperByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputSpecsByModalIdsObj(modalIdsObj),
       },
       rating: {
-        wrapper: this.view.getProductInputRatingByModalIdsObj(modalIdsObj),
-        input: this.view.getProductInputRatingWrapperByModalIdsObj(modalIdsObj),
+        wrapper:
+          this.view.getProductInputRatingWrapperByModalIdsObj(modalIdsObj),
+        input: this.view.getProductInputRatingByModalIdsObj(modalIdsObj),
       },
     };
 
@@ -1675,7 +1708,7 @@ export default class Controller {
       validateObj.rating.input
     );
 
-    Object.keys(validateObj).forEach(({ wrapper, input, state }) => {
+    Object.values(validateObj).forEach(({ wrapper, input, state }) => {
       if (state === "OK") {
         this.view.removeErrorFromInput(
           input,

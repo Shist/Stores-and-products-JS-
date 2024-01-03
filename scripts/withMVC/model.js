@@ -258,7 +258,7 @@ export default class Model {
         neededURL += `?filter=${JSON.stringify(filterObj)}`;
       }
 
-      return await getData(neededURL);
+      return await this._getData(neededURL);
     } catch (error) {
       console.error(
         `Error while fetching stores list. Reason: ${error.message}`
@@ -271,7 +271,7 @@ export default class Model {
 
   async getStoreById(storeId) {
     try {
-      return await getData(
+      return await this._getData(
         Model.GET_ENDPOINT.STORE_BY_ID.replace("{storeId}", storeId)
       );
     } catch (error) {
@@ -312,7 +312,7 @@ export default class Model {
         neededURL += `?filter=${JSON.stringify(filterObj)}`;
       }
 
-      return await getData(neededURL);
+      return await this._getData(neededURL);
     } catch (error) {
       console.error(
         `Error while fetching products list for store with id=${storeId}. Reason: ${error.message}`
@@ -389,7 +389,7 @@ export default class Model {
         neededURL += `?filter=${JSON.stringify(filterObj)}`;
       }
 
-      return await getData(neededURL);
+      return await this._getData(neededURL);
     } catch (error) {
       console.error(
         `Error while fetching filtered products list for store with id=${storeId}. Reason: ${error.message}`
@@ -402,7 +402,7 @@ export default class Model {
 
   async getProductById(productId) {
     try {
-      return await getData(
+      return await this._getData(
         Model.GET_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId)
       );
     } catch (error) {
@@ -417,7 +417,7 @@ export default class Model {
 
   async postStore(storeObj) {
     try {
-      return await postData(Model.POST_ENDPOINT.STORE, storeObj);
+      return await this._postData(Model.POST_ENDPOINT.STORE, storeObj);
     } catch (error) {
       console.error(`Error while posting store. Reason: ${error.message}`);
       throw new Error(`Error while posting store. Reason: ${error.message}`);
@@ -426,7 +426,7 @@ export default class Model {
 
   async postProduct(storeId, productObj) {
     try {
-      return await postData(
+      return await this._postData(
         Model.POST_ENDPOINT.PRODUCT_BY_STORE_ID.replace("{storeId}", storeId),
         productObj
       );
@@ -438,7 +438,7 @@ export default class Model {
 
   async editProduct(productId, productObj) {
     try {
-      return await putData(
+      return await this._putData(
         Model.PUT_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId),
         productObj
       );
@@ -450,7 +450,7 @@ export default class Model {
 
   async deleteStoreProducts(storeId) {
     try {
-      return await deleteData(
+      return await this._deleteData(
         Model.DELETE_ENDPOINT.PRDOCUTS_BY_STORE_ID.replace("{storeId}", storeId)
       );
     } catch (error) {
@@ -465,7 +465,7 @@ export default class Model {
 
   async deleteStore(storeId) {
     try {
-      return await deleteData(
+      return await this._deleteData(
         Model.DELETE_ENDPOINT.STORE_BY_ID.replace("{storeId}", storeId)
       );
     } catch (error) {
@@ -476,7 +476,7 @@ export default class Model {
 
   async deleteProduct(productId) {
     try {
-      return await deleteData(
+      return await this._deleteData(
         Model.DELETE_ENDPOINT.PRODUCT_BY_ID.replace("{productId}", productId)
       );
     } catch (error) {
