@@ -1699,9 +1699,9 @@ class Controller {
       spinnerToRemove &&
       !this._getFetchOperationsAmountForSpinner(spinnerId)
     ) {
-      if (spinnerId === View.ID.SPINNER.PRODUCTS_LIST) {
-        this._describeProductsListSpinnerResizeListeners();
-      }
+      spinnerId === View.ID.SPINNER.PRODUCTS_LIST
+        ? this._describeProductsListSpinnerResizeListeners()
+        : null;
 
       spinnerToRemove.remove();
     }
