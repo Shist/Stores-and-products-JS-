@@ -610,37 +610,6 @@ export default class View {
             </div>`;
   }
 
-  _getStructureForStoresList(storesList) {
-    return storesList.reduce((storesStr, nextStore) => {
-      const storeName = nextStore.Name
-        ? nextStore.Name
-        : View.DEFAULT_NOT_SPECIFIED_MSG;
-      const storeAddress = nextStore.Address
-        ? nextStore.Address
-        : View.DEFAULT_NOT_SPECIFIED_MSG;
-      const storeFLoorArea = nextStore.FloorArea ? nextStore.FloorArea : "-";
-      storesStr += `
-                <div class="${View.CLASS.STORES_LIST_ITEM}" data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
-                    <div class="${View.CLASS.STORES_LIST_ITEM}__name-address-wrapper">
-                        <h3 class="${View.CLASS.STORES_LIST_ITEM}__name-headline">
-                            ${storeName}
-                        </h3>
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__address-text">
-                            ${storeAddress}
-                        </span>
-                    </div>
-                    <div class="${View.CLASS.STORES_LIST_ITEM}__area-data-wrapper">
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-number">
-                            ${storeFLoorArea}
-                        </span>
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-unit">sq.m</span>
-                    </div>
-                </div>
-                `;
-      return storesStr;
-    }, "");
-  }
-
   getStructureForTableHead(defaultSortOrder) {
     return `<tr class="products-table__table-name-row"
             id="${View.ID.PRODUCTS_TABLE.HEAD_NAME}">
@@ -675,178 +644,6 @@ export default class View {
             id="${View.ID.PRODUCTS_TABLE.HEAD_TITLES}"
               >${this._getStructureForTableHeaders(defaultSortOrder)}
             </tr>`;
-  }
-
-  _getStructureForTableHeaders(defaultSortOrder) {
-    return View.PRODUCTS_TABLE_COLUMNS.reduce(
-      (tablesHeadersStr, [columnKey, columnName, alignType]) => {
-        const wrapperClassesStr =
-          alignType === "align-start"
-            ? "products-table__product-field-wrapper"
-            : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
-
-        tablesHeadersStr += `
-              <th class="products-table__product-field">
-                <div class="${wrapperClassesStr}">
-                  <button
-                    class="${View.CLASS.BTN.SORT}"
-                    title="Sort"
-                    data-${View.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnKey}"
-                    data-${View.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="${defaultSortOrder}"
-                  ></button>
-                  <span class="products-table__product-field-name"
-                    >${columnName}</span
-                  >
-                </div>
-              </th>
-              `;
-
-        return tablesHeadersStr;
-      },
-      ""
-    );
-  }
-
-  _getStructureForTableBody(productsList) {
-    let productTableBodyStr = "";
-
-    if (Array.isArray(productsList)) {
-      productTableBodyStr = productsList?.reduce((neededStr, product) => {
-        neededStr += `
-          <tr class="product-table-item">
-            ${this._getStructureForTableRow(product)}
-          </tr>`;
-        return neededStr;
-      }, "");
-    }
-
-    if (!productTableBodyStr) {
-      productTableBodyStr = `
-        <tr class="product-table-empty-item">
-          <td colspan="${View.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
-            No data
-          </td>
-        </tr>`;
-    }
-
-    return productTableBodyStr;
-  }
-
-  _getStructureForTableRow(product) {
-    return View.PRODUCTS_TABLE_COLUMNS.reduce(
-      (productTableDataStr, [productKey, ,]) => {
-        switch (productKey) {
-          case "Name":
-            const productName = product.Name
-              ? product.Name
-              : View.DEFAULT_NOT_SPECIFIED_MSG;
-            const productId = product.id
-              ? product.id
-              : View.DEFAULT_NOT_SPECIFIED_MSG;
-            productTableDataStr += this._getTableStructureForNameField(
-              productName,
-              productId
-            );
-            break;
-          case "Price":
-            const productPrice = product.Price ? product.Price : "-";
-            productTableDataStr +=
-              this._getTableStructureForPriceField(productPrice);
-            break;
-          case "Rating":
-            const productRating = product.Rating ? product.Rating : 0;
-            productTableDataStr += this._getTableStructureForRatingField(
-              productRating,
-              product.id
-            );
-            break;
-          default:
-            const productStandardField = product[productKey]
-              ? product[productKey]
-              : View.DEFAULT_NOT_SPECIFIED_MSG;
-            productTableDataStr +=
-              this._getTableStructureForStandardField(productStandardField);
-        }
-        return productTableDataStr;
-      },
-      ""
-    );
-  }
-
-  _getTableStructureForNameField(productName, productId) {
-    return `<td class="product-table-item__name">
-              <div class="product-table-item__name-num-wrapper">
-                <span class="product-table-item__name-text">
-                  ${productName}
-                </span>
-                <span class="product-table-item__num-text">
-                  ${productId}
-                </span>
-              </div>
-            </td>`;
-  }
-
-  _getTableStructureForPriceField(productPrice) {
-    return `<td class="product-table-item__price">
-              <div class="product-table-item__price-wrapper">
-                <span class="product-table-item__price-value">
-                  ${productPrice}
-                </span>
-                <span class="product-table-item__price-currency">
-                  USD
-                </span>
-              </div>
-            </td>`;
-  }
-
-  _getTableStructureForRatingField(productRating, productId) {
-    return `<td class="product-table-item__rating">
-              <div class="product-table-item__stars-wrapper">
-                ${this._getStructureForRatingStars(productRating, productId)}
-              </div>
-            </td>`;
-  }
-
-  _getTableStructureForStandardField(productField) {
-    return `<td class="product-table-item__standard-field">
-              <span
-              class="product-table-item__standard-field-text"
-              title="${productField}">
-                ${productField}
-              </span>
-            </td>`;
-  }
-
-  _getStructureForRatingStars(productRating, productId) {
-    return (
-      Array(5)
-        .fill()
-        .reduce((neededStr, _, index) => {
-          if (index < productRating) {
-            return neededStr + `<span class="yellow-star"></span>`;
-          } else {
-            return neededStr + `<span class="empty-star"></span>`;
-          }
-        }, "") +
-      `<div class="arrow-cross-wrapper">
-          <span class="${View.CLASS.BTN.EDIT}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
-          <span class="${View.CLASS.BTN.CROSS}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
-      </div>`
-    );
-  }
-
-  _updateStoresListLayout(storesList) {
-    const noStoresLayout = document.querySelector(
-      `#${View.ID.NO_STORES_LAYOUT}`
-    );
-
-    if (storesList.length) {
-      noStoresLayout.classList.add(View.JS_CLASS.ELEMENT.HIDDEN);
-    } else {
-      noStoresLayout.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
-    }
-
-    return this;
   }
 
   highlightActiveStoreCard(currStoreId) {
@@ -1010,35 +807,6 @@ export default class View {
     }
 
     return this;
-  }
-
-  _getCurrProductsAmounts(searchedProductsListWithoutFilter, storeId) {
-    const amountsData = {
-      all: searchedProductsListWithoutFilter.length,
-      ok: 0,
-      storage: 0,
-      outOfStock: 0,
-    };
-
-    searchedProductsListWithoutFilter.forEach((product) => {
-      switch (product.Status) {
-        case "OK":
-          amountsData.ok++;
-          break;
-        case "STORAGE":
-          amountsData.storage++;
-          break;
-        case "OUT_OF_STOCK":
-          amountsData.outOfStock++;
-          break;
-        default:
-          console.warn(
-            `Store with id=${storeId} had product with unknown status type: ${product.Status}`
-          );
-      }
-    });
-
-    return amountsData;
   }
 
   updateProductsAmounts(searchedProductsListWithoutFilter, storeId) {
@@ -1281,5 +1049,237 @@ export default class View {
     modalWrapper.classList.remove(View.JS_CLASS.ELEMENT.FLEX);
 
     return this;
+  }
+
+  _getStructureForStoresList(storesList) {
+    return storesList.reduce((storesStr, nextStore) => {
+      const storeName = nextStore.Name
+        ? nextStore.Name
+        : View.DEFAULT_NOT_SPECIFIED_MSG;
+      const storeAddress = nextStore.Address
+        ? nextStore.Address
+        : View.DEFAULT_NOT_SPECIFIED_MSG;
+      const storeFLoorArea = nextStore.FloorArea ? nextStore.FloorArea : "-";
+      storesStr += `
+                <div class="${View.CLASS.STORES_LIST_ITEM}" data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
+                    <div class="${View.CLASS.STORES_LIST_ITEM}__name-address-wrapper">
+                        <h3 class="${View.CLASS.STORES_LIST_ITEM}__name-headline">
+                            ${storeName}
+                        </h3>
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__address-text">
+                            ${storeAddress}
+                        </span>
+                    </div>
+                    <div class="${View.CLASS.STORES_LIST_ITEM}__area-data-wrapper">
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-number">
+                            ${storeFLoorArea}
+                        </span>
+                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-unit">sq.m</span>
+                    </div>
+                </div>
+                `;
+      return storesStr;
+    }, "");
+  }
+
+  _getStructureForTableHeaders(defaultSortOrder) {
+    return View.PRODUCTS_TABLE_COLUMNS.reduce(
+      (tablesHeadersStr, [columnKey, columnName, alignType]) => {
+        const wrapperClassesStr =
+          alignType === "align-start"
+            ? "products-table__product-field-wrapper"
+            : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
+
+        tablesHeadersStr += `
+              <th class="products-table__product-field">
+                <div class="${wrapperClassesStr}">
+                  <button
+                    class="${View.CLASS.BTN.SORT}"
+                    title="Sort"
+                    data-${View.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnKey}"
+                    data-${View.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="${defaultSortOrder}"
+                  ></button>
+                  <span class="products-table__product-field-name"
+                    >${columnName}</span
+                  >
+                </div>
+              </th>
+              `;
+
+        return tablesHeadersStr;
+      },
+      ""
+    );
+  }
+
+  _getStructureForTableBody(productsList) {
+    let productTableBodyStr = "";
+
+    if (Array.isArray(productsList)) {
+      productTableBodyStr = productsList?.reduce((neededStr, product) => {
+        neededStr += `
+          <tr class="product-table-item">
+            ${this._getStructureForTableRow(product)}
+          </tr>`;
+        return neededStr;
+      }, "");
+    }
+
+    if (!productTableBodyStr) {
+      productTableBodyStr = `
+        <tr class="product-table-empty-item">
+          <td colspan="${View.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
+            No data
+          </td>
+        </tr>`;
+    }
+
+    return productTableBodyStr;
+  }
+
+  _getStructureForTableRow(product) {
+    return View.PRODUCTS_TABLE_COLUMNS.reduce(
+      (productTableDataStr, [productKey, ,]) => {
+        switch (productKey) {
+          case "Name":
+            const productName = product.Name
+              ? product.Name
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            const productId = product.id
+              ? product.id
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            productTableDataStr += this._getTableStructureForNameField(
+              productName,
+              productId
+            );
+            break;
+          case "Price":
+            const productPrice = product.Price ? product.Price : "-";
+            productTableDataStr +=
+              this._getTableStructureForPriceField(productPrice);
+            break;
+          case "Rating":
+            const productRating = product.Rating ? product.Rating : 0;
+            productTableDataStr += this._getTableStructureForRatingField(
+              productRating,
+              product.id
+            );
+            break;
+          default:
+            const productStandardField = product[productKey]
+              ? product[productKey]
+              : View.DEFAULT_NOT_SPECIFIED_MSG;
+            productTableDataStr +=
+              this._getTableStructureForStandardField(productStandardField);
+        }
+        return productTableDataStr;
+      },
+      ""
+    );
+  }
+
+  _getTableStructureForNameField(productName, productId) {
+    return `<td class="product-table-item__name">
+              <div class="product-table-item__name-num-wrapper">
+                <span class="product-table-item__name-text">
+                  ${productName}
+                </span>
+                <span class="product-table-item__num-text">
+                  ${productId}
+                </span>
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForPriceField(productPrice) {
+    return `<td class="product-table-item__price">
+              <div class="product-table-item__price-wrapper">
+                <span class="product-table-item__price-value">
+                  ${productPrice}
+                </span>
+                <span class="product-table-item__price-currency">
+                  USD
+                </span>
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForRatingField(productRating, productId) {
+    return `<td class="product-table-item__rating">
+              <div class="product-table-item__stars-wrapper">
+                ${this._getStructureForRatingStars(productRating, productId)}
+              </div>
+            </td>`;
+  }
+
+  _getTableStructureForStandardField(productField) {
+    return `<td class="product-table-item__standard-field">
+              <span
+              class="product-table-item__standard-field-text"
+              title="${productField}">
+                ${productField}
+              </span>
+            </td>`;
+  }
+
+  _getStructureForRatingStars(productRating, productId) {
+    return (
+      Array(5)
+        .fill()
+        .reduce((neededStr, _, index) => {
+          if (index < productRating) {
+            return neededStr + `<span class="yellow-star"></span>`;
+          } else {
+            return neededStr + `<span class="empty-star"></span>`;
+          }
+        }, "") +
+      `<div class="arrow-cross-wrapper">
+          <span class="${View.CLASS.BTN.EDIT}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
+          <span class="${View.CLASS.BTN.CROSS}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
+      </div>`
+    );
+  }
+
+  _updateStoresListLayout(storesList) {
+    const noStoresLayout = document.querySelector(
+      `#${View.ID.NO_STORES_LAYOUT}`
+    );
+
+    if (storesList.length) {
+      noStoresLayout.classList.add(View.JS_CLASS.ELEMENT.HIDDEN);
+    } else {
+      noStoresLayout.classList.remove(View.JS_CLASS.ELEMENT.HIDDEN);
+    }
+
+    return this;
+  }
+
+  _getCurrProductsAmounts(searchedProductsListWithoutFilter, storeId) {
+    const amountsData = {
+      all: searchedProductsListWithoutFilter.length,
+      ok: 0,
+      storage: 0,
+      outOfStock: 0,
+    };
+
+    searchedProductsListWithoutFilter.forEach((product) => {
+      switch (product.Status) {
+        case "OK":
+          amountsData.ok++;
+          break;
+        case "STORAGE":
+          amountsData.storage++;
+          break;
+        case "OUT_OF_STOCK":
+          amountsData.outOfStock++;
+          break;
+        default:
+          console.warn(
+            `Store with id=${storeId} had product with unknown status type: ${product.Status}`
+          );
+      }
+    });
+
+    return amountsData;
   }
 }

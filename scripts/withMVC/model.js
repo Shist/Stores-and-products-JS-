@@ -59,103 +59,6 @@ export default class Model {
     DEFAULT: "default",
   };
 
-  _getProductsFilterTypeById(filterId) {
-    return Object.keys(Model.FILTER_ID).find(
-      (filterType) => Model.FILTER_ID[filterType] === filterId
-    );
-  }
-
-  _getProductsSortOrderTypeByAttribute(orderAttribute) {
-    return Object.keys(Model.SORT_ORDER).find(
-      (orderType) => Model.SORT_ORDER[orderType] === orderAttribute
-    );
-  }
-
-  async _getData(endPoint) {
-    try {
-      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response status - ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-
-  async _postData(endPoint, data) {
-    try {
-      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-        body: data,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response status - ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-
-  async _putData(endPoint, data) {
-    try {
-      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
-        },
-        body: data,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response status - ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-
-  async _deleteData(endPoint) {
-    try {
-      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response status - ${response.statusText}`);
-      }
-
-      if (response.status === 204) {
-        return;
-      } else {
-        const data = await response.json();
-        return data;
-      }
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
-
   validateSearch(searchInput) {
     return /^[^#%&*()\[\]{}\\]*$/.test(searchInput.value);
   }
@@ -482,6 +385,103 @@ export default class Model {
     } catch (error) {
       console.error(`Error while deleting product. Reason: ${error.message}`);
       throw new Error(`Error while deleting product. Reason: ${error.message}`);
+    }
+  }
+
+  _getProductsFilterTypeById(filterId) {
+    return Object.keys(Model.FILTER_ID).find(
+      (filterType) => Model.FILTER_ID[filterType] === filterId
+    );
+  }
+
+  _getProductsSortOrderTypeByAttribute(orderAttribute) {
+    return Object.keys(Model.SORT_ORDER).find(
+      (orderType) => Model.SORT_ORDER[orderType] === orderAttribute
+    );
+  }
+
+  async _getData(endPoint) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async _postData(endPoint, data) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async _putData(endPoint, data) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async _deleteData(endPoint) {
+    try {
+      const response = await fetch(`${Model.API_PREFIX}${endPoint}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status - ${response.statusText}`);
+      }
+
+      if (response.status === 204) {
+        return;
+      } else {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 }
