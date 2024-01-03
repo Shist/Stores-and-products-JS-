@@ -1,11 +1,39 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: view.js</title>
 
-/** View class. Knows everything about DOM & manipulation and a little bit about data structure, which should be filled into UI element. */
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: view.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+
+/** View class. Knows everything about DOM &amp; manipulation and a little bit about data structure, which should be filled into UI element. */
 class View {
   /**
    * Static object for storing all identifiers of DOM
    * @constant
-   * @type {Object.<string, string|Object>}
+   * @type {Object.&lt;string, string|Object>}
    * @static
    * @public
    */
@@ -153,7 +181,7 @@ class View {
   /**
    * Static object for storing all classes used in DOM
    * @constant
-   * @type {Object.<string, string|Object>}
+   * @type {Object.&lt;string, string|Object>}
    * @static
    * @public
    */
@@ -174,7 +202,7 @@ class View {
   /**
    * Static object for storing all classes that dynamically used in script
    * @constant
-   * @type {Object.<string, string|Object>}
+   * @type {Object.&lt;string, string|Object>}
    * @static
    * @public
    */
@@ -197,7 +225,7 @@ class View {
   /**
    * Static object for storing all text messages for spinners
    * @constant
-   * @type {Object.<string, Object<string, string>>}
+   * @type {Object.&lt;string, Object&lt;string, string>>}
    * @static
    * @public
    */
@@ -236,7 +264,7 @@ class View {
   /**
    * Static object for storing all data-attributes (kebab and camel cases)
    * @constant
-   * @type {Object.<string, Object<string, string>>}
+   * @type {Object.&lt;string, Object&lt;string, string>>}
    * @static
    * @public
    */
@@ -278,7 +306,7 @@ class View {
   /**
    * Static object for storing all possible colors for popup
    * @constant
-   * @type {Object.<string, string>}
+   * @type {Object.&lt;string, string>}
    * @static
    * @public
    */
@@ -318,7 +346,7 @@ class View {
   /**
    * Static array for storing arrays that consist of products data: 1) server key; 2) column label; 3) align-type
    * @constant
-   * @type {Array.<string[]>}
+   * @type {Array.&lt;string[]>}
    * @static
    * @public
    */
@@ -512,7 +540,7 @@ class View {
 
   /**
    * Returns the name input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the name input of product form
    * @public
    */
@@ -522,7 +550,7 @@ class View {
 
   /**
    * Returns the name input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the name input wrapper of product form
    * @public
    */
@@ -532,7 +560,7 @@ class View {
 
   /**
    * Returns the price input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the price input of product form
    * @public
    */
@@ -542,7 +570,7 @@ class View {
 
   /**
    * Returns the price input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the price input wrapper of product form
    * @public
    */
@@ -552,7 +580,7 @@ class View {
 
   /**
    * Returns the specs input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the specs input of product form
    * @public
    */
@@ -562,7 +590,7 @@ class View {
 
   /**
    * Returns the specs input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the specs input wrapper of product form
    * @public
    */
@@ -572,7 +600,7 @@ class View {
 
   /**
    * Returns the rating input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the rating input of product form
    * @public
    */
@@ -582,7 +610,7 @@ class View {
 
   /**
    * Returns the rating input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the rating input wrapper of product form
    * @public
    */
@@ -592,7 +620,7 @@ class View {
 
   /**
    * Returns the supplier info input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the supplier info input of product form
    * @public
    */
@@ -602,7 +630,7 @@ class View {
 
   /**
    * Returns the supplier info input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the supplier info input wrapper of product form
    * @public
    */
@@ -614,7 +642,7 @@ class View {
 
   /**
    * Returns the country input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the country input of product form
    * @public
    */
@@ -624,7 +652,7 @@ class View {
 
   /**
    * Returns the country input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the country input wrapper of product form
    * @public
    */
@@ -634,7 +662,7 @@ class View {
 
   /**
    * Returns the production company input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the production company input of product form
    * @public
    */
@@ -644,7 +672,7 @@ class View {
 
   /**
    * Returns the production company input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the production company input wrapper of product form
    * @public
    */
@@ -654,7 +682,7 @@ class View {
 
   /**
    * Returns the status input of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLInputElement} the status input of product form
    * @public
    */
@@ -664,7 +692,7 @@ class View {
 
   /**
    * Returns the status input wrapper of product form (create or edit) by object with modal identifiers
-   * @param {Object.<string, string>} modalIdsObj object with modal identifiers (create form or edit form)
+   * @param {Object.&lt;string, string>} modalIdsObj object with modal identifiers (create form or edit form)
    * @returns {?HTMLDivElement} the status input wrapper of product form
    * @public
    */
@@ -1032,7 +1060,7 @@ class View {
 
   /**
    * Returns the HTML structure of spinner via given spinner options
-   * @param {Object.<string, string|number>} filterOptions the object with spinner options
+   * @param {Object.&lt;string, string|number>} filterOptions the object with spinner options
    * @returns {string} the HTML structure of spinner
    * @public
    */
@@ -1045,20 +1073,20 @@ class View {
     targetBgColor,
   }) {
     const windowWidth = window.innerWidth;
-    return `<div class="stores-list-section__loading-data-layout" id="${spinnerId}"
+    return `&lt;div class="stores-list-section__loading-data-layout" id="${spinnerId}"
             style="width:${targetWidth};min-width:${targetMinWidth};height:${targetHeight};background-color:${targetBgColor}"
             data-${View.DATA_ATTRIBUTE.SPINNER_INIT_HEIGHT.KEBAB}="${targetHeight}"
             data-${View.DATA_ATTRIBUTE.SPINNER_INIT_WIDTH.KEBAB}="${targetWidth}"
             data-${View.DATA_ATTRIBUTE.WINDOW_INIT_WIDTH.KEBAB}="${windowWidth}">
-              <span class="stores-list-section__loading-data-text"
-                >${targetText}</span
+              &lt;span class="stores-list-section__loading-data-text"
+                >${targetText}&lt;/span
               >
-              <div class="loading-spinner">
-                <div class="bounce1"></div>
-                <div class="bounce2"></div>
-                <div class="bounce3"></div>
-              </div>
-            </div>`;
+              &lt;div class="loading-spinner">
+                &lt;div class="bounce1">&lt;/div>
+                &lt;div class="bounce2">&lt;/div>
+                &lt;div class="bounce3">&lt;/div>
+              &lt;/div>
+            &lt;/div>`;
   }
 
   /**
@@ -1068,39 +1096,39 @@ class View {
    * @public
    */
   getStructureForTableHead(defaultSortOrder) {
-    return `<tr class="products-table__table-name-row"
+    return `&lt;tr class="products-table__table-name-row"
             id="${View.ID.PRODUCTS_TABLE.HEAD_NAME}">
-              <th colspan="${
+              &lt;th colspan="${
                 View.PRODUCTS_TABLE_COLUMNS.length
               }" class="products-table__table-name-headline">
-                <div class="product-table__name-search-wrapper">
-                  <span class="products-table__table-name-text">
+                &lt;div class="product-table__name-search-wrapper">
+                  &lt;span class="products-table__table-name-text">
                     Products
-                  </span>
-                  <div class="products-table__search-wrapper" 
+                  &lt;/span>
+                  &lt;div class="products-table__search-wrapper" 
                   id="${View.ID.PRODUCTS_SEARCH.WRAPPER}"
                   data-${View.DATA_ATTRIBUTE.ERROR_MSG.KEBAB}=
                   "${View.DEFAULT_ERROR_MSG}">
-                    <input
+                    &lt;input
                       type="search"
                       class="products-table__search-line"
                       name="${View.ID.PRODUCTS_SEARCH.INPUT}"
                       placeholder="Enter value to search"
                       id="${View.ID.PRODUCTS_SEARCH.INPUT}"
                     />
-                    <button
+                    &lt;button
                       class="products-table__search-btn"
                       id="${View.ID.PRODUCTS_SEARCH.BTN}"
                       title="Search"
-                    ></button>
-                  </div>
-                </div>
-              </th>
-            </tr>
-            <tr class="products-table__product-specifications-row"
+                    >&lt;/button>
+                  &lt;/div>
+                &lt;/div>
+              &lt;/th>
+            &lt;/tr>
+            &lt;tr class="products-table__product-specifications-row"
             id="${View.ID.PRODUCTS_TABLE.HEAD_TITLES}"
               >${this._getStructureForTableHeaders(defaultSortOrder)}
-            </tr>`;
+            &lt;/tr>`;
   }
 
   /**
@@ -1181,7 +1209,7 @@ class View {
 
   /**
    * Updates store description fields (email, phone, etc.) via given store object
-   * @param {Object.<string, string|number>} store the store object
+   * @param {Object.&lt;string, string|number>} store the store object
    * @returns {View} self object (for chaining ability)
    * @public
    */
@@ -1239,7 +1267,7 @@ class View {
 
   /**
    * Updates edit product form fields (name, price, etc.) via given product object
-   * @param {Object.<string, string|number>} product the product object
+   * @param {Object.&lt;string, string|number>} product the product object
    * @returns {View} self object (for chaining ability)
    * @public
    */
@@ -1656,22 +1684,22 @@ class View {
         : View.DEFAULT_NOT_SPECIFIED_MSG;
       const storeFLoorArea = nextStore.FloorArea ? nextStore.FloorArea : "-";
       storesStr += `
-                <div class="${View.CLASS.STORES_LIST_ITEM}" data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
-                    <div class="${View.CLASS.STORES_LIST_ITEM}__name-address-wrapper">
-                        <h3 class="${View.CLASS.STORES_LIST_ITEM}__name-headline">
+                &lt;div class="${View.CLASS.STORES_LIST_ITEM}" data-${View.DATA_ATTRIBUTE.STORE_ID.KEBAB}="${nextStore.id}">
+                    &lt;div class="${View.CLASS.STORES_LIST_ITEM}__name-address-wrapper">
+                        &lt;h3 class="${View.CLASS.STORES_LIST_ITEM}__name-headline">
                             ${storeName}
-                        </h3>
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__address-text">
+                        &lt;/h3>
+                        &lt;span class="${View.CLASS.STORES_LIST_ITEM}__address-text">
                             ${storeAddress}
-                        </span>
-                    </div>
-                    <div class="${View.CLASS.STORES_LIST_ITEM}__area-data-wrapper">
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-number">
+                        &lt;/span>
+                    &lt;/div>
+                    &lt;div class="${View.CLASS.STORES_LIST_ITEM}__area-data-wrapper">
+                        &lt;span class="${View.CLASS.STORES_LIST_ITEM}__area-number">
                             ${storeFLoorArea}
-                        </span>
-                        <span class="${View.CLASS.STORES_LIST_ITEM}__area-unit">sq.m</span>
-                    </div>
-                </div>
+                        &lt;/span>
+                        &lt;span class="${View.CLASS.STORES_LIST_ITEM}__area-unit">sq.m&lt;/span>
+                    &lt;/div>
+                &lt;/div>
                 `;
       return storesStr;
     }, "");
@@ -1692,19 +1720,19 @@ class View {
             : "products-table__product-field-wrapper products-table__product-field-wrapper_end";
 
         tablesHeadersStr += `
-              <th class="products-table__product-field">
-                <div class="${wrapperClassesStr}">
-                  <button
+              &lt;th class="products-table__product-field">
+                &lt;div class="${wrapperClassesStr}">
+                  &lt;button
                     class="${View.CLASS.BTN.SORT}"
                     title="Sort"
                     data-${View.DATA_ATTRIBUTE.SORT_KEY.KEBAB}="${columnKey}"
                     data-${View.DATA_ATTRIBUTE.SORT_STATE.KEBAB}="${defaultSortOrder}"
-                  ></button>
-                  <span class="products-table__product-field-name"
-                    >${columnName}</span
+                  >&lt;/button>
+                  &lt;span class="products-table__product-field-name"
+                    >${columnName}&lt;/span
                   >
-                </div>
-              </th>
+                &lt;/div>
+              &lt;/th>
               `;
 
         return tablesHeadersStr;
@@ -1725,20 +1753,20 @@ class View {
     if (Array.isArray(productsList)) {
       productTableBodyStr = productsList?.reduce((neededStr, product) => {
         neededStr += `
-          <tr class="product-table-item">
+          &lt;tr class="product-table-item">
             ${this._getStructureForTableRow(product)}
-          </tr>`;
+          &lt;/tr>`;
         return neededStr;
       }, "");
     }
 
     if (!productTableBodyStr) {
       productTableBodyStr = `
-        <tr class="product-table-empty-item">
-          <td colspan="${View.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
+        &lt;tr class="product-table-empty-item">
+          &lt;td colspan="${View.PRODUCTS_TABLE_COLUMNS.length}" class="product-table-empty-item__no-data">
             No data
-          </td>
-        </tr>`;
+          &lt;/td>
+        &lt;/tr>`;
     }
 
     return productTableBodyStr;
@@ -1746,7 +1774,7 @@ class View {
 
   /**
    * Returns the HTML structure of table row
-   * @param {Object.<string, string|number>} product the product object
+   * @param {Object.&lt;string, string|number>} product the product object
    * @returns {string} the HTML structure of v
    * @private
    */
@@ -1799,16 +1827,16 @@ class View {
    * @private
    */
   _getTableStructureForNameField(productName, productId) {
-    return `<td class="product-table-item__name">
-              <div class="product-table-item__name-num-wrapper">
-                <span class="product-table-item__name-text">
+    return `&lt;td class="product-table-item__name">
+              &lt;div class="product-table-item__name-num-wrapper">
+                &lt;span class="product-table-item__name-text">
                   ${productName}
-                </span>
-                <span class="product-table-item__num-text">
+                &lt;/span>
+                &lt;span class="product-table-item__num-text">
                   ${productId}
-                </span>
-              </div>
-            </td>`;
+                &lt;/span>
+              &lt;/div>
+            &lt;/td>`;
   }
 
   /**
@@ -1818,16 +1846,16 @@ class View {
    * @private
    */
   _getTableStructureForPriceField(productPrice) {
-    return `<td class="product-table-item__price">
-              <div class="product-table-item__price-wrapper">
-                <span class="product-table-item__price-value">
+    return `&lt;td class="product-table-item__price">
+              &lt;div class="product-table-item__price-wrapper">
+                &lt;span class="product-table-item__price-value">
                   ${productPrice}
-                </span>
-                <span class="product-table-item__price-currency">
+                &lt;/span>
+                &lt;span class="product-table-item__price-currency">
                   USD
-                </span>
-              </div>
-            </td>`;
+                &lt;/span>
+              &lt;/div>
+            &lt;/td>`;
   }
 
   /**
@@ -1838,11 +1866,11 @@ class View {
    * @private
    */
   _getTableStructureForRatingField(productRating, productId) {
-    return `<td class="product-table-item__rating">
-              <div class="product-table-item__stars-wrapper">
+    return `&lt;td class="product-table-item__rating">
+              &lt;div class="product-table-item__stars-wrapper">
                 ${this._getStructureForRatingStars(productRating, productId)}
-              </div>
-            </td>`;
+              &lt;/div>
+            &lt;/td>`;
   }
 
   /**
@@ -1852,13 +1880,13 @@ class View {
    * @private
    */
   _getTableStructureForStandardField(productField) {
-    return `<td class="product-table-item__standard-field">
-              <span
+    return `&lt;td class="product-table-item__standard-field">
+              &lt;span
               class="product-table-item__standard-field-text"
               title="${productField}">
                 ${productField}
-              </span>
-            </td>`;
+              &lt;/span>
+            &lt;/td>`;
   }
 
   /**
@@ -1873,16 +1901,16 @@ class View {
       Array(5)
         .fill()
         .reduce((neededStr, _, index) => {
-          if (index < productRating) {
-            return neededStr + `<span class="yellow-star"></span>`;
+          if (index &lt; productRating) {
+            return neededStr + `&lt;span class="yellow-star">&lt;/span>`;
           } else {
-            return neededStr + `<span class="empty-star"></span>`;
+            return neededStr + `&lt;span class="empty-star">&lt;/span>`;
           }
         }, "") +
-      `<div class="arrow-cross-wrapper">
-          <span class="${View.CLASS.BTN.EDIT}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
-          <span class="${View.CLASS.BTN.CROSS}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}"></span>
-      </div>`
+      `&lt;div class="arrow-cross-wrapper">
+          &lt;span class="${View.CLASS.BTN.EDIT}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}">&lt;/span>
+          &lt;span class="${View.CLASS.BTN.CROSS}" data-${View.DATA_ATTRIBUTE.PRODUCT_ID.KEBAB}="${productId}">&lt;/span>
+      &lt;/div>`
     );
   }
 
@@ -1910,7 +1938,7 @@ class View {
    * Calculates values for products amounts fields (All, Ok, Storage, Out of Stock) via given products array and store identifier
    * @param {Object[]} searchedProductsListWithoutFilter the array of products objects (without status filter)
    * @param {string} storeId current store identifier
-   * @returns {Object.<string, number>} object that contains values for products amounts fields
+   * @returns {Object.&lt;string, number>} object that contains values for products amounts fields
    * @private
    */
   _getCurrProductsAmounts(searchedProductsListWithoutFilter, storeId) {
@@ -1944,3 +1972,26 @@ class View {
 }
 
 export default View;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Model.html">Model</a></li><li><a href="View.html">View</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 16:54:04 GMT+0300 (Москва, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
