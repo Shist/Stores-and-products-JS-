@@ -1386,53 +1386,28 @@ class Controller {
   _plusFetchOperationForSpinner(spinnerId) {
     switch (spinnerId) {
       case View.ID.SPINNER.STORES_LIST:
-        let storesListFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
-        );
-        storesListFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
-          storesListFetches
         );
         break;
       case View.ID.SPINNER.STORE_DETAILS:
-        let detailsFethes = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
-        );
-        detailsFethes++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
-          detailsFethes
         );
         break;
       case View.ID.SPINNER.PRODUCTS_AMOUNTS:
-        let filtersFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
-        );
-        filtersFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
-          filtersFetches
         );
         break;
       case View.ID.SPINNER.PRODUCTS_LIST:
-        let productsListFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
-        );
-        productsListFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
-          productsListFetches
         );
         break;
       case View.ID.SPINNER.EDIT_PRODUCT_FORM:
-        let editProductFormFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
-        );
-        editProductFormFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
-          editProductFormFetches
         );
         break;
       default:
@@ -1443,6 +1418,17 @@ class Controller {
   }
 
   /**
+   * Increases current amount of fetch operations by one for spinner in localStorage via given key
+   * @param {string} spinnerFetchesKey key of spinner fetch operations in localStorage
+   * @private
+   */
+  _plusFetchOperationForSpinnerToLocalStorage(spinnerFetchesKey) {
+    let spinnerFetches = +localStorage.getItem(spinnerFetchesKey);
+    spinnerFetches++;
+    localStorage.setItem(spinnerFetchesKey, spinnerFetches);
+  }
+
+  /**
    * Decreases current amount of fetch operations by one for spinner with given identifier
    * @param {string} spinnerId identifier of the spinner
    * @private
@@ -1450,53 +1436,28 @@ class Controller {
   _minusFetchOperationForSpinner(spinnerId) {
     switch (spinnerId) {
       case View.ID.SPINNER.STORES_LIST:
-        let storesListFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
-        );
-        storesListFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
-          storesListFetches
         );
         break;
       case View.ID.SPINNER.STORE_DETAILS:
-        let detailsFethes = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
-        );
-        detailsFethes--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
-          detailsFethes
         );
         break;
       case View.ID.SPINNER.PRODUCTS_AMOUNTS:
-        let filtersFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
-        );
-        filtersFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
-          filtersFetches
         );
         break;
       case View.ID.SPINNER.PRODUCTS_LIST:
-        let productsListFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
-        );
-        productsListFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
-          productsListFetches
         );
         break;
       case View.ID.SPINNER.EDIT_PRODUCT_FORM:
-        let editProductFormFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
-        );
-        editProductFormFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
-          editProductFormFetches
         );
         break;
       default:
@@ -1504,6 +1465,17 @@ class Controller {
           `Got unknown type of spinner while minusing fetch operation, spinerId: ${spinnerId}`
         );
     }
+  }
+
+  /**
+   * Decreases current amount of fetch operations by one for spinner in localStorage via given key
+   * @param {string} spinnerFetchesKey key of spinner fetch operations in localStorage
+   * @private
+   */
+  _minusFetchOperationForSpinnerToLocalStorage(spinnerFetchesKey) {
+    let spinnerFetches = +localStorage.getItem(spinnerFetchesKey);
+    spinnerFetches--;
+    localStorage.setItem(spinnerFetchesKey, spinnerFetches);
   }
 
   /**
@@ -1727,9 +1699,9 @@ class Controller {
       spinnerToRemove &amp;&amp;
       !this._getFetchOperationsAmountForSpinner(spinnerId)
     ) {
-      if (spinnerId === View.ID.SPINNER.PRODUCTS_LIST) {
-        this._describeProductsListSpinnerResizeListeners();
-      }
+      spinnerId === View.ID.SPINNER.PRODUCTS_LIST
+        ? this._describeProductsListSpinnerResizeListeners()
+        : null;
 
       spinnerToRemove.remove();
     }
@@ -1911,17 +1883,34 @@ class Controller {
       this.view.getProductInputProdCompanyByModalIdsObj(modalIdsObj);
     const inputStatus =
       this.view.getProductInputStatusByModalIdsObj(modalIdsObj);
+    const resultObj = {};
 
-    return {
-      [Model.PRODUCT_KEY.NAME]: inputName.value,
-      [Model.PRODUCT_KEY.PRICE]: inputPrice.value,
-      [Model.PRODUCT_KEY.SPECS]: inputSpecs.value,
-      [Model.PRODUCT_KEY.RATING]: inputRating.value,
-      [Model.PRODUCT_KEY.SUPPLIER_INFO]: inputSupplierInfo.value,
-      [Model.PRODUCT_KEY.COUNTRY]: inputCountry.value,
-      [Model.PRODUCT_KEY.PROD_COMPANY]: inputProdCompany.value,
-      [Model.PRODUCT_KEY.STATUS]: inputStatus.value,
-    };
+    if (inputName.value) {
+      resultObj[Model.PRODUCT_KEY.NAME] = inputName.value;
+    }
+    if (inputPrice.value) {
+      resultObj[Model.PRODUCT_KEY.PRICE] = inputPrice.value;
+    }
+    if (inputSpecs.value) {
+      resultObj[Model.PRODUCT_KEY.SPECS] = inputSpecs.value;
+    }
+    if (inputRating.value) {
+      resultObj[Model.PRODUCT_KEY.RATING] = inputRating.value;
+    }
+    if (inputSupplierInfo.value) {
+      resultObj[Model.PRODUCT_KEY.SUPPLIER_INFO] = inputSupplierInfo.value;
+    }
+    if (inputCountry.value) {
+      resultObj[Model.PRODUCT_KEY.COUNTRY] = inputCountry.value;
+    }
+    if (inputProdCompany.value) {
+      resultObj[Model.PRODUCT_KEY.PROD_COMPANY] = inputProdCompany.value;
+    }
+    if (inputStatus.value) {
+      resultObj[Model.PRODUCT_KEY.STATUS] = inputStatus.value;
+    }
+
+    return resultObj;
   }
 
   /**
@@ -1981,7 +1970,7 @@ export default Controller;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 21:48:00 GMT+0300 (Москва, стандартное время)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed Jan 03 2024 22:29:12 GMT+0300 (Москва, стандартное время)
 </footer>
 
 <script> prettyPrint(); </script>

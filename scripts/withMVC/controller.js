@@ -1358,53 +1358,28 @@ class Controller {
   _plusFetchOperationForSpinner(spinnerId) {
     switch (spinnerId) {
       case View.ID.SPINNER.STORES_LIST:
-        let storesListFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
-        );
-        storesListFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
-          storesListFetches
         );
         break;
       case View.ID.SPINNER.STORE_DETAILS:
-        let detailsFethes = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
-        );
-        detailsFethes++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
-          detailsFethes
         );
         break;
       case View.ID.SPINNER.PRODUCTS_AMOUNTS:
-        let filtersFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
-        );
-        filtersFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
-          filtersFetches
         );
         break;
       case View.ID.SPINNER.PRODUCTS_LIST:
-        let productsListFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
-        );
-        productsListFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
-          productsListFetches
         );
         break;
       case View.ID.SPINNER.EDIT_PRODUCT_FORM:
-        let editProductFormFetches = +localStorage.getItem(
+        this._plusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
-        );
-        editProductFormFetches++;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
-          editProductFormFetches
         );
         break;
       default:
@@ -1415,6 +1390,17 @@ class Controller {
   }
 
   /**
+   * Increases current amount of fetch operations by one for spinner in localStorage via given key
+   * @param {string} spinnerFetchesKey key of spinner fetch operations in localStorage
+   * @private
+   */
+  _plusFetchOperationForSpinnerToLocalStorage(spinnerFetchesKey) {
+    let spinnerFetches = +localStorage.getItem(spinnerFetchesKey);
+    spinnerFetches++;
+    localStorage.setItem(spinnerFetchesKey, spinnerFetches);
+  }
+
+  /**
    * Decreases current amount of fetch operations by one for spinner with given identifier
    * @param {string} spinnerId identifier of the spinner
    * @private
@@ -1422,53 +1408,28 @@ class Controller {
   _minusFetchOperationForSpinner(spinnerId) {
     switch (spinnerId) {
       case View.ID.SPINNER.STORES_LIST:
-        let storesListFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES
-        );
-        storesListFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.STORES_LIST_SPINNER_FETHES,
-          storesListFetches
         );
         break;
       case View.ID.SPINNER.STORE_DETAILS:
-        let detailsFethes = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES
-        );
-        detailsFethes--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.DETAILS_SPINNER_FETHES,
-          detailsFethes
         );
         break;
       case View.ID.SPINNER.PRODUCTS_AMOUNTS:
-        let filtersFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES
-        );
-        filtersFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.FILTERS_SPINNER_FETHES,
-          filtersFetches
         );
         break;
       case View.ID.SPINNER.PRODUCTS_LIST:
-        let productsListFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES
-        );
-        productsListFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.PRODUCTS_LIST_SPINNER_FETHES,
-          productsListFetches
         );
         break;
       case View.ID.SPINNER.EDIT_PRODUCT_FORM:
-        let editProductFormFetches = +localStorage.getItem(
+        this._minusFetchOperationForSpinnerToLocalStorage(
           Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES
-        );
-        editProductFormFetches--;
-        localStorage.setItem(
-          Controller._LOCAL_STORAGE_ID.EDIT_PRODUCT_FORM_SPINNER_FETHES,
-          editProductFormFetches
         );
         break;
       default:
@@ -1476,6 +1437,17 @@ class Controller {
           `Got unknown type of spinner while minusing fetch operation, spinerId: ${spinnerId}`
         );
     }
+  }
+
+  /**
+   * Decreases current amount of fetch operations by one for spinner in localStorage via given key
+   * @param {string} spinnerFetchesKey key of spinner fetch operations in localStorage
+   * @private
+   */
+  _minusFetchOperationForSpinnerToLocalStorage(spinnerFetchesKey) {
+    let spinnerFetches = +localStorage.getItem(spinnerFetchesKey);
+    spinnerFetches--;
+    localStorage.setItem(spinnerFetchesKey, spinnerFetches);
   }
 
   /**
