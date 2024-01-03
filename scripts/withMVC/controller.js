@@ -72,7 +72,18 @@ class Controller {
 
     this._loadStoreIdFromBookmark();
 
-    this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.LOADING);
+    this._loadAndUpdateFilteredStoresList(
+      View.SPINNER_TEXT.STORES_LIST.LOADING
+    );
+  }
+
+  /**
+   * Handles getting stores list (with search filter) and its showing
+   * @param {string} storesListText the text to be shown inside "stores list spinner"
+   * @private
+   */
+  _loadAndUpdateFilteredStoresList(storesListText) {
+    this._setStoresListSpinner(storesListText);
 
     this.model
       .getSearchedStoresList(this.view.getStoresSearchInput().value)
@@ -93,24 +104,42 @@ class Controller {
   }
 
   /**
-   * Updates details of current store
+   * Handles getting store (by its identifier) and updating store description
+   * @param {string} storeDetailsText the text to be shown inside "stores description spinner"
    * @private
    */
-  _updateAllStoreDetails() {
-    this._setProductsTableHeadToDefault();
+  _loadStoreAndUpdateStoreDescription(storeDetailsText) {
+    this._setStoreDescriptionSpinner(storeDetailsText);
 
-    this.view.highlightActiveStoreCard(
-      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-    );
+    this.model
+      .getStoreById(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+      )
+      .then((store) => {
+        if (store) {
+          this.view.updateStoreDescriptionFields(store);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORE_DETAILS);
+      });
+  }
 
-    this.view.updateStoreDetailsLayout(
-      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-    );
-
-    this._updateStoreDescription();
-
-    this._setProductsAmountsSpinner(View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING);
-    this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
+  /**
+   * Handles getting products list (with search filter only) and updates products table and amounts
+   * @param {string} productsAmountsText the text to be shown inside "products amounts spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _loadSearchedProductsListAndUpdateTableWithAmounts(
+    productsAmountsText,
+    productsListText
+  ) {
+    this._setProductsAmountsSpinner(productsAmountsText);
+    this._setProductsListSpinner(productsListText);
 
     this.model
       .getSearchedProductsListByStoreId(
@@ -145,6 +174,384 @@ class Controller {
   }
 
   /**
+   * Handles getting products list (with all filters) and updates products table
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _loadFilteredProductsListAndUpdateTable(productsListText) {
+    this._setProductsListSpinner(productsListText);
+
+    const filterOptions = {
+      filterId: localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
+      sortKey: localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY),
+      sortOrder: localStorage.getItem(
+        Controller._LOCAL_STORAGE_ID.CURR_SORT_ORDER
+      ),
+      searchFilterValue: this.view.getProductsSearchInput().value,
+    };
+
+    this.model
+      .getFullFilteredProductsListByStoreId(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
+        filterOptions
+      )
+      .then((fullFilteredProductsList) => {
+        if (Array.isArray(fullFilteredProductsList)) {
+          this.view.updateProductsTableBody(fullFilteredProductsList);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles getting products list (with search filter only and with all filters) and separately updates products table and amounts
+   * @param {string} productsAmountsText the text to be shown inside "products amounts spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _loadProductsListsAndUpdateTableWithAmounts(
+    productsAmountsText,
+    productsListText
+  ) {
+    const searchedProductsPromise = this.model
+      .getSearchedProductsListByStoreId(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
+        this.view.getProductsSearchInput().value
+      )
+      .then((searchedProductsList) => {
+        if (Array.isArray(searchedProductsList)) {
+          this.view.updateProductsAmounts(
+            searchedProductsList,
+            localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+          );
+        }
+      });
+
+    const filterOptions = {
+      filterId: localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_FILTER),
+      sortKey: localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY),
+      sortOrder: localStorage.getItem(
+        Controller._LOCAL_STORAGE_ID.CURR_SORT_ORDER
+      ),
+      searchFilterValue: this.view.getProductsSearchInput().value,
+    };
+
+    const fullFilteredProductsPromise = this.model
+      .getFullFilteredProductsListByStoreId(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
+        filterOptions
+      )
+      .then((fullFilteredProductsList) => {
+        if (Array.isArray(fullFilteredProductsList)) {
+          this.view.updateProductsTableBody(fullFilteredProductsList);
+        }
+      });
+
+    this._setProductsAmountsSpinner(productsAmountsText);
+    this._setProductsListSpinner(productsListText);
+
+    Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles getting product (by its identifier) and loads product data to editing form
+   * @param {string} editProductFormText the text to be shown inside "edit product form spinner"
+   * @private
+   */
+  _loadProductAndUpdateEditForm(editProductFormText) {
+    this._setEditProductFormSpinner(editProductFormText);
+
+    this.model
+      .getProductById(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT)
+      )
+      .then((product) => {
+        if (product) {
+          this.view.updateEditProductFormFields(product);
+        }
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.EDIT_PRODUCT_FORM);
+      });
+  }
+
+  /**
+   * Handles posting store and updates stores list after that (in case of success)
+   * @param {string} resultObj string containing JSON.stringify() version of the store object
+   * @param {string} storesListText the text to be shown inside "stores list spinner"
+   * @private
+   */
+  _postStoreAndUpdateStoresList(resultObj, storesListText) {
+    this._setStoresListSpinner(storesListText);
+
+    this.model
+      .postStore(JSON.stringify(resultObj))
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "New store has been successfully created!",
+          View.POPUP_COLOR.SUCCESS,
+          5000
+        );
+
+        this._loadAndUpdateFilteredStoresList(
+          View.SPINNER_TEXT.STORES_LIST.UPDATING
+        );
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+      });
+  }
+
+  /**
+   * Handles posting product and updates products amounts and table after that (in case of success)
+   * @param {string} resultObj string containing JSON.stringify() version of the product object
+   * @param {string} productsAmountText the text to be shown inside "products amounts spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _postProductAndUpdateTableWithAmounts(
+    resultObj,
+    productsAmountText,
+    productsListText
+  ) {
+    this._setProductsAmountsSpinner(productsAmountText);
+    this._setProductsListSpinner(productsListText);
+
+    this.model
+      .postProduct(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
+        JSON.stringify(resultObj)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "New product has been successfully created!",
+          View.POPUP_COLOR.SUCCESS,
+          5000
+        );
+
+        this._loadProductsListsAndUpdateTableWithAmounts(
+          View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING,
+          View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+        );
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles editing product and updates products amounts and table after that (in case of success)
+   * @param {string} resultObj string containing JSON.stringify() version of the product object
+   * @param {string} productsAmountText the text to be shown inside "products amounts spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _editProductAndUpdateTableWithAmounts(
+    resultObj,
+    productsAmountText,
+    productsListText
+  ) {
+    this._setProductsAmountsSpinner(productsAmountText);
+    this._setProductsListSpinner(productsListText);
+
+    this.model
+      .editProduct(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT),
+        JSON.stringify(resultObj)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "The product has been successfully edited!",
+          View.POPUP_COLOR.SUCCESS,
+          5000
+        );
+
+        this._loadProductsListsAndUpdateTableWithAmounts(
+          View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING,
+          View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+        );
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles deleting store products and after that starts deleting the store itself (in case of success)
+   * @param {string} storesListText the text to be shown inside "stores list spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _deleteStoreProductsWithStoreAndUpdateStoresList(
+    storesListText,
+    productsListText
+  ) {
+    this._setStoresListSpinner(storesListText);
+    this._setProductsListSpinner(productsListText);
+
+    this.model
+      .deleteStoreProducts(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "All products of store have been successfully deleted.",
+          View.POPUP_COLOR.ATTENTION,
+          5000
+        );
+
+        this._deleteStoreAndUpdateStoresList(
+          View.SPINNER_TEXT.STORES_LIST.DELETING_STORE,
+          View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE
+        );
+      })
+      .catch((error) => {
+        this.view.unlockStoreDetailsFooterBtns();
+
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles deleting store and updates stores list (in case of success)
+   * @param {string} storesListText the text to be shown inside "stores list spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _deleteStoreAndUpdateStoresList(storesListText, productsListText) {
+    this._setStoresListSpinner(storesListText);
+    this._setProductsListSpinner(productsListText);
+
+    this.model
+      .deleteStore(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "The store has been successfully deleted.",
+          View.POPUP_COLOR.ATTENTION,
+          5000
+        );
+
+        localStorage.removeItem(Controller._LOCAL_STORAGE_ID.CURR_STORE);
+        if (
+          localStorage.getItem(Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED)
+        ) {
+          this._updateBookmarkInsideURL();
+        }
+        this.view.updateStoreDetailsLayout(
+          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+        );
+
+        this._loadAndUpdateFilteredStoresList(
+          View.SPINNER_TEXT.STORES_LIST.UPDATING
+        );
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this.view.unlockStoreDetailsFooterBtns();
+
+        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Handles deleting product and updates products amounts and table (in case of success)
+   * @param {string} productsAmountText the text to be shown inside "products amounts spinner"
+   * @param {string} productsListText the text to be shown inside "products list spinner"
+   * @private
+   */
+  _deleteProductAndUpdateTableWithAmounts(
+    productsAmountText,
+    productsListText
+  ) {
+    this._setProductsAmountsSpinner(productsAmountText);
+    this._setProductsListSpinner(productsListText);
+
+    this.model
+      .deleteProduct(
+        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT)
+      )
+      .then(() => {
+        this.view.showPopupWithMsg(
+          "The product has been successfully deleted.",
+          View.POPUP_COLOR.ATTENTION,
+          5000
+        );
+
+        this._loadProductsListsAndUpdateTableWithAmounts(
+          View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING,
+          View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
+        );
+      })
+      .catch((error) => {
+        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
+      })
+      .finally(() => {
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
+        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
+      });
+  }
+
+  /**
+   * Updates details of current store
+   * @private
+   */
+  _updateAllStoreDetails() {
+    this._setProductsTableHeadToDefault();
+
+    this.view.highlightActiveStoreCard(
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+    );
+
+    this.view.updateStoreDetailsLayout(
+      localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
+    );
+
+    this._loadStoreAndUpdateStoreDescription(
+      View.SPINNER_TEXT.STORE_DETAILS.LOADING
+    );
+
+    this._loadSearchedProductsListAndUpdateTableWithAmounts(
+      View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING,
+      View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+    );
+  }
+
+  /**
    * Sets products table head to default state
    * @private
    */
@@ -166,30 +573,6 @@ class Controller {
   }
 
   /**
-   * Updates current store description
-   * @private
-   */
-  _updateStoreDescription() {
-    this._setStoreDescriptionSpinner(View.SPINNER_TEXT.STORE_DETAILS.LOADING);
-
-    this.model
-      .getStoreById(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-      )
-      .then((store) => {
-        if (store) {
-          this.view.updateStoreDescriptionFields(store);
-        }
-      })
-      .catch((error) => {
-        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
-      })
-      .finally(() => {
-        this._requestSpinnerRemovingById(View.ID.SPINNER.STORE_DETAILS);
-      });
-  }
-
-  /**
    * Renders products table head (based on existing array of columns in object of constans)
    * @private
    */
@@ -203,32 +586,6 @@ class Controller {
     this._setTableSortBtnsListener();
 
     this._setSearchProductsListeners();
-  }
-
-  /**
-   * Loads product data to editing form (via request to server)
-   * @private
-   */
-  _loadProductDataToEditForm() {
-    this._setEditProductFormSpinner(
-      View.SPINNER_TEXT.EDIT_PRODUCT_FORM.LOADING
-    );
-
-    this.model
-      .getProductById(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT)
-      )
-      .then((product) => {
-        if (product) {
-          this.view.updateEditProductFormFields(product);
-        }
-      })
-      .catch((error) => {
-        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
-      })
-      .finally(() => {
-        this._requestSpinnerRemovingById(View.ID.SPINNER.EDIT_PRODUCT_FORM);
-      });
   }
 
   /**
@@ -316,28 +673,9 @@ class Controller {
         searchWrapper
       );
 
-      this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.LOADING);
-
-      this.model
-        .getSearchedStoresList(searchInput.value)
-        .then((storesList) => {
-          if (Array.isArray(storesList)) {
-            this.view.updateStoresList(
-              storesList,
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-            );
-          }
-        })
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-        });
+      this._loadAndUpdateFilteredStoresList(
+        View.SPINNER_TEXT.STORES_LIST.LOADING
+      );
     } else {
       this.view.addErrorToInput(
         searchInput,
@@ -420,41 +758,9 @@ class Controller {
         newFilterBtn.id
       );
 
-      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-      const filterOptions = {
-        filterId: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.CURR_FILTER
-        ),
-        sortKey: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY
-        ),
-        sortOrder: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.SORT_ORDER
-        ),
-        searchFilterValue: this.view.getProductsSearchInput().value,
-      };
-
-      this.model
-        .getFullFilteredProductsListByStoreId(
-          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-          filterOptions
-        )
-        .then((fullFilteredProductsList) => {
-          if (Array.isArray(fullFilteredProductsList)) {
-            this.view.updateProductsTableBody(fullFilteredProductsList);
-          }
-        })
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-        });
+      this._loadFilteredProductsListAndUpdateTable(
+        View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+      );
     }
   }
 
@@ -481,15 +787,6 @@ class Controller {
       const currSortBtn = e.target;
       const sortKey = currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_KEY.CAMEL];
 
-      const filterOptions = {
-        filterId: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.CURR_FILTER
-        ),
-        sortKey: sortKey,
-        sortOrder: null,
-        searchFilterValue: this.view.getProductsSearchInput().value,
-      };
-
       switch (currSortBtn.dataset[View.DATA_ATTRIBUTE.SORT_STATE.CAMEL]) {
         case Model.SORT_ORDER.DEFAULT:
           this.view.setAllSortBtnsToDefault(Model.SORT_ORDER.DEFAULT);
@@ -503,30 +800,9 @@ class Controller {
             Model.SORT_ORDER.ASC
           );
 
-          filterOptions.sortOrder = Model.SORT_ORDER.ASC;
-
-          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-          this.model
-            .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              filterOptions
-            )
-            .then((fullFilteredProductsList) => {
-              if (Array.isArray(fullFilteredProductsList)) {
-                this.view.updateProductsTableBody(fullFilteredProductsList);
-              }
-            })
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-            });
+          this._loadFilteredProductsListAndUpdateTable(
+            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+          );
 
           break;
         case Model.SORT_ORDER.ASC:
@@ -540,30 +816,9 @@ class Controller {
             Model.SORT_ORDER.DESC
           );
 
-          filterOptions.sortOrder = Model.SORT_ORDER.DESC;
-
-          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-          this.model
-            .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              filterOptions
-            )
-            .then((fullFilteredProductsList) => {
-              if (Array.isArray(fullFilteredProductsList)) {
-                this.view.updateProductsTableBody(fullFilteredProductsList);
-              }
-            })
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-            });
+          this._loadFilteredProductsListAndUpdateTable(
+            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+          );
 
           break;
         case Model.SORT_ORDER.DESC:
@@ -573,28 +828,9 @@ class Controller {
 
           this._clearTableSortFiltersFromLocalStorage();
 
-          this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-          this.model
-            .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              filterOptions
-            )
-            .then((fullFilteredProductsList) => {
-              if (Array.isArray(fullFilteredProductsList)) {
-                this.view.updateProductsTableBody(fullFilteredProductsList);
-              }
-            })
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-            });
+          this._loadFilteredProductsListAndUpdateTable(
+            View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
+          );
 
           break;
         default:
@@ -637,61 +873,10 @@ class Controller {
         searchWrapper
       );
 
-      const searchedProductsPromise = this.model
-        .getSearchedProductsListByStoreId(
-          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-          searchInput.value
-        )
-        .then((searchedProductsList) => {
-          if (Array.isArray(searchedProductsList)) {
-            this.view.updateProductsAmounts(
-              searchedProductsList,
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-            );
-          }
-        });
-
-      const filterOptions = {
-        filterId: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.CURR_FILTER
-        ),
-        sortKey: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY
-        ),
-        sortOrder: localStorage.getItem(
-          Controller._LOCAL_STORAGE_ID.SORT_ORDER
-        ),
-        searchFilterValue: this.view.getProductsSearchInput().value,
-      };
-
-      const fullFilteredProductsPromise = this.model
-        .getFullFilteredProductsListByStoreId(
-          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-          filterOptions
-        )
-        .then((fullFilteredProductsList) => {
-          if (Array.isArray(fullFilteredProductsList)) {
-            this.view.updateProductsTableBody(fullFilteredProductsList);
-          }
-        });
-
-      this._setProductsAmountsSpinner(
-        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING
+      this._loadProductsListsAndUpdateTableWithAmounts(
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.LOADING,
+        View.SPINNER_TEXT.PRODUCTS_LIST.LOADING
       );
-      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.LOADING);
-
-      Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-        });
     } else {
       this.view.addErrorToInput(
         searchInput,
@@ -728,7 +913,9 @@ class Controller {
 
       modalWrapper.classList.add(View.JS_CLASS.ELEMENT.FLEX);
 
-      this._loadProductDataToEditForm();
+      this._loadProductAndUpdateEditForm(
+        View.SPINNER_TEXT.EDIT_PRODUCT_FORM.LOADING
+      );
     } else if (e.target.classList.contains(View.CLASS.BTN.CROSS)) {
       const modalWrapper = this.view.getModalDeleteProductWrapper();
 
@@ -837,50 +1024,10 @@ class Controller {
 
       this.view.closeCreateStoreModal();
 
-      this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.CREATING);
-
-      this.model
-        .postStore(JSON.stringify(resultObj))
-        .then(() => {
-          this.view.showPopupWithMsg(
-            "New store has been successfully created!",
-            View.POPUP_COLOR.SUCCESS,
-            5000
-          );
-
-          this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.UPDATING);
-
-          this.model
-            .getSearchedStoresList(this.view.getStoresSearchInput().value)
-            .then((storesList) => {
-              if (Array.isArray(storesList)) {
-                this.view.updateStoresList(
-                  storesList,
-                  localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-                );
-              }
-            })
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-            });
-        })
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-        });
+      this._postStoreAndUpdateStoresList(
+        resultObj,
+        View.SPINNER_TEXT.STORES_LIST.CREATING
+      );
     } else {
       this.view.showErrorModal();
     }
@@ -895,102 +1042,10 @@ class Controller {
 
     this.view.closeDeleteStoreModal();
 
-    this._setStoresListSpinner(
-      View.SPINNER_TEXT.STORES_LIST.DELETING_STORE_PRODUCTS
-    );
-    this._setProductsListSpinner(
+    this._deleteStoreProductsWithStoreAndUpdateStoresList(
+      View.SPINNER_TEXT.STORES_LIST.DELETING_STORE_PRODUCTS,
       View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE_PRODUCTS
     );
-
-    this.model
-      .deleteStoreProducts(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-      )
-      .then(() => {
-        this.view.showPopupWithMsg(
-          "All products of store have been successfully deleted.",
-          View.POPUP_COLOR.ATTENTION,
-          5000
-        );
-
-        this._setStoresListSpinner(
-          View.SPINNER_TEXT.STORES_LIST.DELETING_STORE
-        );
-        this._setProductsListSpinner(
-          View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_STORE
-        );
-
-        this.model
-          .deleteStore(
-            localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-          )
-          .then(() => {
-            this.view.showPopupWithMsg(
-              "The store has been successfully deleted.",
-              View.POPUP_COLOR.ATTENTION,
-              5000
-            );
-
-            localStorage.removeItem(Controller._LOCAL_STORAGE_ID.CURR_STORE);
-            if (
-              localStorage.getItem(
-                Controller._LOCAL_STORAGE_ID.BOOKMARK_DETECTED
-              )
-            ) {
-              this._updateBookmarkInsideURL();
-            }
-            this.view.updateStoreDetailsLayout(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-            );
-
-            this._setStoresListSpinner(View.SPINNER_TEXT.STORES_LIST.UPDATING);
-
-            this.model
-              .getSearchedStoresList(this.view.getStoresSearchInput().value)
-              .then((storesList) => {
-                if (Array.isArray(storesList)) {
-                  this.view.updateStoresList(
-                    storesList,
-                    localStorage.getItem(
-                      Controller._LOCAL_STORAGE_ID.CURR_STORE
-                    )
-                  );
-                }
-              })
-              .catch((error) => {
-                this.view.showPopupWithMsg(
-                  error.message,
-                  View.POPUP_COLOR.ERROR,
-                  8000
-                );
-              })
-              .finally(() => {
-                this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-              });
-          })
-          .catch((error) => {
-            this.view.showPopupWithMsg(
-              error.message,
-              View.POPUP_COLOR.ERROR,
-              8000
-            );
-          })
-          .finally(() => {
-            this.view.unlockStoreDetailsFooterBtns();
-
-            this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-          });
-      })
-      .catch((error) => {
-        this.view.unlockStoreDetailsFooterBtns();
-
-        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
-      })
-      .finally(() => {
-        this._requestSpinnerRemovingById(View.ID.SPINNER.STORES_LIST);
-        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-      });
   }
 
   /**
@@ -1005,94 +1060,11 @@ class Controller {
 
       this.view.closeCreateProductModal();
 
-      this._setProductsAmountsSpinner(
-        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING
+      this._postProductAndUpdateTableWithAmounts(
+        resultObj,
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.CREATING,
+        View.SPINNER_TEXT.PRODUCTS_LIST.CREATING
       );
-      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.CREATING);
-
-      this.model
-        .postProduct(
-          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-          JSON.stringify(resultObj)
-        )
-        .then(() => {
-          this.view.showPopupWithMsg(
-            "New product has been successfully created!",
-            View.POPUP_COLOR.SUCCESS,
-            5000
-          );
-
-          const searchedProductsPromise = this.model
-            .getSearchedProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              this.view.getProductsSearchInput().value
-            )
-            .then((searchedProductsList) => {
-              if (Array.isArray(searchedProductsList)) {
-                this.view.updateProductsAmounts(
-                  searchedProductsList,
-                  localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-                );
-              }
-            });
-
-          const filterOptions = {
-            filterId: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.CURR_FILTER
-            ),
-            sortKey: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY
-            ),
-            sortOrder: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.SORT_ORDER
-            ),
-            searchFilterValue: this.view.getProductsSearchInput().value,
-          };
-
-          const fullFilteredProductsPromise = this.model
-            .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              filterOptions
-            )
-            .then((fullFilteredProductsList) => {
-              if (Array.isArray(fullFilteredProductsList)) {
-                this.view.updateProductsTableBody(fullFilteredProductsList);
-              }
-            });
-
-          this._setProductsAmountsSpinner(
-            View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
-          );
-          this._setProductsListSpinner(
-            View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
-          );
-
-          Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(
-                View.ID.SPINNER.PRODUCTS_AMOUNTS
-              );
-              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-            });
-        })
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-        });
     } else {
       this.view.showErrorModal();
     }
@@ -1112,94 +1084,11 @@ class Controller {
         Controller._LOCAL_STORAGE_ID.CURR_STORE
       );
 
-      this._setProductsAmountsSpinner(
-        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.EDITING
+      this._editProductAndUpdateTableWithAmounts(
+        resultObj,
+        View.SPINNER_TEXT.PRODUCTS_AMOUNTS.EDITING,
+        View.SPINNER_TEXT.PRODUCTS_LIST.EDITING
       );
-      this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.EDITING);
-
-      this.model
-        .editProduct(
-          localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT),
-          JSON.stringify(resultObj)
-        )
-        .then(() => {
-          this.view.showPopupWithMsg(
-            "The product has been successfully edited!",
-            View.POPUP_COLOR.SUCCESS,
-            5000
-          );
-
-          const searchedProductsPromise = this.model
-            .getSearchedProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              this.view.getProductsSearchInput().value
-            )
-            .then((searchedProductsList) => {
-              if (Array.isArray(searchedProductsList)) {
-                this.view.updateProductsAmounts(
-                  searchedProductsList,
-                  localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-                );
-              }
-            });
-
-          const filterOptions = {
-            filterId: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.CURR_FILTER
-            ),
-            sortKey: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY
-            ),
-            sortOrder: localStorage.getItem(
-              Controller._LOCAL_STORAGE_ID.SORT_ORDER
-            ),
-            searchFilterValue: this.view.getProductsSearchInput().value,
-          };
-
-          const fullFilteredProductsPromise = this.model
-            .getFullFilteredProductsListByStoreId(
-              localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-              filterOptions
-            )
-            .then((fullFilteredProductsList) => {
-              if (Array.isArray(fullFilteredProductsList)) {
-                this.view.updateProductsTableBody(fullFilteredProductsList);
-              }
-            });
-
-          this._setProductsAmountsSpinner(
-            View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
-          );
-          this._setProductsListSpinner(
-            View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING
-          );
-
-          Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-            .catch((error) => {
-              this.view.showPopupWithMsg(
-                error.message,
-                View.POPUP_COLOR.ERROR,
-                8000
-              );
-            })
-            .finally(() => {
-              this._requestSpinnerRemovingById(
-                View.ID.SPINNER.PRODUCTS_AMOUNTS
-              );
-              this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-            });
-        })
-        .catch((error) => {
-          this.view.showPopupWithMsg(
-            error.message,
-            View.POPUP_COLOR.ERROR,
-            8000
-          );
-        })
-        .finally(() => {
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
-          this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-        });
 
       this._onCancelEditProductBtnClick();
     } else {
@@ -1212,87 +1101,10 @@ class Controller {
    * @private
    */
   _onConfirmDeleteProductClick() {
-    this._setProductsAmountsSpinner(
-      View.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING
-    );
-    this._setProductsListSpinner(
+    this._deleteProductAndUpdateTableWithAmounts(
+      View.SPINNER_TEXT.PRODUCTS_AMOUNTS.DELETING,
       View.SPINNER_TEXT.PRODUCTS_LIST.DELETING_PRODUCT
     );
-
-    this.model
-      .deleteProduct(
-        localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_PRODUCT)
-      )
-      .then(() => {
-        this.view.showPopupWithMsg(
-          "The product has been successfully deleted.",
-          View.POPUP_COLOR.ATTENTION,
-          5000
-        );
-
-        const searchedProductsPromise = this.model
-          .getSearchedProductsListByStoreId(
-            localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-            this.view.getProductsSearchInput().value
-          )
-          .then((searchedProductsList) => {
-            if (Array.isArray(searchedProductsList)) {
-              this.view.updateProductsAmounts(
-                searchedProductsList,
-                localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE)
-              );
-            }
-          });
-
-        const filterOptions = {
-          filterId: localStorage.getItem(
-            Controller._LOCAL_STORAGE_ID.CURR_FILTER
-          ),
-          sortKey: localStorage.getItem(
-            Controller._LOCAL_STORAGE_ID.CURR_SORT_KEY
-          ),
-          sortOrder: localStorage.getItem(
-            Controller._LOCAL_STORAGE_ID.SORT_ORDER
-          ),
-          searchFilterValue: this.view.getProductsSearchInput().value,
-        };
-
-        const fullFilteredProductsPromise = this.model
-          .getFullFilteredProductsListByStoreId(
-            localStorage.getItem(Controller._LOCAL_STORAGE_ID.CURR_STORE),
-            filterOptions
-          )
-          .then((fullFilteredProductsList) => {
-            if (Array.isArray(fullFilteredProductsList)) {
-              this.view.updateProductsTableBody(fullFilteredProductsList);
-            }
-          });
-
-        this._setProductsAmountsSpinner(
-          View.SPINNER_TEXT.PRODUCTS_AMOUNTS.UPDATING
-        );
-        this._setProductsListSpinner(View.SPINNER_TEXT.PRODUCTS_LIST.UPDATING);
-
-        Promise.all([searchedProductsPromise, fullFilteredProductsPromise])
-          .catch((error) => {
-            this.view.showPopupWithMsg(
-              error.message,
-              View.POPUP_COLOR.ERROR,
-              8000
-            );
-          })
-          .finally(() => {
-            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
-            this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-          });
-      })
-      .catch((error) => {
-        this.view.showPopupWithMsg(error.message, View.POPUP_COLOR.ERROR, 8000);
-      })
-      .finally(() => {
-        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_AMOUNTS);
-        this._requestSpinnerRemovingById(View.ID.SPINNER.PRODUCTS_LIST);
-      });
 
     this._onCancelDeleteProductBtnClick();
   }
