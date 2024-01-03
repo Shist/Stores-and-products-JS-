@@ -1202,37 +1202,25 @@ class View {
       `#${View.ID.STORE_LABELS.ADDRESS}`
     );
 
-    if (store.Email) {
-      storeEmailField.textContent = store.Email;
-    } else {
-      storeEmailField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
-    }
-    if (store.Established) {
-      storeEstDateField.textContent = new Date(
-        store.Established
-      ).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    } else {
-      storeEstDateField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
-    }
-    if (store.Address) {
-      storeAddressField.textContent = store.Address;
-    } else {
-      storeAddressField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
-    }
-    if (store.PhoneNumber) {
-      storePhoneField.textContent = store.PhoneNumber;
-    } else {
-      storePhoneField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
-    }
-    if (store.FloorArea) {
-      storeFloorAreaField.textContent = store.FloorArea;
-    } else {
-      storeFloorAreaField.textContent = View.DEFAULT_NOT_SPECIFIED_MSG;
-    }
+    storeEmailField.textContent = store.Email
+      ? store.Email
+      : View.DEFAULT_NOT_SPECIFIED_MSG;
+    storeEstDateField.textContent = store.Established
+      ? new Date(store.Established).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : View.DEFAULT_NOT_SPECIFIED_MSG;
+    storeAddressField.textContent = store.Address
+      ? store.Address
+      : View.DEFAULT_NOT_SPECIFIED_MSG;
+    storePhoneField.textContent = store.PhoneNumber
+      ? store.PhoneNumber
+      : View.DEFAULT_NOT_SPECIFIED_MSG;
+    storeFloorAreaField.textContent = store.FloorArea
+      ? store.FloorArea
+      : View.DEFAULT_NOT_SPECIFIED_MSG;
 
     return this;
   }
