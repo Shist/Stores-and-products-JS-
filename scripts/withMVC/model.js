@@ -190,8 +190,12 @@ class Model {
    * @public
    */
   validateCreateStorePhone(inputPhone) {
+    const phoneRegex = /^[\d\+\-\(\)x\ ]+$/;
+
     if (!inputPhone.value) {
       return "Phone can not be empty!";
+    } else if (!phoneRegex.test(inputPhone.value)) {
+      return "Phone you have entered is invalid!";
     } else {
       return "OK";
     }
