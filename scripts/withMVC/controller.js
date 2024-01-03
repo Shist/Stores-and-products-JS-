@@ -1883,17 +1883,34 @@ class Controller {
       this.view.getProductInputProdCompanyByModalIdsObj(modalIdsObj);
     const inputStatus =
       this.view.getProductInputStatusByModalIdsObj(modalIdsObj);
+    const resultObj = {};
 
-    return {
-      [Model.PRODUCT_KEY.NAME]: inputName.value,
-      [Model.PRODUCT_KEY.PRICE]: inputPrice.value,
-      [Model.PRODUCT_KEY.SPECS]: inputSpecs.value,
-      [Model.PRODUCT_KEY.RATING]: inputRating.value,
-      [Model.PRODUCT_KEY.SUPPLIER_INFO]: inputSupplierInfo.value,
-      [Model.PRODUCT_KEY.COUNTRY]: inputCountry.value,
-      [Model.PRODUCT_KEY.PROD_COMPANY]: inputProdCompany.value,
-      [Model.PRODUCT_KEY.STATUS]: inputStatus.value,
-    };
+    if (inputName.value) {
+      resultObj[Model.PRODUCT_KEY.NAME] = inputName.value;
+    }
+    if (inputPrice.value) {
+      resultObj[Model.PRODUCT_KEY.PRICE] = inputPrice.value;
+    }
+    if (inputSpecs.value) {
+      resultObj[Model.PRODUCT_KEY.SPECS] = inputSpecs.value;
+    }
+    if (inputRating.value) {
+      resultObj[Model.PRODUCT_KEY.RATING] = inputRating.value;
+    }
+    if (inputSupplierInfo.value) {
+      resultObj[Model.PRODUCT_KEY.SUPPLIER_INFO] = inputSupplierInfo.value;
+    }
+    if (inputCountry.value) {
+      resultObj[Model.PRODUCT_KEY.COUNTRY] = inputCountry.value;
+    }
+    if (inputProdCompany.value) {
+      resultObj[Model.PRODUCT_KEY.PROD_COMPANY] = inputProdCompany.value;
+    }
+    if (inputStatus.value) {
+      resultObj[Model.PRODUCT_KEY.STATUS] = inputStatus.value;
+    }
+
+    return resultObj;
   }
 
   /**
