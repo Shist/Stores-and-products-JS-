@@ -4,6 +4,10 @@
 
 ---
 
+### This project has a [twin project](https://github.com/Shist/Stores-and-products-UI5-) which has almost same functional however written on UI5 framework.
+
+---
+
 ## Video demo:
 
 https://github.com/Shist/Stores-and-products-JS-/assets/40572268/07400308-f226-40a6-be52-42835b54f37e
