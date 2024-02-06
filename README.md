@@ -1,5 +1,1 @@
-# lx-course-dec23-zhukouski-pavel-vanillajs
-
-## Description
-
-This is a web page that working with list of stores and their details.
+This is the MVC app with stores and products that imitates the work of SAPUI5 framework but based on native JavaScript
